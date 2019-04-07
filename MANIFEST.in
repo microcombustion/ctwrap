@@ -1,0 +1,5 @@
+include examples/*.ipynb
+include examples/*.yaml
+include examples/*.md
+include _bin/*.py
+include *.py
