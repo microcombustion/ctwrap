@@ -9,7 +9,6 @@ Wrapper functions for batch Cantera simulations.
 The following uses `pip` to install a (linked) version within a python environment (e.g. Anaconda).
 
 ```
-
 $ git clone https://github.com/ischg/cantera-wrapper.git
 $ cd cantera-wrapper
 $ pip install -e .

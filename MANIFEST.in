@@ -2,5 +2,6 @@ include examples/*.ipynb
 include examples/*.yaml
 include examples/*.md
 include plugins/*.py
+include fileio/*.py
 include _bin/*.py
 include *.py

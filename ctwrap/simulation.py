@@ -2,65 +2,105 @@
 # -*- coding: utf-8 -*-
 """Object handling variations."""
 
-import os
-import pandas as pd
 from copy import deepcopy
+import warnings
 
 # multiprocessing
 import multiprocessing as mp
 import queue  # imported for using queue.Empty exception
 
-from ._helper import flatten, load_yaml
-from .templates import _Base
+# ctwrap specific imports
+from . import fileio
+from .parsers import parse_output
 
 __all__ = ['SimulationHandler']
 
+indent1 = ' * '
+indent2 = '   - '
 
-def worker(tasks_to_accomplish, tasks_that_are_done, simulation, lock, var0,
-           hdf_args):
 
-    verbosity = hdf_args.get('verbosity', False)
-    this = mp.current_process().name
+class _PluginHandler(object):
+    """Rudimentary functions required by a simulation object"""
 
-    # check compliance of target object
-    for m in ['__init__', 'run', 'save']:
-        msg = 'Target object is missing required method `{}`'
-        assert hasattr(simulation, m), msg.format(m)
+    def __init__(self, func_handle, output, verbosity=0):
+        """Base plugin constructor
 
-    if verbosity > 1:
-        print('starting ' + this)
+        Arguments:
+           fcn_handle (function): function that runs the simulation
+           output (dict): description of file output
 
-    while True:
-        try:
-            # retrieve next simulation task
-            key, config = tasks_to_accomplish.get_nowait()
-            if verbosity > 1:
-                print('fetching next case: `{}`'.format(key))
+        Keyword Arguments:
+           verbosity (int): verbosity level
+        """
 
-        except queue.Empty:
-            # no tasks left
-            if verbosity > 1:
-                print('terminating ' + this)
-            break
+        self.func_handle = func_handle
+        self.verbosity = verbosity
+        self._output = output
 
-        else:
-            # perform task
-            obj = simulation(**config)
-            if verbosity > 0:
-                pvar, kvar = var0
-                msg = ' * processing `{}.{}`: {} ({})'
-                print(msg.format(pvar, kvar, key, this))
-            obj.initialize()
-            obj.run()
-            with lock:
-                key_str = hdf_args['key_formatter']
-                key_str = key_str.format(key)  # .replace(' ', '_')
-                obj.save(key_str, hdf_args['oname'], path=hdf_args['path'])
+    def dispatch(self, name, config, verbosity=None, **kwargs):
+        """Dispatch function holding configuration in dictionary.
 
-            msg = 'case `{}` completed by {}'.format(key, this)
-            tasks_that_are_done.put(msg)
+        Args:
+           func_handle (function): function that runs the simulation
+           config (dict): configuration
+        Kwargs:
+           kwargs (optional): depends on implementation of __init__
 
-    return True
+        dispatch_from_yaml does not support an output formatter.
+        """
+
+        if verbosity is not None:
+            self.verbosity = verbosity
+
+        name_ = self._output['task_formatter'].format(name)
+        self.data = self.func_handle(
+            name_, **config, **kwargs, verbosity=self.verbosity)
+
+    # def dispatch_from_yaml(self,
+    #                        name,
+    #                        yaml_file,
+    #                        path='.',
+    #                        verbosity=None,
+    #                        **kwargs):
+    #     """Alternate dispatch function using YAML file as input.
+
+    #     Args:
+    #        func_handle (function): function that runs the simulation
+    #        yaml_file (string): yaml file
+    #     Kwargs:
+    #        path (string): path to yaml file
+    #        kwargs (optional): depends on implementation of __init__
+
+    #     dispatch_from_yaml does not support an output formatter.
+    #     """
+
+    #     # load configuration from yaml
+    #     content = fileio.load_yaml(yml_file, path)
+    #     config = content.get('configuration', {})
+
+    #     if verbosity is not None:
+    #         self.verbosity = verbosity
+
+    #     name_ = self._output['task_formatter'].format(name)
+    #     self.data = self.func_handle(
+    #         name_, **config, **kwargs, verbosity=self.verbosity)
+
+    # @property
+    # def verbose(self):
+    #     """Verbosity level"""
+    #     return self.verbosity > 0
+
+    def save(self):
+        """save simulation data"""
+
+        if self._output is None:
+            return
+
+        oname = self._output['file_name']
+        opath = self._output['path']
+        force = self._output['force_overwrite']
+
+        fileio.save(oname, self.data, mode='a', force=force, path=opath)
 
 
 class SimulationHandler(object):
@@ -70,159 +110,159 @@ class SimulationHandler(object):
     """
 
     def __init__(self,
-                 defaults,
+                 configuration,
                  variation,
                  output,
-                 oname,
+                 plugin=None,
                  verbosity=0,
                  path='.'):
         """Constructor"""
 
         # parse arguments
-        self._defaults = defaults
+        self._configuration = configuration
         self._variation = variation
         self._output = output
+        self.plugin = plugin
         self.verbosity = verbosity
 
         # obtain parameter variation
-        if len(self._variation) == 0:
+        if self._variation is None:
             # no variation detected;
-            self._variation_tuple = (None, None), None
+            self._entry = None
+            self._tasks = None
         else:
             # buffer variation
-            pvar, kvar = self._variation.get('entry', (None, None))
-            values = self._variation.get('values', None)
-            self._variation_tuple = (pvar, kvar), values
+            var = self._variation
 
-        vals = self._variation_tuple[1]
-        if self.verbosity and vals is not None:
-            print('Simulated values: {}'.format(vals))
+            # transition
+            if 'values' in var:
+                warnings.warn(
+                    'YAML key `variation.values` is superseded '
+                    'by `variation.tasks`', PendingDeprecationWarning)
+                if 'tasks' not in var:
+                    var['tasks'] = var['values']
 
-        self.oname = oname
-        self.path = path
+            # transition
+            if 'entry' in var:
+                warnings.warn(
+                    'YAML key `variation.entry` is superseded '
+                    'by `variation.configuration_entry`',
+                    PendingDeprecationWarning)
+                if 'tasks' not in var:
+                    var['configuraton_entry'] = var['entry']
 
-        if self.oname is not None:
+            msg = 'missing entry `{}` in `variation`'
+            for key in ['configuration_entry', 'tasks']:
+                assert key in var, msg.format(key)
 
-            # overwrite naming defaults from yaml (overrides)
-            fileparts = oname.split('.')
-            self._output['name'] = '.'.join(fileparts[:-1])
-            self._output['format'] = fileparts[-1]
+            self._entry = var['configuration_entry']
+            self._tasks = var['tasks']
 
-            if self._output['format'] in ['hdf', 'h5', 'hdf5', 'xlsx']:
+        # vals = self._variation_tuple[1]
+        if self.verbosity and self._tasks is not None:
+            print('Simulation tasks: {}'.format(self._tasks))
 
-                # save defaults to output file
-                fname = (os.sep).join([self.path, self.oname])
-                meta = pd.Series(flatten(self._defaults))
-                var = pd.Series(flatten(self._variation))
-                if self._output['format'] == 'xlsx':
-                    with pd.ExcelWriter(
-                            fname, engine='openpyxl', mode='w') as writer:
-                        meta.to_excel(writer, sheet_name='defaults')
-                    with pd.ExcelWriter(
-                            fname, engine='openpyxl', mode='a') as writer:
-                        var.to_excel(writer, sheet_name='variation')
-                else:
-                    meta.to_hdf(fname, 'defaults', mode='w')
-                    var.to_hdf(fname, 'variation', mode='a')
-            else:
-                raise NotImplementedError(
-                    'output as `.{}` is not implemented'.format(
-                        output['format']))
+        if self._output is not None:
+
+            # assemble information
+            info = {
+                'configuration': self._configuration,
+                'variation': self._variation
+            }
+
+            # save to file
+            oname = self._output['file_name']
+            path = self._output['path']
+            force = self._output['force_overwrite']
+
+            fileio.save(oname, info, mode='w', force=force, path=path)
 
     @classmethod
-    def from_yaml(cls, yml_file, path='.', **kwargs):
+    def from_yaml(cls,
+                  yml_file,
+                  yml_path=None,
+                  oname=None,
+                  opath=None,
+                  **kwargs):
         """Alternate constructor using YAML file as input.
 
         Args:
            yml_file (string): yaml file
         Kwargs:
-           path (string): path to yaml file
-           output (string): output name (overrides yaml)
-           save_species (bool): flag (overrides yaml)
+           yml_path (string): path to yaml file
+           oname (string): output name (overrides yaml)
+           opath (string): output path (overrides yaml)
            kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
         """
         # load configuration from yaml
-        content = load_yaml(yml_file, path)
+        content = fileio.load_yaml(yml_file, yml_path)
         output = content.get('output', {})
 
         # naming priorities: keyword / yaml / automatic
-        name = kwargs.pop('name', None)
-        if name is None:
-            name = '.'.join(yml_file.split('.')[:-1])
-            name = output.get('name', name)
+        if oname is None:
+            oname = '.'.join(yml_file.split('.')[:-1])
+            oname = output.get('name', oname)
 
-        return cls.from_dict(content, name=name, **kwargs)
+        return cls.from_dict(content, oname=oname, opath=opath, **kwargs)
 
     @classmethod
-    def from_dict(cls, content, **kwargs):
+    def from_dict(cls, content, oname=None, opath=None, **kwargs):
         """Alternate constructor using a dictionary as input.
 
         Args:
            content (dict): dictionary
         Kwargs:
-           output (string): output name (overrides yaml)
-           save_species (bool): flag (overrides yaml)
+           oname (string): output name (overrides yaml)
+           opath (string): output path (overrides yaml)
            kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
         """
 
-        assert 'version' in content, 'obsolete yaml file format'
-        defaults = content.get('defaults', {})
-        variation = content.get('variation', {})
-        output = content.get('output', {})
+        assert 'ctwrap' in content, 'obsolete yaml file format'
+        configuration = content.get('configuration', {})
+        variation = content.get('variation', None)
+        output = content.get('output', None)
 
-        # save species override
-        save_species = kwargs.pop('save_species', None)
-        if save_species in [True, False]:
-            output['save_species'] = save_species
+        output = parse_output(output, fname=oname, fpath=opath)
 
-        # reacting override
-        reacting = kwargs.pop('reacting', None)
-        if reacting in [True, False]:
-            defaults['chemistry']['reacting'] = reacting
-
-        # naming priorities: keyword / yaml / no name
-        name = output.get('name', None)
-        name = kwargs.pop('name', name)
-        if name is not None:
-            fmt = output.get('format', 'h5')
-            fmt = kwargs.pop('format', fmt)
-            name = '.'.join([name, fmt])
-
-        return cls(defaults, variation, output, name, **kwargs)
-
-    def __getattr__(self, attr):
-        """Access settings dictionary as attribute"""
-
-        assert attr in self._defaults.keys(), 'invalid attribute'
-        return self._defaults[attr]
+        return cls(configuration, variation, output, **kwargs)
 
     def __iter__(self):
         """Returns itself as iterator"""
 
-        for key in self._variation_tuple[1]:
-            yield key
+        for task in self._tasks:
+            yield task
 
-    def __getitem__(self, val):
-        return self.simulation(val)
+    def __getitem__(self, task):
+        return self.configuration(task)
 
-    def simulation(self, val):
+    def configuration(self, task=None, verbosity=None):
         """Return """
 
-        if val is None:
-            return self._defaults
+        if verbosity is None:
+            verbosity = self.verbosity
 
-        pkvar, vals = self._variation_tuple
-        pvar, kvar = pkvar
-        assert val in vals, 'invalid value'
-
-        out = deepcopy(self._defaults)
-        if isinstance(out[pvar][kvar], list):
-            out[pvar][kvar][0] = val
+        if task is None:
+            return self._configuration
         else:
-            out[pvar][kvar] = val
+            assert task in self._tasks, 'invalid value'
+            out = deepcopy(self._configuration)
 
-        out['verbosity'] = self.verbosity
-        out['output'] = self._output
+        # locate entry in nested dictionary (recursive)
+        def replace_entry(nested, key_list, value):
+            sub = nested[key_list[0]]
+            if len(key_list) == 1:
+                if isinstance(sub, list):
+                    sub[0] = value
+                else:
+                    sub = value
+            else:
+                sub = replace_entry(sub, key_list[1:], value)
+            nested[key_list[0]] = sub
+            return nested
+
+        entry = replace_entry(out, self._entry, task)
+
+        # out['verbosity'] = verbosity
 
         return out
 
@@ -231,74 +271,95 @@ class SimulationHandler(object):
         return self.verbosity > 0
 
     @property
-    def variation(self):
-        """Information on parameter variation"""
-        return self._variation_tuple
+    def oname(self):
+        if self._output['path'] is None:
+            return self._output['file_name']
+        else:
+            return self._output['path'] + self._output['file_name']
 
-    def keys(self):
-        """keys of variation"""
-        return self._variation_tuple[1]
+    @property
+    def tasks(self):
+        """values of variation"""
+        return self._tasks
 
-    def item(self, key):
-        """get item"""
-        return key, self[key]
+    def dispatch(self, task, plugin=None, verbosity=None, **kwargs):
 
-    def get_simulation(self, key, simulation=_Base):
+        assert callable(plugin), 'plugin needs to be a function'
 
-        config = self[key]
-        return simulation(**config)
+        if verbosity is None:
+            verbosity = self.verbosity
 
-    def run_serial(self, simulation=_Base, **kwargs):
+        obj = _PluginHandler(plugin, self._output, verbosity)
+
+        # run simulation
+        config = self.configuration(task)
+
+        obj.dispatch(task, config, verbosity=verbosity, **kwargs)
+        obj.save()
+
+    def run_serial(self, plugin=None, verbosity=None, **kwargs):
         """Run variation in series"""
 
-        for key in self.keys():
+        assert callable(plugin), 'plugin needs to be a function'
+
+        if verbosity is None:
+            verbosity = self.verbosity
+
+        obj = _PluginHandler(plugin, self._output, verbosity)
+
+        for task in self._tasks:
+
+            if verbosity > 0:
+                entry = '.'.join(self._entry)
+                print(indent1 + 'processing `{}`: {}'.format(entry, task))
 
             # run simulation
-            config = self[key]
-            obj = simulation(**config)
-            if self.verbosity > 0:
-                pvar, kvar = self._variation_tuple[0]
-                print(' * processing `{}.{}`: {}'.format(pvar, kvar, key))
-            obj.initialize()
-            obj.run()
-            key_str = self._output.get('key_formatter', '{}')
-            key_str = key_str.format(key)
-            obj.save(key_str, self.oname, path=self.path)
+            config = self.configuration(task)
+
+            obj.dispatch(task, config, verbosity=verbosity, **kwargs)
+            obj.save()
 
         return True
 
     def run_parallel(self,
-                     simulation=_Base,
+                     plugin=None,
                      number_of_processes=None,
+                     verbosity=None,
                      **kwargs):
         """Run variation using multiprocessing"""
 
-        tasks_to_accomplish = mp.Queue()
-        finished_tasks = mp.Queue()
+        assert callable(plugin), 'plugin needs to be a function'
 
         if number_of_processes is None:
             number_of_processes = mp.cpu_count() // 2
 
-        processes = []
+        if verbosity is None:
+            verbosity = self.verbosity
 
-        for k in self.keys():
-            tasks_to_accomplish.put((k, self[k]))
+        if verbosity > 0:
+            print(indent1 + 'running simulation using ' +
+                  '{} cores'.format(number_of_processes))
 
-        kwarg_dict = {
-            'oname': self.oname,
-            'path': self.path,
-            'verbosity': self.verbosity,
-            'key_formatter': self._output.get('key_formatter', '{}'),
-        }
+        # set up queues
+        tasks_to_accomplish = mp.Queue()
+        finished_tasks = mp.Queue()
+        for t in self._tasks:
+            config = self.configuration(t, verbosity)
+            tasks_to_accomplish.put((t, config, kwargs))
 
         lock = mp.Lock()
 
+        entry = '.'.join(self._entry)
+        msg = indent1 + \
+            'processing `{}`: {{}} ({{}})'.format('.'.join(self._entry))
+
         # creating processes
+        processes = []
         for w in range(number_of_processes):
             p = mp.Process(
                 target=worker,
-                args=(tasks_to_accomplish, finished_tasks, simulation, lock,
-                      self._variation_tuple[0], kwarg_dict))
+                args=(tasks_to_accomplish, finished_tasks, plugin, lock, msg,
+                      self._output, verbosity))
             processes.append(p)
             p.start()
 
@@ -307,9 +368,48 @@ class SimulationHandler(object):
             p.join()
 
         # print the output
+        if verbosity > 0:
+            print('=' * 60)
+            print('Summary:')
         while not finished_tasks.empty():
             msg = finished_tasks.get()
-            if self.verbosity > 1:
-                print(msg)
+            if verbosity > 0:
+                print(indent1 + msg)
 
         return True
+
+
+def worker(tasks_to_accomplish, tasks_that_are_done, plugin, lock, msg, output,
+           verbosity):
+
+    this = mp.current_process().name
+
+    if verbosity > 0:
+        print(indent1 + 'starting ' + this)
+
+    while True:
+        try:
+            # retrieve next simulation task
+            task, config, kwargs = tasks_to_accomplish.get_nowait()
+
+        except queue.Empty:
+            # no tasks left
+            if verbosity > 0:
+                print(indent1 + 'terminating ' + this)
+            break
+
+        else:
+
+            obj = _PluginHandler(plugin, output, verbosity)
+
+            # perform task
+            if verbosity > 0:
+                print(msg.format(task, this))
+            obj.dispatch(task, config, verbosity=verbosity, **kwargs)
+            with lock:
+                obj.save()
+
+            msg = 'case `{}` completed by {}'.format(task, this)
+            tasks_that_are_done.put(msg)
+
+    return True

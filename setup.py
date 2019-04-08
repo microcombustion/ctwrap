@@ -43,7 +43,7 @@ setup(
         'openpyxl',
         'pint',
         'cantera>=2.4.0',
-        'pyyaml>=3.13',
         'h5py',
+        'ruamel.yaml',
     ],
     zip_safe=False)

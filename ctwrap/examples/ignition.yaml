@@ -1,27 +1,25 @@
 # example YAML file
 # specifies parameter variation for fuel
 variation:
-  entry: [initial, fuel] 
-  values: ['CH4','C2H4','C3H8','CH3OCH3','C2H5OH']
+  configuration_entry: [initial, phi] 
+  tasks: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
 output:
   format: h5
-  save_species: ['OH','CO'] # <-- True/False or tuple of species
+  task_formatter: 'phi={}'
 configuration:
   initial:
-    T_initial: [1000., kelvin]
-    pressure: [101325.0, pascal]
+    T: [1000., kelvin, 'initial temperature']
+    P: [1., atmosphere, 'pressure']
     phi: [1., dimensionless, 'equivalence ratio']
-    fuel: 'C3H8'
-    diluent: 'N2'
-    o2_percent: [21., dimensionless]
+    fuel: 'H2'
+    oxidizer: 'O2:1,AR:3.76'
   chemistry:
-    mechanism: AramcoMech1.3.xml
-    path: ../mech
+    mechanism: h2o2.xml
+    path: ''
   simulation:
-    delta_t: 1.e-4
-    delta_Tmax: 25.
-    n_points: 5000
+    delta_t: 1.e-5
+    n_points: 500
     atol: 1.e-15
     rtol: 1.e-9
-    max_time_step: 5.e-6
-version: 0.2.0 # minimum version of zerod code
+    max_time_step: 1.e-6
+ctwrap: 0.1.0
