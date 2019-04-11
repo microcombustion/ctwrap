@@ -2,13 +2,23 @@
 # -*- coding: utf-8 -*-
 """Template demonstrating """
 
+from ruamel import yaml
 import pandas as pd
 import time
 
-from ctwrap.fileio import load_yaml
+
+__DEFAULT = """\
+# default parameters for the `template` module
+sleep: 0.2
+"""
 
 
-def template(name, sleep=.2, **kwargs):
+def default():
+    """Returns dictionary containing default arguments"""
+    return yaml.load(__DEFAULT, Loader=yaml.SafeLoader)
+
+
+def run(name, sleep=.2, **kwargs):
     """this function does nothing"""
 
     # initialize
@@ -20,5 +30,5 @@ def template(name, sleep=.2, **kwargs):
 
 if __name__ == "__main__":
 
-    config = load_yaml('template.yaml')
-    template('main', **config)
+    config = default()
+    run('main', **config)

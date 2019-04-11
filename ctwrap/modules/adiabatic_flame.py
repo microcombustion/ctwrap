@@ -1,27 +1,45 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from ruamel import yaml
 import cantera as ct
 import pandas as pd
 import numpy as np
 
-from ctwrap.fileio import load_yaml
-from ctwrap import parsers
+from ctwrap import Parser
+
+__DEFAULT = """\
+# default parameters for the `freeflame` module
+upstream:
+  T: [300., kelvin, 'temperature']
+  P: [1., atmosphere, 'pressure']
+  phi: [.55, dimensionless, 'equivalence ratio']
+  fuel: 'H2'
+  oxidizer: 'O2:1.,AR:5'
+chemistry:
+  mechanism: h2o2.xml
+  path: ''
+domain:
+  width: [30, millimeter, 'domain width']
+"""
 
 
-def freeflame(name,
-              verbosity=0,
-              chemistry=None,
-              upstream=None,
-              domain=None,
-              loglevel=0):
+def default():
+    """Returns dictionary containing default arguments"""
+    return yaml.load(__DEFAULT, Loader=yaml.SafeLoader)
+
+
+def run(name,
+        chemistry=None,
+        upstream=None,
+        domain=None,
+        loglevel=0):
     """Function handling reactor simulation.
 
     Arguments:
         name (str): name used for output
 
     Keyword Arguments:
-        verbosity (bool): verbosity level (required)
         chemistry (dict): reflects yaml 'configuration:chemistry'
         upstream  (dict): reflects yaml 'configuration:upstream'
         domain    (dict): reflects yaml 'configuration:simulation'
@@ -29,6 +47,9 @@ def freeflame(name,
 
     Returns:
         dict: dictionary with pandas DataFrame entries
+
+    The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
+    for handling and conversion of units.
     """
 
     out = {}
@@ -37,23 +58,27 @@ def freeflame(name,
 
     # IdealGasMix object used to compute mixture properties, set to the state of the
     # upstream fuel-air mixture
-    gas = parsers.create_solution(chemistry)
+    mech = Parser(chemistry).mechanism
+    gas = ct.Solution(mech)
 
     # temperature, pressure, and composition
-    parsers.set_TP(gas, upstream)
-    parsers.set_equivalence_ratio(gas, upstream)
+    upstream = Parser(upstream)
+    T = upstream.T.m_as('kelvin')
+    P = upstream.P.m_as('pascal')
+    gas.TP = T, P
+    phi = upstream.phi.m
+    gas.set_equivalence_ratio(phi, upstream.fuel, upstream.oxidizer)
 
-    width = parsers.get_value(domain, 'width', 'meter')
-
-    # entries used for output
-    keys = ['z (m)', 'u (m/s)', 'V (1/s)', 'T (K)', 'rho (kg/m3)'] + \
-        gas.species_names
-
-    # Set up flame object
+    # set up flame object
+    width = Parser(domain).width.m_as('meter')
     f = ct.FreeFlame(gas, width=width)
     f.set_refine_criteria(ratio=3, slope=0.06, curve=0.12)
     if loglevel > 0:
         f.show_solution()
+
+    # entries used for output
+    keys = ['z (m)', 'u (m/s)', 'V (1/s)', 'T (K)', 'rho (kg/m3)'] + \
+        gas.species_names
 
     # Solve with mixture-averaged transport model
     f.transport_model = 'Mix'
@@ -86,5 +111,5 @@ def freeflame(name,
 
 if __name__ == "__main__":
 
-    config = load_yaml('freeflame.yaml')
-    df = freeflame('main', **config, loglevel=1)
+    config = default()
+    df = run('main', **config, loglevel=1)

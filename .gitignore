@@ -106,3 +106,7 @@ venv.bak/
 # misc
 *~
 *#
+*.h5
+*.csv
+*.xml
+Untitled*.ipynb

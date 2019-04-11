@@ -1,3 +1,3 @@
-from .ignition import ignition
-from .template import template
-from .freeflame import freeflame
+from . import template
+from . import ignition
+from . import adiabatic_flame

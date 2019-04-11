@@ -35,7 +35,8 @@ setup(
     test_suite='nose.collector',
     tests_require=['nose', 'nose-cover3'],
     entry_points={
-        'console_scripts': ['ctwrap-ignition=ctwrap._bin.ignition:main'],
+        'console_scripts': ['ctwrap-ignition=ctwrap.bin.ignition:main'],
+        'console_scripts': ['ctwrap-adiabatic-flame=ctwrap.bin.adiabatic_flame:main'],
     },
     include_package_data=True,
     install_requires=[
@@ -43,7 +44,6 @@ setup(
         'openpyxl',
         'pint',
         'cantera>=2.4.0',
-        'h5py',
         'ruamel.yaml',
     ],
     zip_safe=False)

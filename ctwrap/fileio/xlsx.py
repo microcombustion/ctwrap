@@ -1,75 +1,98 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Excel file input/output"""
+"""Functions handling Excel input/output"""
 
 import pandas as pd
+import os
+
+# filter warning as group names may not be valid python identifiers
+import warnings
+warnings.filterwarnings("ignore",
+                        "object name is not a valid Python identifier:")
+
+# local imports
 from .yaml import flatten, nested
-###from ..configuration import Configuration
 
 __all__ = ['xlsxls', 'to_xlsx', 'from_xlsx']
 
 
-def xlsxls(fname):
+def _getfile(fname, path=None):
+    """helper function"""
 
-    raise NotImplementedError('to be done')
-
-
-def to_xlsx(fname):
-
-    raise NotImplementedError('to be done')
-
-
-def load_xlsx(fname, path=''):
-
-    if path is 'default':
-        fname = (os.sep).join([__DATA_PATH, fname])
-    elif path is not '':
+    if path not in ['', None]:
         fname = (os.sep).join([path, fname])
 
-    return pd.read_excel(fname, encoding="ISO-8859-1")
+    return fname, os.path.isfile(fname)
 
 
-# meta = pd.Series(flatten(self._configuration))
-# with pd.ExcelWriter(
-#         fname, engine='openpyxl', mode='w') as writer:
-#     meta.to_excel(writer, sheet_name='configuration')
+def xlsxls(iname, path=None):
+    """Retrieve names of sheets within a xlsx file"""
 
-# # # save information on variation (if available)
-# if self._variation is not None:
-#     with pd.ExcelWriter(
-#             fname, engine='openpyxl', mode='a') as writer:
-#         var.to_excel(writer, sheet_name='variation')
+    fname, fexists = _getfile(iname, path=path)
+    if not fexists:
+        return []
 
-# # Excel
-# with ExcelWriter(fname, engine='openpyxl', mode='a') as writer:
-#     df[keys].to_excel(writer, sheet_name=key)
+    with pd.ExcelFile(fname) as xlsx:
+        sheets = [s for s in reac.sheet_names]
+
+    return sheets
 
 
-def from_xlsx(fname):
-    """load content from xlsx file"""
+def to_xlsx(oname, sheets, path=None, mode='a', force=True):
+    """Write content to sheet(s) of xlsx file"""
 
-    reac = pd.ExcelFile(fname)
-    sheets = [
-        s for s in reac.sheet_names if s not in ['configuration', 'variation']
-    ]
-    sheets.sort(key=lambda f: int(''.join(list(filter(str.isdigit, f)))))
-    data = {s: pd.read_excel(reac, s) for s in sheets}
+    # file check
+    fname, fexists = _getfile(oname, path=path)
+    if fexists and mode == 'w' and not force:
+        msg = 'Cannot overwrite existing file `{}` (use force to override)'
+        raise RuntimeError(msg.format(oname))
 
-    if 'configuration' in reac.sheet_names:
-        df = pd.read_excel(reac, 'configuration')
-        keys = df.keys()
-        config = dict(zip(df[keys[0]], df[keys[1]]))
-        config = nested(config)
-        #config = Configuration(**config)
-    else:
-        config = None
+    existing = xlsxls(fname)
+    for s in sheets:
 
-    if 'variation' in reac.sheet_names:
-        df = pd.read_excel(reac, 'variation')
-        keys = df.keys()
-        var = dict(zip(df[keys[0]], df[keys[1]]))
-        var = nested(var)
-    else:
-        var = None
+        if mode == 'a' and s in existing and not force:
+            msg = 'Cannot overwrite existing sheet `{}` (use force to override)'
+            raise RuntimeError(msg.format(key))
 
-    return data, config, var
+        data = sheets[s]
+        if isinstance(data, dict):
+            data = pd.Series(flatten(data))
+            with pd.ExcelWriter(fname, engine='openpyxl', mode=mode) as writer:
+                data.to_excel(writer, sheet_name=s)
+        elif isinstance(data, (pd.DataFrame, pd.Series)):
+            with pd.ExcelWriter(fname, engine='openpyxl', mode=mode) as writer:
+                data.to_excel(writer, sheet_name=s)
+        elif data is None:
+            # print('no data frame')
+            pass
+        else:
+            # ignore anything else
+            pass
+
+        # prevent overwriting of existing sheets
+        mode = 'a'
+
+
+def from_xlsx(iname, path=None):
+    """Load content from xlsx file"""
+
+    # check file
+    iname, fexists = _getfile(iname, path=path)
+    if not fexists:
+        msg = 'File `{}` does not exist'
+        raise RuntimeError(msg.format(oname))
+
+    # retrieve content
+    with pd.ExcelFile(iname) as xlsx:
+
+        sheets = xlsx.sheet_names
+
+        out = {}
+        for s in sheets:
+
+            data = pd.read_excel(xlsx, s)
+            if isinstance(data, pd.Series):
+                data = nested(dict(data))
+            out[s] = data
+
+    return out

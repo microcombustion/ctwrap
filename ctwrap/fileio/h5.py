@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Function handling h5 (hdf5) input/output."""
+"""Functions handling h5 (hdf5) input/output."""
 
 import pandas as pd
 import os
@@ -26,9 +26,11 @@ def _getfile(fname, path=None):
 
 
 def h5ls(iname, path=None):
-    """Load object from hdf file (using h5py module)."""
+    """Retrieve names of groups within a hdf file."""
 
-    fname, _ = _getfile(iname, path=path)
+    fname, fexists = _getfile(iname, path=path)
+    if not fexists:
+        return []
 
     with pd.HDFStore(fname) as hdf:
         groups = [k.lstrip('/') for k in hdf.keys()]
@@ -41,19 +43,15 @@ def h5ls(iname, path=None):
 
 
 def to_hdf(oname, groups, path=None, mode='a', force=True):
-    """write content to group(s) of hdf5 container """
+    """Write content to group(s) of hdf5 container """
 
+    # file check
     fname, fexists = _getfile(oname, path=path)
-
-    # safety check
     if fexists and mode == 'w' and not force:
         msg = 'Cannot overwrite existing file `{}` (use force to override)'
         raise RuntimeError(msg.format(oname))
 
-    with pd.HDFStore(fname) as hdf:
-
-        existing = [k.lstrip('/') for k in hdf.keys()]
-
+    existing = h5ls(fname)
     for g in groups:
 
         if mode == 'a' and g in existing and not force:
@@ -78,11 +76,10 @@ def to_hdf(oname, groups, path=None, mode='a', force=True):
 
 
 def from_hdf(iname, path=None):
-    """load content from hdf file"""
+    """Load content from hdf file"""
 
+    # check file
     fname, fexists = _getfile(iname, path=path)
-
-    # safety check
     if not fexists:
         msg = 'File `{}` does not exist'
         raise RuntimeError(msg.format(oname))
@@ -91,12 +88,12 @@ def from_hdf(iname, path=None):
     with pd.HDFStore(fname) as hdf:
         groups = [k.lstrip('/') for k in hdf.keys()]
 
-    out = {}
-    for g in groups:
+        out = {}
+        for g in groups:
 
-        data = pd.read_hdf(fname, g)
-        if isinstance(data, pd.Series):
-            data = nested(dict(data))
-        out[g] = data
+            data = pd.read_hdf(hdf, g)
+            if isinstance(data, pd.Series):
+                data = nested(dict(data))
+            out[g] = data
 
     return out
