@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup, find_packages
 from os import path
 import sys
 
@@ -31,7 +31,7 @@ setup(
     author='Ingmar Schoegl',
     author_email='ischoegl@lsu.edu',
     license='MIT',
-    packages=['ctwrap'],
+    packages=find_packages(),
     test_suite='nose.collector',
     tests_require=['nose', 'nose-cover3'],
     entry_points={

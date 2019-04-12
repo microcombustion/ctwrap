@@ -158,42 +158,40 @@ class SimulationHandler(object):
 
     @classmethod
     def from_yaml(cls,
-                  yml_file,
-                  yml_path=None,
-                  oname=None,
-                  opath=None,
+                  yaml_file,
+                  name=None,
+                  path=None,
                   **kwargs):
         """Alternate constructor using YAML file as input.
 
         Args:
-           yml_file (string): yaml file
+           yaml_file (string): yaml file
         Kwargs:
-           yml_path (string): path to yaml file
-           oname (string): output name (overrides yaml)
-           opath (string): output path (overrides yaml)
+           name (string): output name (overrides yaml)
+           path (string): file path (both yaml and output)
            kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
         """
 
         # load configuration from yaml
-        content = fileio.load_yaml(yml_file, yml_path)
+        content = fileio.load_yaml(yaml_file, path)
         output = content.get('output', {})
 
         # naming priorities: keyword / yaml / automatic
-        if oname is None:
-            oname = '.'.join(yml_file.split('.')[:-1])
-            oname = output.get('name', oname)
+        if name is None:
+            name = '.'.join(yaml_file.split('.')[:-1])
+            name = output.get('name', name)
 
-        return cls.from_dict(content, oname=oname, opath=opath, **kwargs)
+        return cls.from_dict(content, name=name, path=path, **kwargs)
 
     @classmethod
-    def from_dict(cls, content, oname=None, opath=None, **kwargs):
+    def from_dict(cls, content, name=None, path=None, **kwargs):
         """Alternate constructor using a dictionary as input.
 
         Args:
            content (dict): dictionary
         Kwargs:
-           oname (string): output name (overrides yaml)
-           opath (string): output path (overrides yaml)
+           name (string): output name (overrides yaml)
+           path (string): output path (overrides yaml)
            kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
         """
 
@@ -203,7 +201,7 @@ class SimulationHandler(object):
         variation = content.get('variation', None)
         output = content.get('output', None)
 
-        output = cls._parse_output(output, fname=oname, fpath=opath)
+        output = cls._parse_output(output, fname=name, fpath=path)
 
         return cls(defaults, variation, output, **kwargs)
 
@@ -219,8 +217,7 @@ class SimulationHandler(object):
 
         # establish defaults
         out = dct.copy()
-        if 'path' not in out:
-            out['path'] = None
+        out['path'] = None  # should never be specified inside of yaml
         if 'format' not in out:
             out['format'] = ''
         if 'force_overwrite' not in out:
@@ -305,7 +302,7 @@ class SimulationHandler(object):
         return self.verbosity > 0
 
     @property
-    def oname(self):
+    def output_name(self):
         if self._output['path'] is None:
             return self._output['file_name']
         else:

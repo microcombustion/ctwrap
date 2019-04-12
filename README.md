@@ -1,6 +1,19 @@
-# cantera-wrapper
+# ctwrap
 
-Wrapper functions for batch Cantera simulations.
+Light-weight Python wrapper for batch simulations (e.g. Cantera).
+
+## Philosophy
+
+The code was developed with the following objectives. It should:
+
+ * Create a flexible framework for generic simulations
+ * Provide a command line interface
+ * Be easily scriptable (using YAML configuration files via `ruamel.yaml`)
+ * Enforce units (via `pint`)
+ * Generate self-documenting results (data is saved in HDF containers via `pandas`)
+ * Enable parallel execution of (single-threaded) simulations (via `multiprocessing`)
+
+Caveat: the documentation of the initial release is limited to rudimentary docstrings, plus usage examples in the form of jupyter notebooks.
 
 ## Installation
 
@@ -9,14 +22,14 @@ Wrapper functions for batch Cantera simulations.
 The following uses `pip` to install a (linked) version within a python environment (e.g. Anaconda).
 
 ```
-$ git clone https://github.com/ischg/cantera-wrapper.git
-$ cd cantera-wrapper
-$ pip install -e .
+$ git clone https://github.com/ischg/ctwrap.git
+$ cd ctwrap
+$ pip install .
 ```
 
 ### Update
 
-Within the `cantera-wrapper` source folder, run:
+Within the `ctwrap` source folder, run:
 
 ```
 $ git pull
@@ -29,12 +42,3 @@ $ python setup.py develop
 $ pip uninstall ctwrap
 ```
 
-## Dependencies
-
-Requires cantera. Using the anaconda packager, it is installed via:
-
-```
-conda update --all
-conda install -c cantera cantera
-conda clean -t
-```
