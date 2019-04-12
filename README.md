@@ -6,14 +6,22 @@ Light-weight Python wrapper for batch simulations (e.g. Cantera).
 
 The code was developed with the following objectives in mind. It should:
 
- * Create a flexible framework for generic simulations
- * Provide a command line interface
- * Be easily scriptable (using YAML configuration files via `ruamel.yaml`)
- * Enforce units (via `pint`)
- * Generate self-documenting results (data is saved in HDF containers via `pandas`)
- * Enable parallel execution of (single-threaded) simulations (via `multiprocessing`)
+ * create a flexible framework for generic simulations
+ * provide a command line interface
+ * be easily scriptable (using YAML configuration files via `ruamel.yaml`)
+ * enforce units (via `pint`)
+ * avoid clutter (data are saved in HDF containers)
+ * results can be easily processed (via `pandas` HDF implementation)
+ * generate self-documenting results (save configuration with results)
+ * enable parallel execution of (single-threaded) simulations (via `multiprocessing`)
 
-Caveat: the documentation of the initial release is limited to rudimentary docstrings, plus usage examples in the form of jupyter notebooks.
+__Example:__ a parallel batch job for adiabatic flame calculations uses the simulation module `adiabatic_flame` (slightly modified from Cantera's `adiabatic_flame` example) with parameters defined in `adiabatic_flame.yaml`. This can be run as:
+```
+$ ctwrap adiabatic_flame adiabatic_flame.yaml --parallel
+```
+Results (including configuration files) are written to a single file `adiabatic_flame.h5`.
+
+__Caveat:__ the documentation of the initial code is limited to rudimentary docstrings, plus usage examples in the form of [jupyter notebooks](ctwrap/examples).
 
 ## Installation
 
