@@ -8,7 +8,8 @@ from ruamel import yaml
 import pandas as pd
 from ctwrap import Parser
 
-__DEFAULT = """\
+# default configuration
+__DEFAULTS = """\
 # default parameters for the `ignition` module
 initial:
   T: [1000., kelvin, 'temperature']
@@ -18,19 +19,17 @@ initial:
   oxidizer: 'O2:1.,AR:3.76'
 chemistry:
   mechanism: h2o2.xml
-  path: ''
 simulation:
   delta_t: 1.e-5
   n_points: 500
   atol: 1.e-15
   rtol: 1.e-9
-  max_time_step: 1.e-6
 """
 
 
-def default():
+def defaults():
     """Returns dictionary containing default arguments"""
-    return yaml.load(__DEFAULT, Loader=yaml.SafeLoader)
+    return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
 
 
 def run(name, chemistry=None, initial=None, simulation=None):
@@ -70,7 +69,6 @@ def run(name, chemistry=None, initial=None, simulation=None):
     par = Parser(simulation)
     sim.atol = par.atol
     sim.rtol = par.rtol
-    sim.set_max_time_step(par.max_time_step)
     delta_t = par.delta_t
     n_points = par.n_points
 
@@ -102,5 +100,5 @@ def run(name, chemistry=None, initial=None, simulation=None):
 
 if __name__ == "__main__":
 
-    config = default()
+    config = defaults()
     out = run('main', **config)

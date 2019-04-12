@@ -35,8 +35,7 @@ setup(
     test_suite='nose.collector',
     tests_require=['nose', 'nose-cover3'],
     entry_points={
-        'console_scripts': ['ctwrap-ignition=ctwrap.bin.ignition:main'],
-        'console_scripts': ['ctwrap-adiabatic-flame=ctwrap.bin.adiabatic_flame:main'],
+        'console_scripts': ['ctwrap=ctwrap.bin.ctwrap:main'],
     },
     include_package_data=True,
     install_requires=[

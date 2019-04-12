@@ -8,7 +8,7 @@ import numpy as np
 
 from ctwrap import Parser
 
-__DEFAULT = """\
+__DEFAULTS = """\
 # default parameters for the `freeflame` module
 upstream:
   T: [300., kelvin, 'temperature']
@@ -18,15 +18,14 @@ upstream:
   oxidizer: 'O2:1.,AR:5'
 chemistry:
   mechanism: h2o2.xml
-  path: ''
 domain:
   width: [30, millimeter, 'domain width']
 """
 
 
-def default():
+def defaults():
     """Returns dictionary containing default arguments"""
-    return yaml.load(__DEFAULT, Loader=yaml.SafeLoader)
+    return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
 
 
 def run(name,
@@ -90,7 +89,7 @@ def run(name,
     msg = '    {0:s}: mixture-averaged flamespeed = {1:7f} m/s'
     print(msg.format(name, f.u[0]))
 
-    out[name + ':mix'] = pd.DataFrame(
+    out[name + '<mix>'] = pd.DataFrame(
         np.vstack([f.grid, f.u, f.V, f.T, f.density, f.X]).T, columns=keys)
 
     # Solve with multi-component transport properties
@@ -101,7 +100,7 @@ def run(name,
     msg = '    {0:s}: multi-component flamespeed  = {1:7f} m/s'
     print(msg.format(name, f.u[0]))
 
-    out[name + ':multi'] = pd.DataFrame(
+    out[name + '<multi>'] = pd.DataFrame(
         np.vstack([f.grid, f.u, f.V, f.T, f.density, f.X]).T, columns=keys)
 
     return out
@@ -111,5 +110,5 @@ def run(name,
 
 if __name__ == "__main__":
 
-    config = default()
+    config = defaults()
     df = run('main', **config, loglevel=1)

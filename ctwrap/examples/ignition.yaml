@@ -1,12 +1,11 @@
 # example YAML file
 # specifies parameter variation for fuel
 variation:
-  configuration_entry: [initial, phi] 
-  tasks: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
+  entry: initial.phi 
+  values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
 output:
   format: h5
-  task_formatter: 'phi={}'
-configuration:
+defaults:
   initial:
     T: [1000., kelvin, 'initial temperature']
     P: [1., atmosphere, 'pressure']
@@ -15,11 +14,9 @@ configuration:
     oxidizer: 'O2:1,AR:3.76'
   chemistry:
     mechanism: h2o2.xml
-    path: ''
   simulation:
     delta_t: 1.e-5
     n_points: 500
     atol: 1.e-15
     rtol: 1.e-9
-    max_time_step: 1.e-6
 ctwrap: 0.1.0

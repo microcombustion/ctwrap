@@ -33,7 +33,7 @@ def xlsxls(iname, path=None):
         return []
 
     with pd.ExcelFile(fname) as xlsx:
-        sheets = [s for s in reac.sheet_names]
+        sheets = [s for s in xlsx.sheet_names]
 
     return sheets
 

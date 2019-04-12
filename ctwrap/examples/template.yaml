@@ -3,8 +3,8 @@
 output:
   format: null
 variation:
-  configuration_entry: [sleep] 
-  tasks: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
-configuration:
+  entry: sleep
+  values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
+defaults:
   sleep: 0.2
 ctwrap: 0.1.0

@@ -7,15 +7,15 @@ import pandas as pd
 import time
 
 
-__DEFAULT = """\
+__DEFAULTS = """\
 # default parameters for the `template` module
 sleep: 0.2
 """
 
 
-def default():
+def defaults():
     """Returns dictionary containing default arguments"""
-    return yaml.load(__DEFAULT, Loader=yaml.SafeLoader)
+    return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
 
 
 def run(name, sleep=.2, **kwargs):
@@ -30,5 +30,5 @@ def run(name, sleep=.2, **kwargs):
 
 if __name__ == "__main__":
 
-    config = default()
+    config = defaults()
     run('main', **config)

@@ -25,7 +25,7 @@ class Simulation(object):
     Attributes:
         data (dict): dictionary of pandas.DataFrame objects
 
-    Required module functions 'run' and 'default' are passed through
+    Required module functions 'run' and 'defaults' are passed through
     """
 
     def __init__(self, module, output=None):
@@ -38,7 +38,7 @@ class Simulation(object):
 
         # ensure that module is well formed
         msg = 'module `{}` is missing attribute `{}`'
-        for attr in ['default', 'run']:
+        for attr in ['defaults', 'run']:
             assert hasattr(module, attr), msg.format(module.__name__, attr)
 
         self._module = module
@@ -63,7 +63,7 @@ class Simulation(object):
 
         return type(name, (cls,), {})(module, output)
 
-    def run(self, name='default', config=None, **kwargs):
+    def run(self, name='defaults', config=None, **kwargs):
         """Run function holding configuration in dictionary.
 
         Args:
@@ -74,18 +74,13 @@ class Simulation(object):
         """
 
         if config is None:
-            config = self._module.default()
+            config = self._module.defaults()
 
-        if self._output is not None and 'task_formatter' in self._output:
-            name_ = self._output['task_formatter'].format(name)
-        else:
-            name_ = name
+        self.data = self._module.run(name, **config, **kwargs)
 
-        self.data = self._module.run(name_, **config, **kwargs)
-
-    def default(self):
-        """Pass-through returning default configuration as a dictionary"""
-        return self._module.default()
+    def defaults(self):
+        """Pass-through returning module defaults as a dictionary"""
+        return self._module.defaults()
 
     def _save(self):
         """Save simulation data (hidden)"""
@@ -107,64 +102,51 @@ class SimulationHandler(object):
     """
 
     def __init__(self,
-                 configuration,
+                 defaults,
                  variation,
                  output,
-                 verbosity=0,
-                 path='.'):
-        """Constructor"""
+                 verbosity=0):
+        """Constructor
+
+        Arguments:
+            defaults (dict): dictionary containing simulation defaults
+            variation (dict): dictionary containing 'entry' and 'values'
+            output (dict): dictionary specifying file output
+            verbosity (int): verbosity level
+
+        """
 
         # parse arguments
-        self._configuration = configuration
-        self._variation = variation
+        self._defaults = defaults
+        #self._variation = variation
         self._output = output
-        #self.module = module
         self.verbosity = verbosity
 
         # obtain parameter variation
-        if self._variation is None:
-            # no variation detected;
-            self._entry = None
-            self._tasks = None
-        else:
-            # buffer variation
-            var = self._variation
+        assert isinstance(
+            variation, dict), 'variation needs to be a dictionary'
 
-            # transition
-            if 'values' in var:
-                warnings.warn(
-                    'YAML key `variation.values` is superseded '
-                    'by `variation.tasks`', PendingDeprecationWarning)
-                if 'tasks' not in var:
-                    var['tasks'] = var['values']
+        msg = 'missing entry `{}` in `variation`'
+        for key in ['entry', 'values']:
+            assert key in variation, msg.format(key)
 
-            # transition
-            if 'entry' in var:
-                warnings.warn(
-                    'YAML key `variation.entry` is superseded '
-                    'by `variation.configuration_entry`',
-                    PendingDeprecationWarning)
-                if 'tasks' not in var:
-                    var['configuraton_entry'] = var['entry']
-
-            msg = 'missing entry `{}` in `variation`'
-            for key in ['configuration_entry', 'tasks']:
-                assert key in var, msg.format(key)
-
-            self._entry = var['configuration_entry']
-            self._tasks = var['tasks']
+        self._entry = variation['entry']
+        self._values = variation['values']
 
         # vals = self._variation_tuple[1]
-        if self.verbosity and self._tasks is not None:
-            entry = '.'.join(self._entry)
-            print('Simulation tasks for `{}`: {}'.format(entry, self._tasks))
+        if self.verbosity and self._values is not None:
+            print('Simulations for entry `{}` with values: {}'.format(
+                self._entry, self._values))
 
         if self._output is not None:
 
+            var = variation.copy()
+            var['tasks'] = [t for t in self.tasks]
+
             # assemble information
             info = {
-                'configuration': self._configuration,
-                'variation': self._variation
+                'defaults': self._defaults,
+                'variation': var,
             }
 
             # save to file
@@ -191,6 +173,7 @@ class SimulationHandler(object):
            opath (string): output path (overrides yaml)
            kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
         """
+
         # load configuration from yaml
         content = fileio.load_yaml(yml_file, yml_path)
         output = content.get('output', {})
@@ -215,13 +198,14 @@ class SimulationHandler(object):
         """
 
         assert 'ctwrap' in content, 'obsolete yaml file format'
-        configuration = content.get('configuration', {})
+        assert 'defaults' in content, 'obsolete yaml file format'
+        defaults = content['defaults']
         variation = content.get('variation', None)
         output = content.get('output', None)
 
         output = cls._parse_output(output, fname=oname, fpath=opath)
 
-        return cls(configuration, variation, output, **kwargs)
+        return cls(defaults, variation, output, **kwargs)
 
     @staticmethod
     def _parse_output(dct, fname=None, fpath=None):
@@ -239,8 +223,6 @@ class SimulationHandler(object):
             out['path'] = None
         if 'format' not in out:
             out['format'] = ''
-        if 'task_formatter' not in out:
-            out['task_formatter'] = '{}'
         if 'force_overwrite' not in out:
             out['force_overwrite'] = True
 
@@ -284,25 +266,21 @@ class SimulationHandler(object):
     def __iter__(self):
         """Returns itself as iterator"""
 
-        for task in self._tasks:
+        for task in self.tasks:
             yield task
 
     def __getitem__(self, task):
         return self.configuration(task)
 
-    def configuration(self, task=None, verbosity=None):
+    def configuration(self, task):
         """Return """
 
-        if verbosity is None:
-            verbosity = self.verbosity
+        value = self.tasks.get(task, None)
+        assert task is not None, 'invalid value'
 
-        if task is None:
-            return self._configuration
-        else:
-            assert task in self._tasks, 'invalid value'
-            out = deepcopy(self._configuration)
+        out = deepcopy(self._defaults)
 
-        # locate entry in nested dictionary (recursive)
+        # locate and replace entry in nested dictionary (recursive)
         def replace_entry(nested, key_list, value):
             sub = nested[key_list[0]]
             if len(key_list) == 1:
@@ -315,11 +293,12 @@ class SimulationHandler(object):
             nested[key_list[0]] = sub
             return nested
 
-        entry = replace_entry(out, self._entry, task)
+        value = self.tasks[task]
+        entry = self._entry.split('.')
 
-        # out['verbosity'] = verbosity
+        return replace_entry(out, entry, value)
 
-        return out
+        # return out
 
     @property
     def verbose(self):
@@ -335,9 +314,12 @@ class SimulationHandler(object):
     @property
     def tasks(self):
         """values of variation"""
-        return self._tasks
+        e = self._entry
+        return {'{}_{}'.format(e, v): v for v in self._values}
 
     def run_task(self, sim, task, **kwargs):
+
+        assert task in self.tasks, 'unknown task `{}`'.format(task)
 
         # create a new simulation object
         obj = Simulation.from_module(sim._module, self._output)
@@ -359,11 +341,10 @@ class SimulationHandler(object):
         # create a new simulation object
         obj = Simulation.from_module(sim._module, self._output)
 
-        for task in self._tasks:
+        for task in self.tasks:
 
             if verbosity > 0:
-                entry = '.'.join(self._entry)
-                print(indent1 + 'processing `{}`: {}'.format(entry, task))
+                print(indent1 + 'processing `{}`'.format(task))
 
             # run simulation
             config = self.configuration(task)
@@ -395,22 +376,18 @@ class SimulationHandler(object):
         # set up queues
         tasks_to_accomplish = mp.Queue()
         finished_tasks = mp.Queue()
-        for t in self._tasks:
-            config = self.configuration(t, verbosity)
+        for t in self.tasks:
+            config = self.configuration(t)
             tasks_to_accomplish.put((t, config, kwargs))
 
         lock = mp.Lock()
-
-        entry = '.'.join(self._entry)
-        msg = indent1 + \
-            'processing `{}`: {{}} ({{}})'.format('.'.join(self._entry))
 
         # creating processes
         processes = []
         for w in range(number_of_processes):
             p = mp.Process(
                 target=worker,
-                args=(tasks_to_accomplish, finished_tasks, sim._module, lock, msg,
+                args=(tasks_to_accomplish, finished_tasks, sim._module, lock,
                       self._output, verbosity))
             processes.append(p)
             p.start()
@@ -419,10 +396,7 @@ class SimulationHandler(object):
         for p in processes:
             p.join()
 
-        # # print the output
-        # if verbosity > 0:
-        #     print('=' * 60)
-        #     print('Summary:')
+        # print the output
         while not finished_tasks.empty():
             msg = finished_tasks.get()
             if verbosity > 1:
@@ -431,7 +405,7 @@ class SimulationHandler(object):
         return True
 
 
-def worker(tasks_to_accomplish, tasks_that_are_done, module, lock, msg, output,
+def worker(tasks_to_accomplish, tasks_that_are_done, module, lock, output,
            verbosity):
 
     this = mp.current_process().name
@@ -455,6 +429,7 @@ def worker(tasks_to_accomplish, tasks_that_are_done, module, lock, msg, output,
             obj = Simulation.from_module(module, output)
 
             # perform task
+            msg = indent1 + 'processing `{}` ({})'
             if verbosity > 0:
                 print(msg.format(task, this))
             obj.run(task, config, **kwargs)

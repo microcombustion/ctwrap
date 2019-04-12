@@ -1,11 +1,10 @@
 # YAML file specifies default parameters for `freeflame` plugin
 variation:
-  configuration_entry: [upstream, phi] 
-  tasks: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6 ]
+  entry: upstream.phi 
+  values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6 ]
 output:
   format: h5
-  task_formatter: 'phi={}'
-configuration:
+defaults:
   upstream:
     T: [300., kelvin, 'temperature']
     P: [1., atmosphere, 'pressure']
@@ -14,7 +13,6 @@ configuration:
     oxidizer: 'O2:1,AR:5'
   chemistry:
     mechanism: h2o2.xml
-    path: ''
   domain:
     width: [30, millimeter, 'domain width']
 ctwrap: 0.1.0
