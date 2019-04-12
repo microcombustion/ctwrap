@@ -15,11 +15,13 @@ The code was developed with the following objectives in mind. It should:
  * generate self-documenting results (save configuration with results)
  * enable parallel execution of (single-threaded) simulations (via `multiprocessing`)
 
-__Example:__ a parallel batch job for adiabatic flame calculations uses the simulation module `adiabatic_flame` (slightly modified from Cantera's `adiabatic_flame` example) with parameters defined in `adiabatic_flame.yaml`. This can be run as:
+__Example:__ a parallel batch job for adiabatic flame calculations uses the simulation module `[adiabatic_flame](ctwrap/modules/adiabatic_flame.py)` (modified from Cantera's `[adiabatic_flame](https://github.com/Cantera/cantera/blob/master/interfaces/cython/cantera/examples/onedim/adiabatic_flame.py)` example) with parameters defined in `[adiabatic_flame.yaml](ctwrap/examples/adiabatic_flame.yaml)`. This can be run as:
 ```
 $ ctwrap adiabatic_flame adiabatic_flame.yaml --parallel
 ```
-Results (including configuration files) are written to a single file `adiabatic_flame.h5`.
+Results (including configuration) are written to a single file `adiabatic_flame.h5`.
+
+__Note__: the wrapper itself does not depend on a Cantera installation; only the simulation modules do.
 
 __Caveat:__ the documentation of the initial code is limited to rudimentary docstrings, plus usage examples in the form of [jupyter notebooks](ctwrap/examples).
 

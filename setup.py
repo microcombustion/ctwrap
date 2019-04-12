@@ -42,7 +42,6 @@ setup(
         'pandas>=0.24.0',
         'openpyxl',
         'pint',
-        'cantera>=2.4.0',
         'ruamel.yaml',
     ],
     zip_safe=False)
