@@ -4,7 +4,7 @@ Light-weight Python wrapper for batch simulations (e.g. Cantera).
 
 ## Philosophy
 
-The code was developed with the following objectives. It should:
+The code was developed with the following objectives in mind. It should:
 
  * Create a flexible framework for generic simulations
  * Provide a command line interface
