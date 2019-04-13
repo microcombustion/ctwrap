@@ -1,5 +1,5 @@
-# example YAML file
-# specifies parameter variation for fuel
+# YAML file example for the `ignition` module
+# file specifes a parameter variation of the equivalence ratio 
 variation:
   entry: initial.phi 
   values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]

@@ -1,7 +1,7 @@
-# example YAML file
-# specifies parameter variation for fuel
+# YAML file example for the `template` module
+# file specifes a parameter variation of the sleep duration
 output:
-  format: null
+  format: null # no file output
 variation:
   entry: sleep
   values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
