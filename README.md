@@ -36,7 +36,7 @@ $ git clone https://github.com/ischg/ctwrap.git
 $ cd ctwrap
 $ pip install .
 ```
-For a linked version, run `pip install -e .` instead.
+For a linked installation, run `pip install -e .` instead.
 
 ### Update
 
