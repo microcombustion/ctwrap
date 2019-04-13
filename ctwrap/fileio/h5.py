@@ -56,7 +56,7 @@ def to_hdf(oname, groups, path=None, mode='a', force=True):
 
         if mode == 'a' and g in existing and not force:
             msg = 'Cannot overwrite existing group `{}` (use force to override)'
-            raise RuntimeError(msg.format(key))
+            raise RuntimeError(msg.format(g))
 
         data = groups[g]
         if isinstance(data, dict):

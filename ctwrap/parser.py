@@ -18,18 +18,18 @@ class Parser(object):
 
     def __init__(self, dct):
 
-        self._dict = dct
+        self.raw = dct
 
     def __getattr__(self, attr):
 
-        if attr not in self._dict:
+        if attr not in self.raw:
             raise AttributeError("unknown attribute '{}'".format(attr))
 
         return self[attr]
 
     def __getitem__(self, key):
 
-        val = self._dict[key]
+        val = self.raw[key]
 
         if isinstance(val, (str, bool, int, float)):
             return val
@@ -37,7 +37,7 @@ class Parser(object):
             return ureg.Quantity(val[0], ureg[val[1]])
 
     def __repr__(self):
-        return repr(self._dict)
+        return repr(self.raw)
 
     def keys(self):
-        return self._dict.keys()
+        return self.raw.keys()

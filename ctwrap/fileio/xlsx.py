@@ -52,7 +52,7 @@ def to_xlsx(oname, sheets, path=None, mode='a', force=True):
 
         if mode == 'a' and s in existing and not force:
             msg = 'Cannot overwrite existing sheet `{}` (use force to override)'
-            raise RuntimeError(msg.format(key))
+            raise RuntimeError(msg.format(s))
 
         data = sheets[s]
         if isinstance(data, dict):
