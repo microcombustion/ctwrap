@@ -19,7 +19,6 @@ path = 'ctwrap/examples'
 
 
 class TestCtwrap(unittest.TestCase):
-
     def test000_parser(self):
 
         try:
@@ -37,10 +36,10 @@ class TestCtwrap(unittest.TestCase):
 
         self.assertTrue(success)
 
-    def test010_template(self):
+    def test010_minimal(self):
 
         try:
-            sim = cw.Simulation.from_module(cw.modules.template)
+            sim = cw.Simulation.from_module(cw.modules.minimal)
             sim.run()
             success = True
         except:
@@ -51,18 +50,18 @@ class TestCtwrap(unittest.TestCase):
     def test011_handler(self):
 
         try:
-            sh = cw.SimulationHandler.from_yaml('template.yaml', path=path)
+            sh = cw.SimulationHandler.from_yaml('minimal.yaml', path=path)
             success = True
         except:
             success = False
 
         self.assertTrue(success)
 
-    def test012_template_serial(self):
+    def test012_minimal_serial(self):
 
         try:
-            sim = cw.Simulation.from_module(cw.modules.template)
-            sh = cw.SimulationHandler.from_yaml('template.yaml', path=path)
+            sim = cw.Simulation.from_module(cw.modules.minimal)
+            sh = cw.SimulationHandler.from_yaml('minimal.yaml', path=path)
             sh.run_serial(sim)
             success = True
         except:
@@ -70,11 +69,11 @@ class TestCtwrap(unittest.TestCase):
 
         self.assertTrue(success)
 
-    def test013_template_parallel(self):
+    def test013_minimal_parallel(self):
 
         try:
-            sim = cw.Simulation.from_module(cw.modules.template)
-            sh = cw.SimulationHandler.from_yaml('template.yaml', path=path)
+            sim = cw.Simulation.from_module(cw.modules.minimal)
+            sh = cw.SimulationHandler.from_yaml('minimal.yaml', path=path)
             sh.run_parallel(sim)
             success = True
         except:

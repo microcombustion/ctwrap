@@ -10,15 +10,13 @@ import warnings
 warnings.filterwarnings(action='once')
 
 # ignore some warnings thrown by other packages
-warnings.filterwarnings(
-    "ignore", "object name is not a valid Python identifier:")
+warnings.filterwarnings("ignore",
+                        "object name is not a valid Python identifier:")
 warnings.filterwarnings(
     "ignore",
     "This method will be removed in future versions.  Use 'tree.iter()'")
-warnings.filterwarnings(
-    "ignore", ".*html argument of XMLParser() *")
-warnings.filterwarnings(
-    "ignore", " Use 'tree.iter()' or 'list(tree.iter())'")
+warnings.filterwarnings("ignore", ".*html argument of XMLParser() *")
+warnings.filterwarnings("ignore", " Use 'tree.iter()' or 'list(tree.iter())'")
 
 
 def main():
@@ -29,7 +27,9 @@ def main():
         description='Simulation of constant pressure ignition (ctwrap).')
     parser.add_argument(
         'module_name',
-        help='wrapped module (specifies Python import path as <module_name> or ctwrap.modules.<module_name>)')
+        help=
+        'wrapped module (specifies Python import path as <module_name> or ctwrap.modules.<module_name>)'
+    )
     parser.add_argument('yaml_config', help='yaml configuration file')
     parser.add_argument('--output', help='name of output file')
     parser.add_argument(
@@ -67,9 +67,7 @@ def main():
     # set up variation
     sim = ctwrap.Simulation.from_module(module)
     sh = ctwrap.SimulationHandler.from_yaml(
-        yml_file,
-        verbosity=verbosity,
-        oname=output_file)
+        yml_file, verbosity=verbosity, name=output_file)
 
     # run parameter variation
     if parallel:

@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Template demonstrating """
+"""Minimal example for ctwrap compatible simulation module"""
 
 from ruamel import yaml
 import pandas as pd
 import time
 
-
 __DEFAULTS = """\
-# default parameters for the `template` module
+# default parameters for the `minimal` module
 sleep: 0.2
 """
 
@@ -22,7 +21,7 @@ def run(name, sleep=.2, **kwargs):
     """this function does nothing"""
 
     # initialize
-    print('    - `template`: sleeping for {} seconds ...'.format(sleep))
+    print('    - `minimal`: sleeping for {} seconds ...'.format(sleep))
     time.sleep(sleep)
 
     return {name: pd.DataFrame({'sleep': [sleep]})}
