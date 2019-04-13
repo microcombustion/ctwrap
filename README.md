@@ -23,7 +23,7 @@ Results (including configuration) are written to a single file `adiabatic_flame.
 
 __Note__: the wrapper itself does not depend on a Cantera installation; only the simulation modules do.
 
-__Caveat:__ the documentation of the initial code is limited to rudimentary docstrings, plus examples in the form of [jupyter notebooks](ctwrap/examples). An overview is given by a [minimal example)(ctwrap/examples/template_example.ipynb). 
+__Caveat:__ the documentation of the initial code is limited to rudimentary docstrings, plus examples in the form of [jupyter notebooks](ctwrap/examples). An overview is given by a [minimal example](ctwrap/examples/template_example.ipynb). 
 
 ## Installation
 
