@@ -61,7 +61,7 @@ class Simulation(object):
         name = module.__name__.split('.')[-1]
         name = ''.join([m.title() for m in name.split('_')])
 
-        return type(name, (cls,), {})(module, output)
+        return type(name, (cls, ), {})(module, output)
 
     def run(self, name='defaults', config=None, **kwargs):
         """Run function holding configuration in dictionary.
@@ -101,11 +101,7 @@ class SimulationHandler(object):
     Class adds methods to switch between multiple configurations.
     """
 
-    def __init__(self,
-                 defaults,
-                 variation,
-                 output,
-                 verbosity=0):
+    def __init__(self, defaults, variation, output, verbosity=0):
         """Constructor
 
         Arguments:
@@ -123,8 +119,8 @@ class SimulationHandler(object):
         self.verbosity = verbosity
 
         # obtain parameter variation
-        assert isinstance(
-            variation, dict), 'variation needs to be a dictionary'
+        assert isinstance(variation,
+                          dict), 'variation needs to be a dictionary'
 
         msg = 'missing entry `{}` in `variation`'
         for key in ['entry', 'values']:
@@ -142,6 +138,7 @@ class SimulationHandler(object):
 
             var = variation.copy()
             var['tasks'] = [t for t in self.tasks]
+            var['tasks'].sort()
 
             # assemble information
             info = {
@@ -157,11 +154,7 @@ class SimulationHandler(object):
             fileio.save(oname, info, mode='w', force=force, path=path)
 
     @classmethod
-    def from_yaml(cls,
-                  yaml_file,
-                  name=None,
-                  path=None,
-                  **kwargs):
+    def from_yaml(cls, yaml_file, name=None, path=None, **kwargs):
         """Alternate constructor using YAML file as input.
 
         Args:
@@ -338,15 +331,17 @@ class SimulationHandler(object):
         # create a new simulation object
         obj = Simulation.from_module(sim._module, self._output)
 
-        for task in self.tasks:
+        tasks = [t for t in self.tasks]
+        tasks.sort()
+        for t in tasks:
 
             if verbosity > 0:
-                print(indent1 + 'processing `{}`'.format(task))
+                print(indent1 + 'processing `{}`'.format(t))
 
             # run simulation
-            config = self.configuration(task)
+            config = self.configuration(t)
 
-            obj.run(task, config, **kwargs)
+            obj.run(t, config, **kwargs)
             obj._save()
 
         return True
@@ -373,7 +368,9 @@ class SimulationHandler(object):
         # set up queues
         tasks_to_accomplish = mp.Queue()
         finished_tasks = mp.Queue()
-        for t in self.tasks:
+        tasks = [t for t in self.tasks]
+        tasks.sort()
+        for t in tasks:
             config = self.configuration(t)
             tasks_to_accomplish.put((t, config, kwargs))
 
