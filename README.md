@@ -32,7 +32,7 @@ __Caveat:__ the documentation of the initial code is limited to rudimentary docs
 The following uses `pip` to install `ctwrap` within your python environment (e.g. Anaconda).
 
 ```
-$ git clone https://github.com/ischg/ctwrap.git
+$ git clone https://github.com/ischoegl/ctwrap.git
 $ cd ctwrap
 $ pip install .
 ```
