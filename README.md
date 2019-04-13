@@ -1,6 +1,6 @@
 # ctwrap
 
-Light-weight Python wrapper for batch simulations (e.g. Cantera).
+Light-weight Python wrapper for batch simulation jobs (e.g. Cantera).
 
 ## Philosophy
 
