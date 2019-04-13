@@ -29,13 +29,14 @@ __Caveat:__ the documentation of the initial code is limited to rudimentary docs
 
 ### Clone/Install Repository
 
-The following uses `pip` to install a (linked) version within a python environment (e.g. Anaconda).
+The following uses `pip` to install `ctwrap` within your python environment (e.g. Anaconda).
 
 ```
 $ git clone https://github.com/ischg/ctwrap.git
 $ cd ctwrap
 $ pip install .
 ```
+For a linked version, run `pip install -e .` instead.
 
 ### Update
 
