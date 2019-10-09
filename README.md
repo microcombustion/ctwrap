@@ -2,6 +2,8 @@
 
 Light-weight Python wrapper for batch simulation jobs (e.g. Cantera).
 
+> At the moment, the wrapper works on Linux, but not on Windows. Some features that are currently implemented in Cantera 2.5 (e.g. improved `SolutionArray` support with HDF export) will be incorporated in a future update. 
+
 ## Philosophy
 
 The code was developed with the following objectives in mind. It should:
