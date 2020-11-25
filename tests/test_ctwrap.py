@@ -15,7 +15,7 @@ import logging
 
 import ctwrap as cw
 
-path = 'ctwrap/examples'
+path = '../examples/'
 
 
 class TestCtwrap(unittest.TestCase):
