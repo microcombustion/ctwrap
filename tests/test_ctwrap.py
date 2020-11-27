@@ -4,157 +4,107 @@
 """
 
 import unittest
-
-import warnings
-warnings.filterwarnings(action='once')
-warnings.filterwarnings("ignore", ".*Using or importing the ABCs from *")
-
-import os
-
-import logging
+from pathlib import Path
+import pint.quantity as pq
 
 import ctwrap as cw
 
-path = '../examples/'
+import warnings
+warnings.filterwarnings(action='once')
+#warnings.filterwarnings("ignore", ".*Using or importing the ABCs from *")
+warnings.filterwarnings("ignore", ".*object name is not a valid Python identifier*")
+#warnings.filterwarnings(action='error')
+
+PWD = Path(__file__).parents[0]
+ROOT = PWD.parents[0]
+EXAMPLES = '{}'.format(ROOT / 'examples')
 
 
-class TestCtwrap(unittest.TestCase):
-    def test000_parser(self):
+class TestParser(unittest.TestCase):
 
-        try:
-            defaults = cw.fileio.load_yaml(
-                'ignition.yaml', path=path, keys=['defaults'])
-            p = cw.Parser(defaults[0]['initial'])
-            a = p.T  # attribute
-            b = p['T']  # get item
-            c = p.T.m  # magnitude
-            e = p.T.to('degC')  # unit conversion
-            d = p.T.m_as('degC')  # magnitude after unit conversion
-            success = True
-        except:
-            success = False
+    def test_parser(self):
 
-        self.assertTrue(success)
+        defaults = cw.fileio.load_yaml(
+            'ignition.yaml', path=EXAMPLES, keys=['defaults'])
+        p = cw.Parser(defaults[0]['initial'])
+        self.assertIsInstance(p.T, pq.Quantity)
+        self.assertIsInstance(p.T.m, float)
+        self.assertEqual(str(p.T.units), 'kelvin')
+        self.assertEqual(p.T.m - 273.15, p.T.m_as('degC'))
+        self.assertIsInstance(p.fuel, str)
 
-    def test010_minimal(self):
+class TestWrap(unittest.TestCase):
 
-        try:
-            sim = cw.Simulation.from_module(cw.modules.minimal)
-            sim.run()
-            success = True
-        except:
-            success = False
+    _module = None
+    _yaml = None
+    _hdf = None
 
-        self.assertTrue(success)
+    def test_simulation(self):
+        if self._module is None:
+            self.assertIsNone(self._yaml)
+            return
 
-    def test011_handler(self):
+        sim = cw.Simulation.from_module(self._module)
+        self.assertIsNone(sim.data)
+        sim.run()
+        self.assertIsInstance(sim.data, dict)
+        for key in sim.data.keys():
+            self.assertIn('defaults', key)
 
-        try:
-            sh = cw.SimulationHandler.from_yaml('minimal.yaml', path=path)
-            success = True
-        except:
-            success = False
+    def test_serial(self):
+        if self._module is None:
+            self.assertIsNone(self._yaml)
+            return
 
-        self.assertTrue(success)
+        sim = cw.Simulation.from_module(self._module)
+        sh = cw.SimulationHandler.from_yaml(self._yaml, path=EXAMPLES)
+        self.assertTrue(sh.run_serial(sim))
 
-    def test012_minimal_serial(self):
+        if self._hdf:
+            hdf = Path(EXAMPLES) / self._hdf
+            self.assertTrue(hdf.is_file())
+            hdf.unlink()
 
-        try:
-            sim = cw.Simulation.from_module(cw.modules.minimal)
-            sh = cw.SimulationHandler.from_yaml('minimal.yaml', path=path)
-            sh.run_serial(sim)
-            success = True
-        except:
-            success = False
+    def test_parallel(self):
+        if self._module is None:
+            self.assertIsNone(self._yaml)
+            return
 
-        self.assertTrue(success)
+        sim = cw.Simulation.from_module(self._module)
+        sh = cw.SimulationHandler.from_yaml(self._yaml, path=EXAMPLES)
+        self.assertTrue(sh.run_parallel(sim))
 
-    def test013_minimal_parallel(self):
+        if self._hdf:
+            hdf = Path(EXAMPLES) / self._hdf
+            self.assertTrue(hdf.is_file())
+            hdf.unlink()
 
-        try:
-            sim = cw.Simulation.from_module(cw.modules.minimal)
-            sh = cw.SimulationHandler.from_yaml('minimal.yaml', path=path)
-            sh.run_parallel(sim)
-            success = True
-        except:
-            success = False
 
-        self.assertTrue(success)
+class TestMinimal(TestWrap):
 
-    def test020_ignition(self):
+    _module = cw.modules.minimal
+    _yaml = 'minimal.yaml'
 
-        try:
-            sim = cw.Simulation.from_module(cw.modules.ignition)
-            sim.run()
-            success = True
-        except:
-            success = False
+    def test_handler(self):
 
-        self.assertTrue(success)
+        sh = cw.SimulationHandler.from_yaml('minimal.yaml', path=EXAMPLES)
+        self.assertIsInstance(sh.tasks, dict)
+        self.assertIn('sleep_0.4', sh.tasks)
 
-    def test021_ignition_serial(self):
 
-        try:
-            sim = cw.Simulation.from_module(cw.modules.ignition)
-            sh = cw.SimulationHandler.from_yaml('ignition.yaml', path=path)
-            sh.run_parallel(sim)
-            success = True
-        except:
-            success = False
+class TestIgnition(TestWrap):
 
-        self.assertTrue(success)
+    _module = cw.modules.ignition
+    _yaml = 'ignition.yaml'
+    _hdf = 'ignition.h5'
 
-    def test022_ignition_parallel(self):
 
-        try:
-            sim = cw.Simulation.from_module(cw.modules.ignition)
-            sh = cw.SimulationHandler.from_yaml('ignition.yaml', path=path)
-            sh.run_parallel(sim)
-            success = True
-        except:
-            success = False
+class TestAdiabatic(TestWrap):
 
-        self.assertTrue(success)
-
-    def test030_adiabatic_flame(self):
-
-        try:
-            sim = cw.Simulation.from_module(cw.modules.adiabatic_flame)
-            sim.run()
-            success = True
-        except:
-            success = False
-
-        self.assertTrue(success)
-
-    def test031_adiabatic_flame_serial(self):
-
-        try:
-            sim = cw.Simulation.from_module(cw.modules.adiabatic_flame)
-            sh = cw.SimulationHandler.from_yaml(
-                'adiabatic_flame.yaml', path=path)
-            sh.run_serial(sim)
-            success = True
-        except:
-            success = False
-
-        self.assertTrue(success)
-
-    def test032_adiabatic_flame_parallel(self):
-
-        try:
-            sim = cw.Simulation.from_module(cw.modules.adiabatic_flame)
-            sh = cw.SimulationHandler.from_yaml(
-                'adiabatic_flame.yaml', path=path)
-            sh.run_parallel(sim)
-            success = True
-        except:
-            success = False
-
-        self.assertTrue(success)
+    _module = cw.modules.adiabatic_flame
+    _yaml = 'adiabatic_flame.yaml'
+    _hdf = 'adiabatic_flame.h5'
 
 
 if __name__ == "__main__":
-    logging.basicConfig(stream=sys.stderr)
-    logging.getLogger("SomeTest.testSomething").setLevel(logging.DEBUG)
     unittest.main()
