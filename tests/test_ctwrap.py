@@ -39,15 +39,12 @@ class TestParser(unittest.TestCase):
 
 class TestWrap(unittest.TestCase):
 
-    _module = None
-    _yaml = None
+    _module = cw.modules.minimal
+    _task = 'sleep_0.4'
+    _yaml = 'minimal.yaml'
     _hdf = None
 
     def test_simulation(self):
-        if self._module is None:
-            self.assertIsNone(self._yaml)
-            return
-
         sim = cw.Simulation.from_module(self._module)
         self.assertIsNone(sim.data)
         sim.run()
@@ -55,11 +52,12 @@ class TestWrap(unittest.TestCase):
         for key in sim.data.keys():
             self.assertIn('defaults', key)
 
-    def test_serial(self):
-        if self._module is None:
-            self.assertIsNone(self._yaml)
-            return
+    def test_handler(self):
+        sh = cw.SimulationHandler.from_yaml(self._yaml, path=EXAMPLES)
+        self.assertIsInstance(sh.tasks, dict)
+        self.assertIn(self._task, sh.tasks)
 
+    def test_serial(self):
         sim = cw.Simulation.from_module(self._module)
         sh = cw.SimulationHandler.from_yaml(self._yaml, path=EXAMPLES)
         self.assertTrue(sh.run_serial(sim))
@@ -70,10 +68,6 @@ class TestWrap(unittest.TestCase):
             hdf.unlink()
 
     def test_parallel(self):
-        if self._module is None:
-            self.assertIsNone(self._yaml)
-            return
-
         sim = cw.Simulation.from_module(self._module)
         sh = cw.SimulationHandler.from_yaml(self._yaml, path=EXAMPLES)
         self.assertTrue(sh.run_parallel(sim))
@@ -84,10 +78,6 @@ class TestWrap(unittest.TestCase):
             hdf.unlink()
 
     def test_commandline(self):
-        if self._module is None:
-            self.assertIsNone(self._yaml)
-            return
-
         name = self._module.__name__.split('.')[-1]
         cmd = 'ctwrap'
         yaml = "{}".format(Path(EXAMPLES) / self._yaml)
@@ -97,25 +87,14 @@ class TestWrap(unittest.TestCase):
         process = subprocess.Popen([cmd] + pars,
                      stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE)
-        stdout, stderr = process.communicate()
+        _, stderr = process.communicate()
         self.assertEqual(stderr.decode(), '')
-
-
-class TestMinimal(TestWrap):
-
-    _module = cw.modules.minimal
-    _yaml = 'minimal.yaml'
-
-    def test_handler(self):
-
-        sh = cw.SimulationHandler.from_yaml('minimal.yaml', path=EXAMPLES)
-        self.assertIsInstance(sh.tasks, dict)
-        self.assertIn('sleep_0.4', sh.tasks)
 
 
 class TestIgnition(TestWrap):
 
     _module = cw.modules.ignition
+    _task = 'initial.phi_0.4'
     _yaml = 'ignition.yaml'
     _hdf = 'ignition.h5'
 
@@ -123,6 +102,7 @@ class TestIgnition(TestWrap):
 class TestAdiabaticFlame(TestWrap):
 
     _module = cw.modules.adiabatic_flame
+    _task = 'upstream.phi_0.4'
     _yaml = 'adiabatic_flame.yaml'
     _hdf = 'adiabatic_flame.h5'
 
