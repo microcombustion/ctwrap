@@ -5,6 +5,7 @@
 
 import unittest
 from pathlib import Path
+import subprocess
 import pint.quantity as pq
 
 import ctwrap as cw
@@ -13,6 +14,8 @@ import warnings
 warnings.filterwarnings(action='once')
 #warnings.filterwarnings("ignore", ".*Using or importing the ABCs from *")
 warnings.filterwarnings("ignore", ".*object name is not a valid Python identifier*")
+warnings.filterwarnings("ignore", ".*to be removed after Cantera 2.5*")
+
 #warnings.filterwarnings(action='error')
 
 PWD = Path(__file__).parents[0]
@@ -32,6 +35,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(str(p.T.units), 'kelvin')
         self.assertEqual(p.T.m - 273.15, p.T.m_as('degC'))
         self.assertIsInstance(p.fuel, str)
+
 
 class TestWrap(unittest.TestCase):
 
@@ -78,6 +82,23 @@ class TestWrap(unittest.TestCase):
             hdf = Path(EXAMPLES) / self._hdf
             self.assertTrue(hdf.is_file())
             hdf.unlink()
+
+    def test_commandline(self):
+        if self._module is None:
+            self.assertIsNone(self._yaml)
+            return
+
+        name = self._module.__name__.split('.')[-1]
+        cmd = 'ctwrap'
+        yaml = Path(EXAMPLES) / self._yaml
+        pars = [name, yaml, '--parallel']
+
+        self.maxDiff = None
+        process = subprocess.Popen([cmd] + pars,
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+        self.assertEqual(stderr.decode(), '')
 
 
 class TestMinimal(TestWrap):
