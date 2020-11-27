@@ -78,8 +78,8 @@ class TestWrap(unittest.TestCase):
             hdf.unlink()
 
     def test_commandline(self):
-        name = self._module.__name__.split('.')[-1]
         cmd = 'ctwrap'
+        name = self._module.__name__.split('.')[-1]
         yaml = "{}".format(Path(EXAMPLES) / self._yaml)
         pars = [name, yaml, '--parallel']
 
@@ -89,6 +89,11 @@ class TestWrap(unittest.TestCase):
                      stderr=subprocess.PIPE)
         _, stderr = process.communicate()
         self.assertEqual(stderr.decode(), '')
+
+        if self._hdf:
+            hdf = Path(EXAMPLES) / self._hdf
+            self.assertTrue(hdf.is_file())
+            hdf.unlink()
 
 
 class TestIgnition(TestWrap):
