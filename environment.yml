@@ -10,6 +10,7 @@ dependencies:
   - scipy
   - h5py
   - pandas
+  - pint
   - pytables
   - ruamel_yaml
   - cantera
