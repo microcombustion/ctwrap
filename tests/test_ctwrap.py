@@ -90,7 +90,7 @@ class TestWrap(unittest.TestCase):
 
         name = self._module.__name__.split('.')[-1]
         cmd = 'ctwrap'
-        yaml = Path(EXAMPLES) / self._yaml
+        yaml = "{}".format(Path(EXAMPLES) / self._yaml)
         pars = [name, yaml, '--parallel']
 
         self.maxDiff = None
@@ -120,7 +120,7 @@ class TestIgnition(TestWrap):
     _hdf = 'ignition.h5'
 
 
-class TestAdiabatic(TestWrap):
+class TestAdiabaticFlame(TestWrap):
 
     _module = cw.modules.adiabatic_flame
     _yaml = 'adiabatic_flame.yaml'
