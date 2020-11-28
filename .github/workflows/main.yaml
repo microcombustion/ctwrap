@@ -9,7 +9,6 @@ on:
     branches:
       - main
 
-
 jobs:
   nosetests-linux:
     name: Run pytest on Linux
@@ -68,32 +67,12 @@ jobs:
       run: pytest
 
   sphinx-build:
+  # https://github.com/marketplace/actions/sphinx-build
     name: Build Sphinx docs on Linux
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -l {0}
-    steps:
-    - uses: actions/checkout@v2
-    - uses: conda-incubator/setup-miniconda@v2
-      with:
-        python-version: 3.7
-        mamba-version: "*"
-        channels: conda-forge,cantera/label/dev,defaults
-        channel-priority: true
-        activate-environment: ctwrap
-        environment-file: environment.yml
-        #auto-activate-base: false
-    - name: Check conda status
-      run: |
-        conda info
-        conda list
-    - name: Install ctwrap
-      run: |
-        pip install -e .
     - uses: ammaraskar/sphinx-action@master
       with:
-        #build-command: "sphinx-build -b html . _build"
+        pre-build-command: "apt-get update -y && apt-get install -y pandoc"
         docs-folder: "docs/"
     # Publish built docs to gh-pages branch.
     # ===============================
