@@ -11,6 +11,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ammaraskar/sphinx-action@master
       with:
+<<<<<<< HEAD
         #build-command: "sphinx-build -b html . _build"
         docs-folder: "docs/"
     # Create an artifact of the html output.
@@ -18,3 +19,7 @@ jobs:
       with:
         name: DocumentationHTML
         path: docs/_build/html/
+=======
+        build-command: "sphinx-build -b html . _build"
+        docs-folder: "docs/"
+>>>>>>> 19d1756 (Add make.bat)
