@@ -3,18 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-ctwrap's - Python Wrapper for Batch Simulations
-===============================================
+ctwrap - Python Wrapper for Batch Simulations
+=============================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   Batch Jobs <examples/batch.rst>
+   Indices and Tables <indices.rst>
