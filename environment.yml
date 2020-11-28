@@ -16,6 +16,7 @@ dependencies:
   - setuptools
   - pytest
   - pytest-cov
+  - coverage
   - ipython
   - jupyter
   - matplotlib
