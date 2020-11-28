@@ -15,6 +15,7 @@ dependencies:
   - cantera
   - setuptools
   - pytest
+  - pytest-cov
   - ipython
   - jupyter
   - matplotlib
