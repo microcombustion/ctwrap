@@ -16,7 +16,7 @@ on:
 
 jobs:
   nosetests-linux:
-    name: Run Linux unittests
+    name: Run pytest on Linux
     runs-on: "ubuntu-latest"
     defaults:
       run:
@@ -45,52 +45,31 @@ jobs:
   # nosetests-mac:
   #   name: OSX
   #   runs-on: "macos-latest"
-  #   steps:
-  #     - uses: conda-incubator/setup-miniconda@v2
-  #       with:
-  #         miniconda-version: "latest"
-  #         activate-environment: ctwrap
-  #     - name: Sh
-  #       shell: sh -l {0}
-  #       run: |
-  #         conda info
-  #         conda list
-  #     - name: Bash
-  #       shell: bash -l {0}
-  #       run: |
-  #         conda info
-  #         conda list
-  #     - name: PowerShell Core
-  #       shell: pwsh
-  #       run: |
-  #         conda info
-  #         conda list
 
-  # nosetests-win:
-  #   name: Windows
-  #   runs-on: "windows-latest"
-  #   steps:
-  #     - uses: conda-incubator/setup-miniconda@v2
-  #       with:
-  #         miniconda-version: "latest"
-  #         activate-environment: ctwrap
-  #     - name: Bash
-  #       shell: bash -l {0}
-  #       run: |
-  #         conda info
-  #         conda list
-  #     - name: PowerShell
-  #       shell: powershell
-  #       run: |
-  #         conda info
-  #         conda list
-  #     - name: PowerShell Core
-  #       shell: pwsh
-  #       run: |
-  #         conda info
-  #         conda list
-  #     - name: Cmd.exe
-  #       shell: cmd /C CALL {0}
-  #       run: >-
-  #         conda info && conda list
-
+# # tests on windows are slow (!)
+#   nosetests-win:
+#     name: Run pytest on Windows
+#     runs-on: "windows-latest"
+#     defaults:
+#       run:
+#         shell: bash -l {0}
+#     steps:
+#       - uses: actions/checkout@v2
+#       - uses: conda-incubator/setup-miniconda@v2
+#         with:
+#           python-version: 3.7
+#           mamba-version: "*"
+#           channels: conda-forge,cantera/label/dev,defaults
+#           channel-priority: true
+#           activate-environment: ctwrap
+#           environment-file: environment.yml
+#           #auto-activate-base: false
+#       - name: Check conda status
+#         run: |
+#           conda info
+#           conda list
+#       - name: Install ctwrap
+#         run: |
+#           pip install -e .
+#       - name: Run pytest
+#         run: pytest
