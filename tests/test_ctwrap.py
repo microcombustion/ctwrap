@@ -15,6 +15,7 @@ warnings.filterwarnings(action='once')
 #warnings.filterwarnings("ignore", ".*Using or importing the ABCs from *")
 warnings.filterwarnings("ignore", ".*object name is not a valid Python identifier*")
 warnings.filterwarnings("ignore", ".*to be removed after Cantera 2.5*")
+warnings.filterwarnings("ignore", ".*Calling the getitem method from a UnitRegistry*")
 
 #warnings.filterwarnings(action='error')
 
