@@ -7,4 +7,4 @@ from .parser import *
 from . import modules
 from . import fileio
 
-from ._version import __version__
+from ._version import __version__, __author__
