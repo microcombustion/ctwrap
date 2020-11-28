@@ -8,16 +8,8 @@ import ctwrap
 
 import warnings
 warnings.filterwarnings(action='once')
-
-# ignore some warnings thrown by other packages
 warnings.filterwarnings("ignore",
                         "object name is not a valid Python identifier:")
-warnings.filterwarnings(
-    "ignore",
-    "This method will be removed in future versions.  Use 'tree.iter()'")
-warnings.filterwarnings("ignore", ".*html argument of XMLParser() *")
-warnings.filterwarnings("ignore", " Use 'tree.iter()' or 'list(tree.iter())'")
-
 
 def main():
     """Main."""
