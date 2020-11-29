@@ -41,6 +41,6 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        'pandas>=0.24.0',
+        'pandas>=0.24.0', 'ruamel.yaml',
         'pint'],
     zip_safe=False)
