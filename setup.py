@@ -34,13 +34,11 @@ setup(
     author_email='ischoegl@lsu.edu',
     license='MIT',
     packages=find_packages(),
-    test_suite='nose.collector',
-    tests_require=['nose', 'nose-cover3'],
     entry_points={
         'console_scripts': ['ctwrap=ctwrap.bin.ctwrap:main'],
     },
     include_package_data=True,
     install_requires=[
-        'pandas>=0.24.0', 'ruamel.yaml',
-        'pint'],
+        'pandas>=0.24.0', 'numpy',
+        'ruamel.yaml', 'pint'],
     zip_safe=False)
