@@ -10,6 +10,6 @@ ctwrap - Python Wrapper for Batch Simulations
    :maxdepth: 2
    :caption: Contents:
 
-   Batch Jobs <examples/batch.rst>
-   Jupyter Notebooks <examples/jupyter.rst>
-   Indices and Tables <indices.rst>
+   Batch Jobs <pages/batch.rst>
+   Jupyter Notebooks <pages/jupyter.rst>
+   API Reference <pages/api.rst>
