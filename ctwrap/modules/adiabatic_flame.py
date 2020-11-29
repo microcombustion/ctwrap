@@ -2,11 +2,18 @@
 # -*- coding: utf-8 -*-
 
 from ruamel import yaml
-import cantera as ct
 import pandas as pd
 import numpy as np
 
 from ctwrap import Parser
+
+import warnings
+try:
+    import cantera as ct
+except ImportError as err:
+    warnings.warn(
+        "This module will not work without an installation of Cantera",
+        UserWarning)
 
 __DEFAULTS = """\
 # default parameters for the `freeflame` module

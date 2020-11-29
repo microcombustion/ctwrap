@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import cantera as ct
 import pandas as pd
 from ruamel import yaml
 
-import pandas as pd
 from ctwrap import Parser
+
+import warnings
+try:
+    import cantera as ct
+except ImportError as err:
+    warnings.warn(
+        "This module will not work without an installation of Cantera",
+        UserWarning)
 
 # default configuration
 __DEFAULTS = """\
