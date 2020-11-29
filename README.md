@@ -1,3 +1,5 @@
+![CI](https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg)
+
 # ctwrap
 
 Light-weight Python wrapper for batch simulation jobs (e.g. Cantera).
