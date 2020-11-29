@@ -17,6 +17,7 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
+    #- uses: technote-space/auto-cancel-redundant-workflow@v1
     - uses: actions/checkout@v2
     - uses: conda-incubator/setup-miniconda@v2
       with:
@@ -46,6 +47,7 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
+    #- uses: technote-space/auto-cancel-redundant-workflow@v1
     - uses: actions/checkout@v2
     - uses: conda-incubator/setup-miniconda@v2
       with:
@@ -71,10 +73,11 @@ jobs:
     name: Build Sphinx docs on Linux
     runs-on: ubuntu-latest
     steps:
+    #- uses: technote-space/auto-cancel-redundant-workflow@v1
     - uses: actions/checkout@v2
     - uses: ammaraskar/sphinx-action@master
       with:
-        pre-build-command: "apt-get update -y && apt-get install -y pandoc && pip install ."
+        pre-build-command: "apt-get update -y && apt-get install -y pandoc && pip install -e ."
         docs-folder: "docs/"
     # Publish built docs to gh-pages branch.
     # ===============================
