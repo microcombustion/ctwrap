@@ -14,6 +14,7 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
+      #- uses: technote-space/auto-cancel-redundant-workflow@v1
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
         with:
@@ -39,11 +40,12 @@ jobs:
     name: Check sphinx docs on Linux
     runs-on: ubuntu-latest
     steps:
+    #- uses: technote-space/auto-cancel-redundant-workflow@v1
     - uses: actions/checkout@v2
     - uses: ammaraskar/sphinx-action@master
       with:
         #build-command: "sphinx-build -b html . _build"
-        pre-build-command: "apt-get update -y && apt-get install -y pandoc && pip install ."
+        pre-build-command: "apt-get update -y && apt-get install -y pandoc && pip install -e ."
         docs-folder: "docs/"
     # Create an artifact of the html output.
     - uses: actions/upload-artifact@v2
