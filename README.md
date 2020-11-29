@@ -4,12 +4,12 @@
 
 Light-weight Python wrapper for batch simulation jobs (e.g. Cantera).
 
-> Some features that are currently being implemented in Cantera 2.5 (e.g. improved `SolutionArray` support with HDF export) will be incorporated in a future update. 
+> Some features that are currently being implemented in Cantera 2.5 (e.g. improved `SolutionArray` support with HDF export) will be incorporated in a future update.
 
 ## Documentation
 
 * Initial [Sphinx documentation](https://microcombustion.github.io/ctwrap/)
-* [jupyter notebooks](examples). An overview is given by a [minimal example](examples/minimal_example.ipynb). 
+* [jupyter notebooks](examples). An overview is given by a [minimal example](examples/minimal_example.ipynb).
 * __Caveat:__ the documentation of the initial code is limited to rudimentary docstrings
 
 ## Philosophy
@@ -40,7 +40,7 @@ __Note__: the wrapper itself does not depend on a Cantera installation; only the
 The following uses `pip` to install `ctwrap` within your python environment (e.g. Anaconda).
 
 ```
-$ git clone https://github.com/ischoegl/ctwrap.git
+$ git clone https://github.com/microcombustion/ctwrap.git
 $ cd ctwrap
 $ pip install .
 ```
