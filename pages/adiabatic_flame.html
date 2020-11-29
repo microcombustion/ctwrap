@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adiabatic Flame Batch &#8212; ctwrap 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Jupyter Notebooks" href="jupyter.html" />
+    <link rel="prev" title="Ignition Batch Simulation" href="ignition.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="jupyter.html" title="Jupyter Notebooks"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ignition.html" title="Ignition Batch Simulation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.1.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="batch.html" accesskey="U">Batch Jobs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Adiabatic Flame Batch</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="adiabatic-flame-batch">
+<h1>Adiabatic Flame Batch<a class="headerlink" href="#adiabatic-flame-batch" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="yaml-configuration">
+<h2>YAML Configuration<a class="headerlink" href="#yaml-configuration" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `adiabatic_flame` module</span>
+<span class="c1"># file specifes a parameter variation of the equivalence ratio </span>
+<span class="nt">variation</span><span class="p">:</span>
+  <span class="nt">entry</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">upstream.phi</span> 
+  <span class="nt">values</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">,</span> <span class="nv">2.0</span><span class="p p-Indicator">,</span> <span class="nv">2.2</span><span class="p p-Indicator">,</span> <span class="nv">2.4</span><span class="p p-Indicator">,</span> <span class="nv">2.6</span> <span class="p p-Indicator">]</span>
+<span class="nt">output</span><span class="p">:</span>
+  <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
+<span class="nt">defaults</span><span class="p">:</span>
+  <span class="nt">upstream</span><span class="p">:</span>
+    <span class="nt">T</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">300.</span><span class="p p-Indicator">,</span> <span class="nv">kelvin</span><span class="p p-Indicator">,</span> <span class="s">&#39;temperature&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">P</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.</span><span class="p p-Indicator">,</span> <span class="nv">atmosphere</span><span class="p p-Indicator">,</span> <span class="s">&#39;pressure&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">phi</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">.55</span><span class="p p-Indicator">,</span> <span class="nv">dimensionless</span><span class="p p-Indicator">,</span> <span class="s">&#39;equivalence</span><span class="nv"> </span><span class="s">ratio&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">fuel</span><span class="p">:</span> <span class="s">&#39;H2&#39;</span>
+    <span class="nt">oxidizer</span><span class="p">:</span> <span class="s">&#39;O2:1,AR:5&#39;</span>
+  <span class="nt">chemistry</span><span class="p">:</span>
+    <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.xml</span>
+  <span class="nt">domain</span><span class="p">:</span>
+    <span class="nt">width</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">30</span><span class="p p-Indicator">,</span> <span class="nv">millimeter</span><span class="p p-Indicator">,</span> <span class="s">&#39;domain</span><span class="nv"> </span><span class="s">width&#39;</span><span class="p p-Indicator">]</span>
+<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="simulation-module">
+<h2>Simulation Module<a class="headerlink" href="#simulation-module" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
+<span class="kn">import</span> <span class="nn">cantera</span> <span class="k">as</span> <span class="nn">ct</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">ctwrap</span> <span class="kn">import</span> <span class="n">Parser</span>
+
+<span class="n">__DEFAULTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2"># default parameters for the `freeflame` module</span>
+<span class="s2">upstream:</span>
+<span class="s2">  T: [300., kelvin, &#39;temperature&#39;]</span>
+<span class="s2">  P: [1., atmosphere, &#39;pressure&#39;]</span>
+<span class="s2">  phi: [.55, dimensionless, &#39;equivalence ratio&#39;]</span>
+<span class="s2">  fuel: &#39;H2&#39;</span>
+<span class="s2">  oxidizer: &#39;O2:1.,AR:5&#39;</span>
+<span class="s2">chemistry:</span>
+<span class="s2">  mechanism: h2o2.xml</span>
+<span class="s2">domain:</span>
+<span class="s2">  width: [30, millimeter, &#39;domain width&#39;]</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">defaults</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Returns dictionary containing default arguments&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">__DEFAULTS</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">upstream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">loglevel</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function handling reactor simulation.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): name used for output</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        chemistry (dict): reflects yaml &#39;configuration:chemistry&#39;</span>
+<span class="sd">        upstream  (dict): reflects yaml &#39;configuration:upstream&#39;</span>
+<span class="sd">        domain    (dict): reflects yaml &#39;configuration:simulation&#39;</span>
+<span class="sd">        loglevel   (int): amount of diagnostic output (0 to 8)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: dictionary with pandas DataFrame entries</span>
+
+<span class="sd">    The function uses the class &#39;ctwrap.Parser&#39; in conjunction with &#39;pint.Quantity&#39;</span>
+<span class="sd">    for handling and conversion of units.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># initialize</span>
+
+    <span class="c1"># IdealGasMix object used to compute mixture properties, set to the state of the</span>
+    <span class="c1"># upstream fuel-air mixture</span>
+    <span class="n">mech</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">chemistry</span><span class="p">)</span><span class="o">.</span><span class="n">mechanism</span>
+    <span class="n">gas</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">Solution</span><span class="p">(</span><span class="n">mech</span><span class="p">)</span>
+
+    <span class="c1"># temperature, pressure, and composition</span>
+    <span class="n">upstream</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">upstream</span><span class="p">)</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">upstream</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;kelvin&#39;</span><span class="p">)</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">upstream</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;pascal&#39;</span><span class="p">)</span>
+    <span class="n">gas</span><span class="o">.</span><span class="n">TP</span> <span class="o">=</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">upstream</span><span class="o">.</span><span class="n">phi</span><span class="o">.</span><span class="n">m</span>
+    <span class="n">gas</span><span class="o">.</span><span class="n">set_equivalence_ratio</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">upstream</span><span class="o">.</span><span class="n">fuel</span><span class="p">,</span> <span class="n">upstream</span><span class="o">.</span><span class="n">oxidizer</span><span class="p">)</span>
+
+    <span class="c1"># set up flame object</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">FreeFlame</span><span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">set_refine_criteria</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mf">0.06</span><span class="p">,</span> <span class="n">curve</span><span class="o">=</span><span class="mf">0.12</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
+
+    <span class="c1"># entries used for output</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;z (m)&#39;</span><span class="p">,</span> <span class="s1">&#39;u (m/s)&#39;</span><span class="p">,</span> <span class="s1">&#39;V (1/s)&#39;</span><span class="p">,</span> <span class="s1">&#39;T (K)&#39;</span><span class="p">,</span> <span class="s1">&#39;rho (kg/m3)&#39;</span><span class="p">]</span> <span class="o">+</span> \
+        <span class="n">gas</span><span class="o">.</span><span class="n">species_names</span>
+
+    <span class="c1"># Solve with mixture-averaged transport model</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">transport_model</span> <span class="o">=</span> <span class="s1">&#39;Mix&#39;</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">loglevel</span><span class="o">=</span><span class="n">loglevel</span><span class="p">,</span> <span class="n">auto</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Solve with the energy equation enabled</span>
+    <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    </span><span class="si">{0:s}</span><span class="s1">: mixture-averaged flamespeed = </span><span class="si">{1:7f}</span><span class="s1"> m/s&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="n">out</span><span class="p">[</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;&lt;mix&gt;&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">density</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">X</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span>
+
+    <span class="c1"># Solve with multi-component transport properties</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">transport_model</span> <span class="o">=</span> <span class="s1">&#39;Multi&#39;</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">loglevel</span><span class="p">)</span>  <span class="c1"># don&#39;t use &#39;auto&#39; on subsequent solves</span>
+    <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    </span><span class="si">{0:s}</span><span class="s1">: multi-component flamespeed  = </span><span class="si">{1:7f}</span><span class="s1"> m/s&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="n">out</span><span class="p">[</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;&lt;multi&gt;&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">density</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">X</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="c1">###</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">()</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Adiabatic Flame Batch</a><ul>
+<li><a class="reference internal" href="#yaml-configuration">YAML Configuration</a></li>
+<li><a class="reference internal" href="#simulation-module">Simulation Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ignition.html"
+                        title="previous chapter">Ignition Batch Simulation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="jupyter.html"
+                        title="next chapter">Jupyter Notebooks</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/pages/adiabatic_flame.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="jupyter.html" title="Jupyter Notebooks"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ignition.html" title="Ignition Batch Simulation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.1.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="batch.html" >Batch Jobs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Adiabatic Flame Batch</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-20, I. Schoegl.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>
