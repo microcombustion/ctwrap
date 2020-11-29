@@ -6,6 +6,12 @@ Light-weight Python wrapper for batch simulation jobs (e.g. Cantera).
 
 > Some features that are currently being implemented in Cantera 2.5 (e.g. improved `SolutionArray` support with HDF export) will be incorporated in a future update. 
 
+## Documentation
+
+* Initial [Sphinx documentation](https://microcombustion.github.io/ctwrap/)
+* [jupyter notebooks](examples). An overview is given by a [minimal example](examples/minimal_example.ipynb). 
+* __Caveat:__ the documentation of the initial code is limited to rudimentary docstrings
+
 ## Philosophy
 
 The code was developed with the following objectives in mind. It should:
@@ -26,8 +32,6 @@ $ ctwrap adiabatic_flame adiabatic_flame.yaml --parallel
 Results (including configuration) are written to a single file `adiabatic_flame.h5`.
 
 __Note__: the wrapper itself does not depend on a Cantera installation; only the simulation modules do.
-
-__Caveat:__ the documentation of the initial code is limited to rudimentary docstrings, plus examples in the form of [jupyter notebooks](ctwrap/examples). An overview is given by a [minimal example](ctwrap/examples/minimal_example.ipynb). 
 
 ## Installation
 
