@@ -109,4 +109,5 @@ venv.bak/
 *.h5
 *.csv
 *.xml
+*.xlsx
 Untitled*.ipynb

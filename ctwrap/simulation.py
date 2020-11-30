@@ -6,13 +6,16 @@ import os
 from copy import deepcopy
 import warnings
 import  importlib
+import pandas as pd
+
+# ctwrap specific imports
+from . import fileio
 
 # multiprocessing
 import multiprocessing as mp
 import queue  # imported for using queue.Empty exception
 
-# ctwrap specific imports
-from . import fileio
+supported = ('.h5', '.hdf', '.hdf5', '.xlsx')
 
 __all__ = ['Simulation', 'SimulationHandler']
 
@@ -58,7 +61,7 @@ class Simulation(object):
 
         # create a name that reflect the module name (CamelCase)
         if isinstance(module, str):
-            name  = module.split('.')[-1]
+            name = module.split('.')[-1]
         else:
             name = module.__name__.split('.')[-1]
             module = module.__name__
@@ -70,7 +73,7 @@ class Simulation(object):
         """Run function holding configuration in dictionary.
         Args:
            name (string): name of simulation run
-           config (dict): configuration
+           config (dict, optional): configuration
         Kwargs:
            kwargs (optional): depends on implementation of __init__
         """
@@ -87,17 +90,41 @@ class Simulation(object):
         """Pass-through returning module defaults as a dictionary"""
         return self._module.defaults()
 
-    def _save(self):
-        """Save simulation data (hidden)"""
+    def _save(self, mode='a'):
+        """Save simulation data (hidden)
+        mode('str'): append or write to file. Default to append
+        """
 
         if self._output is None:
             return
 
         oname = self._output['file_name']
         opath = self._output['path']
+        formatt = self._output['format']
         force = self._output['force_overwrite']
 
-        fileio.save(oname, self.data, mode='a', force=force, path=opath)
+        if oname is None:
+            return
+
+        # file check
+        fexists = os.path.isfile(oname)
+        if not fexists and mode == 'a':
+            mode = 'w'
+        if fexists and mode == 'w' and not force:
+            msg = 'Cannot overwrite existing file `{}` (use force to override)'
+            raise RuntimeError(msg.format(oname))
+
+        for key in self.data:
+            if formatt in {'h5', 'hdf5', 'hdf'}:
+                self.data[key].write_hdf(oname, group=key, mode=mode)
+            elif formatt == 'xlsx':
+                pd_output = self.data[key].to_pandas(species='X')
+                with pd.ExcelWriter(oname, mode=mode) as writer:
+                    pd_output.to_excel(writer, sheet_name=key)
+            else:
+                raise ValueError("Invalid file format {}".format(formatt))
+
+            mode = 'a'
 
 
 class SimulationHandler(object):
@@ -116,7 +143,7 @@ class SimulationHandler(object):
 
         # parse arguments
         self._defaults = defaults
-        #self._variation = variation
+        self._variation = variation
         self._output = output
         self.verbosity = verbosity
 
@@ -136,33 +163,14 @@ class SimulationHandler(object):
             print('Simulations for entry `{}` with values: {}'.format(
                 self._entry, self._values))
 
-        if self._output is not None:
-
-            var = variation.copy()
-            var['tasks'] = [t for t in self.tasks]
-            var['tasks'].sort()
-
-            # assemble information
-            info = {
-                'defaults': self._defaults,
-                'variation': var,
-            }
-
-            # save to file
-            oname = self._output['file_name']
-            path = self._output['path']
-            force = self._output['force_overwrite']
-
-            fileio.save(oname, info, mode='w', force=force, path=path)
-
     @classmethod
     def from_yaml(cls, yaml_file, name=None, path=None, **kwargs):
         """Alternate constructor using YAML file as input.
         Args:
            yaml_file (string): yaml file
-        Kwargs:
            name (string): output name (overrides yaml)
            path (string): file path (both yaml and output)
+        Kwargs:
            kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
         """
 
@@ -181,10 +189,10 @@ class SimulationHandler(object):
     def from_dict(cls, content, name=None, path=None, **kwargs):
         """Alternate constructor using a dictionary as input.
         Args:
-           content (dict): dictionary
-        Kwargs:
+           content (dict): dictionary from yaml input
            name (string): output name (overrides yaml)
            path (string): output path (overrides yaml)
+        Kwargs:
            kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
         """
 
@@ -202,6 +210,12 @@ class SimulationHandler(object):
     def _parse_output(dct, fname=None, fpath=None):
         """Parse output dictionary (hidden function)
         Overrides defaults with keyword arguments.
+        Args:
+           dct (dict, optional): dictionary from yaml input
+           fname (name, optional): filename (overrides yaml)
+           fpath (string, optional): output path (overrides yaml)
+        Return:
+            out (dict): output dictionary
         """
 
         if dct is None:
@@ -213,7 +227,7 @@ class SimulationHandler(object):
         if 'format' not in out:
             out['format'] = ''
         if 'force_overwrite' not in out:
-            out['force_overwrite'] = True
+            out['force_overwrite'] = False
 
         fformat = out['format']
 
@@ -228,7 +242,7 @@ class SimulationHandler(object):
                 fpath = head
 
             fname, ext = os.path.splitext(fname)
-            if ext in fileio.supported:
+            if ext in supported:
                 fformat = ext
 
             out['name'] = fname
@@ -262,7 +276,12 @@ class SimulationHandler(object):
         return self.configuration(task)
 
     def configuration(self, task):
-        """Return """
+        """Return configuration
+        Args:
+            task(str) : task to do
+        Return:
+            updated configuration dict based on the task
+        """
 
         value = self.tasks.get(task, None)
         assert task is not None, 'invalid value'
@@ -307,6 +326,13 @@ class SimulationHandler(object):
         return {'{}_{}'.format(e, v): v for v in self._values}
 
     def run_task(self, sim, task, **kwargs):
+        """
+        Args:
+            sim (object): instance of Simulation class
+            task (str): task to do
+        Kwargs:
+           kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
+        """
 
         assert task in self.tasks, 'unknown task `{}`'.format(task)
 
@@ -316,11 +342,20 @@ class SimulationHandler(object):
         # run simulation
         config = self.configuration(task)
 
-        obj.run(task, config, **kwargs)
+        obj.run(task, config,**kwargs)
         obj._save()
 
     def run_serial(self, sim, verbosity=None, **kwargs):
-        """Run variation in series"""
+        """Run variation in series
+        Args:
+            sim (object): instance of Simulation class
+            verbosity (int, optional): verbosity
+        Kwargs:
+           kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
+
+        Returns:
+            return True when task is completed
+        """
 
         assert isinstance(sim, Simulation), 'need simulation object'
 
@@ -333,7 +368,6 @@ class SimulationHandler(object):
         tasks = [t for t in self.tasks]
         tasks.sort()
         for t in tasks:
-
             if verbosity > 0:
                 print(indent1 + 'processing `{}`'.format(t))
 
@@ -350,7 +384,16 @@ class SimulationHandler(object):
                      number_of_processes=None,
                      verbosity=None,
                      **kwargs):
-        """Run variation using multiprocessing"""
+        """Run variation using multiprocessing
+        Args:
+            sim (object): instance of Simulation class
+            number_of_processes(int, optional): number of processes
+            verbosity(int, optional): verbosity level
+        Kwargs:
+           kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
+        Returns:
+            return True when task is completed
+        """
 
         assert isinstance(sim, Simulation), 'need simulation object'
 
@@ -380,7 +423,7 @@ class SimulationHandler(object):
         for w in range(number_of_processes):
             p = mp.Process(
                 target=worker,
-                args=(tasks_to_accomplish, finished_tasks, sim._module, lock,
+                args=(tasks_to_accomplish, finished_tasks, sim._module,lock,
                       self._output, verbosity))
             processes.append(p)
             p.start()
@@ -398,8 +441,8 @@ class SimulationHandler(object):
         return True
 
 
-def worker(tasks_to_accomplish, tasks_that_are_done, module, lock, output,
-           verbosity):
+def worker(tasks_to_accomplish, tasks_that_are_done, module, lock,
+           output, verbosity):
 
     this = mp.current_process().name
 

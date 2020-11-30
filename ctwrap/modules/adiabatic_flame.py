@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 from ruamel import yaml
 import cantera as ct
-import pandas as pd
-import numpy as np
 
 from ctwrap import Parser
+
 
 __DEFAULTS = """\
 # default parameters for the `freeflame` module
@@ -36,7 +36,7 @@ def run(name,
     """Function handling reactor simulation.
 
     Arguments:
-        name (str): name used for output
+        name (str): name of the task
 
     Keyword Arguments:
         chemistry (dict): reflects yaml 'configuration:chemistry'
@@ -45,13 +45,11 @@ def run(name,
         loglevel   (int): amount of diagnostic output (0 to 8)
 
     Returns:
-        dict: dictionary with pandas DataFrame entries
+        Out (dict): dictionary containing cantera Flamebase object
 
     The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
     for handling and conversion of units.
     """
-
-    out = {}
 
     # initialize
 
@@ -75,9 +73,7 @@ def run(name,
     if loglevel > 0:
         f.show_solution()
 
-    # entries used for output
-    keys = ['z (m)', 'u (m/s)', 'V (1/s)', 'T (K)', 'rho (kg/m3)'] + \
-        gas.species_names
+    out = {}
 
     # Solve with mixture-averaged transport model
     f.transport_model = 'Mix'
@@ -87,10 +83,13 @@ def run(name,
     if loglevel > 0:
         f.show_solution()
     msg = '    {0:s}: mixture-averaged flamespeed = {1:7f} m/s'
-    print(msg.format(name, f.u[0]))
+    print(msg.format(name, f.velocity[0]))
 
-    out[name + '<mix>'] = pd.DataFrame(
-        np.vstack([f.grid, f.u, f.V, f.T, f.density, f.X]).T, columns=keys)
+    if name is not 'defaults':
+        group = name + "<mix>"
+    else:
+        group = "mix"
+    out[group] = f
 
     # Solve with multi-component transport properties
     f.transport_model = 'Multi'
@@ -98,15 +97,18 @@ def run(name,
     if loglevel > 0:
         f.show_solution()
     msg = '    {0:s}: multi-component flamespeed  = {1:7f} m/s'
-    print(msg.format(name, f.u[0]))
+    print(msg.format(name, f.velocity[0]))
 
-    out[name + '<multi>'] = pd.DataFrame(
-        np.vstack([f.grid, f.u, f.V, f.T, f.density, f.X]).T, columns=keys)
+    if name is not 'defaults':
+        group = name + "<multi>"
+    else:
+        group = "multi"
+    out[group] = f
 
     return out
 
-
 ###
+
 
 if __name__ == "__main__":
 
