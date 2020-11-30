@@ -1,9 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Versioning information/credits
 
 https://setuptools.readthedocs.io/en/latest/setuptools.html#specifying-your-project-s-version
 """
 
-__author__ = "I. Schoegl"
 __version_info__ = (0, 1, 1)
 __version__ = '.'.join(map(str, __version_info__[:3]))
 if len(__version_info__) == 4:

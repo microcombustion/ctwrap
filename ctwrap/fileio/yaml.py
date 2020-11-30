@@ -4,12 +4,7 @@
 
 import os
 import re
-
-try:
-    import ruamel_yaml as yaml
-except ImportError:
-    from ruamel import yaml
-
+from ruamel import yaml
 from copy import deepcopy
 
 __all__ = ['load_yaml', 'flatten', 'nested']
@@ -22,7 +17,7 @@ def load_yaml(fname, path=None, keys=None):
         fname (str): file name
 
     Keyword Arguments:
-        path (str): relative/absolute path. Empty ('') for
+        path (str): relative/absolute path. Empty ('') for 
     """
 
     if path is 'default':

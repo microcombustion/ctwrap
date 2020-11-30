@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pandas as pd
 from ruamel import yaml
 
 from ctwrap import Parser
@@ -38,16 +37,20 @@ def defaults():
     return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
 
 
-def run(name, chemistry=None, initial=None, simulation=None):
+def run(name, chemistry=None, initial=None,
+        simulation=None, **kwargs):
     """Function handling reactor simulation.
+    Args:
+        name (str): name of the task
 
     Keyword Arguments:
         chemistry  (dict): reflects yaml 'configuration:chemistry'
         initial    (dict): reflects yaml 'configuration:initial'
         simulation (dict): reflects yaml 'configuration:simulation'
 
+
     Returns:
-        dict: dictionary with pandas DataFrame entries
+        out (dict): dictionary containing SolutionArray
 
     The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
     for handling and conversion of units.
@@ -78,33 +81,28 @@ def run(name, chemistry=None, initial=None, simulation=None):
     delta_t = par.delta_t
     n_points = par.n_points
 
-    # preprocess
-
-    # create pandas data frame
-    keys = ['t (s)', 'T (K)', 'rho (kg/m3)'] + \
-        gas.species_names
-    df = pd.DataFrame(columns=keys)
+    # SolutionArray
+    states = ct.SolutionArray(gas, extra=['t'])
 
     # Run simulation
-
     time = sim.time
 
     # loop: note that advance() returns boolean
-    for i in range(par.n_points):
+    for i in range(n_points):
 
         time += delta_t
         sim.advance(time)
 
-        df_len = len(df)
-        row = (time, gas.T, gas.density) + tuple(gas.X)
-        df.loc[df_len] = row
+        states.append(reactor.thermo.state, t=time)
 
-    return {name: df}
+    out = {}
+    out[name] = states
+
+    return out
 
 
 ###
 
 if __name__ == "__main__":
-
     config = defaults()
     out = run('main', **config)
