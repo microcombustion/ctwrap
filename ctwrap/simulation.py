@@ -401,7 +401,7 @@ class SimulationHandler(object):
         e = self._entry
         return {'{}_{}'.format(e, v): v for v in self._values}
 
-    def run_task(self, sim: simulation, task: str, **kwargs:str):
+    def run_task(self, sim: Simulation, task: str, **kwargs:str):
         """
         Function to run a specific task.
 
@@ -425,7 +425,7 @@ class SimulationHandler(object):
         obj._save_metadata(self._metadata)
 
     def run_serial(self,
-                   sim: simulation,
+                   sim: Simulation,
                    verbosity: Optional[int] = None,
                    **kwargs: str) -> bool:
         """
@@ -464,7 +464,7 @@ class SimulationHandler(object):
         return True
 
     def run_parallel(self,
-                     sim: ulation,
+                     sim: Simulation,
                      number_of_processes: Optional[int] = None,
                      verbosity: Optional[str] = None,
                      **kwargs: str) -> bool:
