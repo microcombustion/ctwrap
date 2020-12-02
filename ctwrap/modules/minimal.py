@@ -1,10 +1,10 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Minimal example for ctwrap compatible simulation module"""
 
-from ruamel import yaml
-import pandas as pd
 import time
+from typing import Dict, Any, Optional
+import pandas as pd
+
+from ruamel import yaml
 
 __DEFAULTS = """\
 # default parameters for the `minimal` module
@@ -17,8 +17,8 @@ def defaults():
     return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
 
 
-def run(name, sleep=.2, **kwargs):
-    """this function does nothing"""
+def run(name: str, sleep : Optional[float] = .2) -> Dict[str, Any]:
+    """This function does nothing"""
 
     # initialize
     print('    - `minimal`: sleeping for {} seconds ...'.format(sleep))
@@ -27,7 +27,15 @@ def run(name, sleep=.2, **kwargs):
     return {name: pd.DataFrame({'sleep': [sleep]})}
 
 
+def save(data: Dict[str, Any], output: Optional[Dict[str, Any]] = None,
+         mode: Optional[str] = 'a') -> None:
+    """this function does nothing"""
+
+    return
+
+
 if __name__ == "__main__":
 
     config = defaults()
-    run('main', **config)
+    out = run('main', **config)
+    save(out)

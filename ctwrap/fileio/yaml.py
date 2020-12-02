@@ -1,28 +1,33 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Function handling file input/output."""
 
 import os
-import re
-from ruamel import yaml
+from typing import Optional, Dict,Any
+import json
 from copy import deepcopy
+from ruamel import yaml
 
-__all__ = ['load_yaml', 'flatten', 'nested']
+import h5py
 
 
-def load_yaml(fname, path=None, keys=None):
-    """Load yaml from file
+
+__all__ = ['load_yaml', 'save_metadata']
+
+
+def load_yaml(fname: str,
+              path: Optional[str] = None,
+              keys: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Load yaml from file
 
     Arguments:
-        fname (str): file name
-
-    Keyword Arguments:
-        path (str): relative/absolute path. Empty ('') for 
+        fname (str) : file name
+        path (str) : relative/absolute path. Empty ('') for
+        keys (str) : key
+    Returns:
+        Dictionary containing the required keys
     """
 
-    if path is 'default':
-        fname = (os.sep).join([__DATA_PATH, fname])
-    elif path not in ['', None]:
+    if path not in ['', None]:
         fname = (os.sep).join([path, fname])
 
     with open(fname) as yml:
@@ -34,58 +39,29 @@ def load_yaml(fname, path=None, keys=None):
         return tuple([deepcopy(out[k]) for k in keys])
 
 
-def flatten(d):
-    """Flatten nested dictionary (recursive function)"""
+def save_metadata(output: Dict[str, Any],
+                  metadata: Dict[str, Any]) -> None:
+    """
+    Function save metadata as attributes to file
 
-    out = {}
-    for k, v in d.items():
-        if isinstance(v, dict):
+    Arguments:
+        output (dict): file information
+        metadata (dict): metadata
+    """
 
-            # recursion
-            inner = flatten(v)
-            out.update({'{}.{}'.format(k, kk): vv for kk, vv in inner.items()})
+    oname = output['file_name']
+    opath = output['path']
+    formatt = output['format']
+    force = output['force_overwrite']
 
-        else:
+    if oname is None:
+        return
+    if opath is not None:
+        oname = os.path.join(opath, oname)
 
-            # ensure all saved data is in string format
-            if isinstance(v, (tuple, list)):
-                out[k] = yaml.dump(v).rstrip()
-            elif v is None:
-                out[k] = 'null'
+    with h5py.File(oname, 'r+') as f:
+        for key, val in metadata.items():
+            if isinstance(val, dict):
+                f.attrs[key] = json.dumps(val)
             else:
-                # note: yaml.dump() adds '\n...\n' to scalars
-                out[k] = yaml.dump(v).rstrip().rstrip('.').rstrip()
-
-    return out
-
-
-def nested(d):
-    """Create nested dictionary (recursive function)"""
-
-    out = {}
-    keys = list(d.keys())
-    ukeys = list(set([k.split('.')[0] for k in keys]))
-    ukeys.sort()
-
-    loader = yaml.SafeLoader
-    for uk in ukeys:
-
-        if uk in keys:
-
-            # recreate tuple / string
-            if isinstance(d[uk], str):
-                out[uk] = yaml.load(d[uk], Loader=loader)
-            else:
-                out[uk] = d[uk]
-
-        else:
-
-            # start recursion
-            replace = '{}.'.format(uk)
-            inner = {
-                kk.replace(replace, ''): vv
-                for kk, vv in d.items() if uk in kk
-            }
-            out[uk] = nested(inner)
-
-    return out
+                f.attrs[key] = val

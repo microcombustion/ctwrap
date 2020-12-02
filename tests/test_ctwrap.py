@@ -50,6 +50,7 @@ class TestWrap(unittest.TestCase):
         self.assertIsInstance(sh.tasks, dict)
         self.assertIn(self._task, sh.tasks)
 
+
     def test_serial(self):
         sim = cw.Simulation.from_module(self._module)
         sh = cw.SimulationHandler.from_yaml(self._yaml, path=EXAMPLES)

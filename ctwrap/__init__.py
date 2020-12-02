@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Package exports."""
-
-from .simulation import *
-from .parser import *
+from .simulation import Simulation, SimulationHandler
+from .parser import Parser
 from . import modules
 
-from ._version import __version__
+from ._version import __version__, __author__

@@ -1,11 +1,14 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
+""" Module to run ignition simulation """
+import os
+import warnings
+from typing import Optional, Dict, Any
 from ruamel import yaml
+import h5py
+
 
 from ctwrap import Parser
 
-import warnings
+
 try:
     import cantera as ct
 except ImportError as err:
@@ -37,23 +40,24 @@ def defaults():
     return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
 
 
-def run(name, chemistry=None, initial=None,
-        simulation=None, **kwargs):
-    """Function handling reactor simulation.
-    Args:
-        name (str): name of the task
+def run(name: str,
+        chemistry: Optional[Dict[str, Any]] = None,
+        initial: Optional[Dict[str, Any]] = None,
+        simulation: Optional[Dict[str, Any]] = None,
+        ) -> Dict[str, Any]:
+    """
+    Function handling reactor simulation.
+    The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
+    for handling and conversion of units.
 
-    Keyword Arguments:
+    Arguments:
+        name (str): name of the task
         chemistry  (dict): reflects yaml 'configuration:chemistry'
         initial    (dict): reflects yaml 'configuration:initial'
         simulation (dict): reflects yaml 'configuration:simulation'
 
-
     Returns:
-        out (dict): dictionary containing SolutionArray
-
-    The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
-    for handling and conversion of units.
+        Dictionary containing Cantera SolutionArray
     """
 
     # initialize
@@ -101,8 +105,60 @@ def run(name, chemistry=None, initial=None,
     return out
 
 
+def save(data: Dict[str, Any], output: Optional[Dict[str, Any]] = None,
+         mode: Optional[str] = 'a') -> None:
+    """
+    This function saves the output from the run method
+
+     Arguments:
+         data: data to be saved
+         output: naming information
+         mode: append or write. default to append
+     """
+
+    # file check
+    if output is None:
+        return
+
+    oname = output['file_name']
+    opath = output['path']
+    formatt = output['format']
+    force = output['force_overwrite']
+
+    if oname is None:
+        return
+
+    if opath is not None:
+        oname = os.path.join(opath, oname)
+
+    fexists = os.path.isfile(oname)
+    if not fexists and mode == 'a':
+        mode = 'w'
+    if fexists and mode == 'w' and not force:
+        msg = 'Cannot overwrite existing file `{}` (use force to override)'
+        raise RuntimeError(msg.format(oname))
+
+    if fexists:
+        with h5py.File(oname, 'r') as hdf:
+            groups = {k: 'Group' for k in hdf.keys()}
+    else:
+        groups = {}
+
+    for key in data:
+        if formatt in {'h5', 'hdf5', 'hdf'}:
+            if key in groups and mode == 'a' and not force:
+                msg = 'Cannot overwrite existing group `{}` (use force to override)'
+                raise RuntimeError(msg.format(key))
+            data[key].write_hdf(oname, group=key, mode=mode)
+        else:
+            raise ValueError("Invalid file format {}".format(formatt))
+
+        mode = 'a'
+
+
 ###
 
 if __name__ == "__main__":
     config = defaults()
     out = run('main', **config)
+    save(out)
