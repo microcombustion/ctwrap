@@ -3,6 +3,7 @@
 import os
 from copy import deepcopy
 import importlib
+import h5py
 
 from typing import Dict, Any, Optional, TypeVar, Union
 
@@ -11,10 +12,11 @@ from typing import Dict, Any, Optional, TypeVar, Union
 import multiprocessing as mp
 import queue  # imported for using queue.Empty exception
 
-# ctwrap specific imports
-from . import fileio
+# ctwrap specific import
+from .parser import load_yaml, save_metadata
 
-supported = ('.h5', '.hdf', '.hdf5', '.xlsx')
+
+supported = ('.h5', '.hdf', '.hdf5')
 
 __all__ = ['Simulation', 'SimulationHandler']
 
@@ -86,11 +88,10 @@ class Simulation(object):
         """
         Run function holding configuration in dictionary.
 
-        Argument:
+        Arguments:
            name (string): name of simulation run
            config (dict, optional): configuration
            **kwargs (optional): depends on implementation of __init__
-
         """
 
         self._module = importlib.import_module(self._module)
@@ -105,31 +106,54 @@ class Simulation(object):
         """Pass-through returning module defaults as a dictionary"""
         return self._module.defaults()
 
-    def _save(self, mode: Optional[str] = 'a',
-              **kwargs: str) -> None:
+    def _save(self, mode="a", task=None, **kwargs: str) -> None:
         """
         Save simulation data (hidden)
 
         Arguments:
-            mode('str'): append or write to file. Default to append
             **kwargs (optional): keyword arguments
         """
 
         if self._output is None:
             return
 
-        self._module = importlib.import_module(self._module)
-        self._module.save(self.data, self._output, mode, **kwargs)
-        self._module = self._module.__name__
+        filename = self._output['file_name']
+
+        if filename is None:
+            return
+
+        filepath = self._output['path']
+        formatt = "." + self._output['format']
+        force = self._output['force_overwrite']
+
+        if filepath is not None:
+            filename = os.path.join(filepath, filename)
+
+        # file check
+        fexists = os.path.isfile(filename)
+
+        if fexists:
+            with h5py.File(filename, 'r') as hdf:
+                for group in hdf.keys():
+                    if group in self.data and mode == 'a' and not force:
+                        msg = 'Cannot overwrite existing ' \
+                              'group `{}` (use force to override)'
+                        raise RuntimeError(msg.format(group))
+
+        if formatt in supported:
+            self._module = importlib.import_module(self._module)
+            self._module.save(filename, self.data, task)
+            self._module = self._module.__name__
+        else:
+            raise ValueError("Invalid file format {}".format(formatt))
 
     def _save_metadata(self,
                        metadata: Optional[Dict[str, Any]] = None,
-                       mode: Optional[str] = None) -> None:
+                       ) -> None:
         """This function calls the module save method.
 
         Arguments:
             metadata (dict): data to be saved
-            mode (str): append or write. default to append
         """
 
         if metadata is None:
@@ -138,7 +162,8 @@ class Simulation(object):
         if self._output is None:
             return
 
-        fileio.save_metadata(self._output, metadata)
+        save_metadata(self._output, metadata)
+
 
 TsimulationHandler = TypeVar('TsimulationHandler', bound='SimualationHandler')
 
@@ -214,7 +239,7 @@ class SimulationHandler(object):
         """
 
         # load configuration from yaml
-        content = fileio.load_yaml(yaml_file, path)
+        content = load_yaml(yaml_file, path)
         output = content.get('output', {})
 
         # naming priorities: keyword / yaml / automatic
@@ -400,7 +425,7 @@ class SimulationHandler(object):
         config = self.configuration(task)
 
         obj.run(task, config, **kwargs)
-        obj._save()
+        obj._save(task=task)
         obj._save_metadata(self._metadata)
 
     def run_serial(self,
@@ -438,7 +463,7 @@ class SimulationHandler(object):
             config = self.configuration(t)
 
             obj.run(t, config, **kwargs)
-            obj._save()
+            obj._save(task=t)
         obj._save_metadata(self._metadata)
         return True
 
@@ -554,7 +579,7 @@ def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
                 print(msg.format(task, this))
             obj.run(task, config, **kwargs)
             with lock:
-                obj._save()
+                obj._save(task=task)
 
             msg = 'case `{}` completed by {}'.format(task, this)
             tasks_that_are_done.put(msg)
