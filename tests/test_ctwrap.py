@@ -20,7 +20,7 @@ class TestParser(unittest.TestCase):
 
     def test_parser(self):
 
-        defaults = cw.fileio.load_yaml(
+        defaults = cw.parser.load_yaml(
             'ignition.yaml', path=EXAMPLES, keys=['defaults'])
         p = cw.Parser(defaults[0]['initial'])
         self.assertIsInstance(p.T, pq.Quantity)
