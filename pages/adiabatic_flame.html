@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Adiabatic Flame Batch &#8212; ctwrap 0.1.1 documentation</title>
+    <title>Adiabatic Flame Batch &#8212; ctwrap 0.2.0b documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="ignition.html" title="Ignition Batch Simulation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.1.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="batch.html" accesskey="U">Batch Jobs</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Adiabatic Flame Batch</a></li> 
       </ul>
@@ -75,16 +75,15 @@
 </div>
 <div class="section" id="simulation-module">
 <h2>Simulation Module<a class="headerlink" href="#simulation-module" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Module to run adiabatic flame simulation&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">ctwrap</span> <span class="kn">import</span> <span class="n">Parser</span>
 
-<span class="kn">import</span> <span class="nn">warnings</span>
+
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">cantera</span> <span class="k">as</span> <span class="nn">ct</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -112,30 +111,23 @@
     <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">__DEFAULTS</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">upstream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">loglevel</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Function handling reactor simulation.</span>
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">upstream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">loglevel</span><span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function handling adiabatic flame simulation.</span>
+<span class="sd">    The function uses the class &#39;ctwrap.Parser&#39; in conjunction with &#39;pint.Quantity&#39;</span>
+<span class="sd">    for handling and conversion of units.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        name (str): name used for output</span>
-
-<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        name (str): name of the task</span>
 <span class="sd">        chemistry (dict): reflects yaml &#39;configuration:chemistry&#39;</span>
 <span class="sd">        upstream  (dict): reflects yaml &#39;configuration:upstream&#39;</span>
 <span class="sd">        domain    (dict): reflects yaml &#39;configuration:simulation&#39;</span>
 <span class="sd">        loglevel   (int): amount of diagnostic output (0 to 8)</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict: dictionary with pandas DataFrame entries</span>
-
-<span class="sd">    The function uses the class &#39;ctwrap.Parser&#39; in conjunction with &#39;pint.Quantity&#39;</span>
-<span class="sd">    for handling and conversion of units.</span>
+<span class="sd">        Dictionary containing Cantera `Flamebase` object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># initialize</span>
 
@@ -159,9 +151,7 @@
     <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
 
-    <span class="c1"># entries used for output</span>
-    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;z (m)&#39;</span><span class="p">,</span> <span class="s1">&#39;u (m/s)&#39;</span><span class="p">,</span> <span class="s1">&#39;V (1/s)&#39;</span><span class="p">,</span> <span class="s1">&#39;T (K)&#39;</span><span class="p">,</span> <span class="s1">&#39;rho (kg/m3)&#39;</span><span class="p">]</span> <span class="o">+</span> \
-        <span class="n">gas</span><span class="o">.</span><span class="n">species_names</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># Solve with mixture-averaged transport model</span>
     <span class="n">f</span><span class="o">.</span><span class="n">transport_model</span> <span class="o">=</span> <span class="s1">&#39;Mix&#39;</span>
@@ -171,10 +161,10 @@
     <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    </span><span class="si">{0:s}</span><span class="s1">: mixture-averaged flamespeed = </span><span class="si">{1:7f}</span><span class="s1"> m/s&#39;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
-    <span class="n">out</span><span class="p">[</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;&lt;mix&gt;&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">density</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">X</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&lt;mix&gt;&quot;</span>
+    <span class="n">out</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
 
     <span class="c1"># Solve with multi-component transport properties</span>
     <span class="n">f</span><span class="o">.</span><span class="n">transport_model</span> <span class="o">=</span> <span class="s1">&#39;Multi&#39;</span>
@@ -182,20 +172,33 @@
     <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    </span><span class="si">{0:s}</span><span class="s1">: multi-component flamespeed  = </span><span class="si">{1:7f}</span><span class="s1"> m/s&#39;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
-    <span class="n">out</span><span class="p">[</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;&lt;multi&gt;&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">density</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">X</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&lt;multi&gt;&quot;</span>
+    <span class="n">out</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
 
     <span class="k">return</span> <span class="n">out</span>
 
 
-<span class="c1">###</span>
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function saves the output from the run method</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        filename (str): naming of file</span>
+<span class="sd">        data (Dict): data to be saved</span>
+<span class="sd">        task (str): name of task if running variations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">flame</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">flame</span><span class="o">.</span><span class="n">write_hdf</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-
     <span class="n">config</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">()</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">save</span><span class="p">(</span><span class="s1">&#39;adiabatic_flame.h5&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -259,13 +262,13 @@
         <li class="right" >
           <a href="ignition.html" title="Ignition Batch Simulation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.1.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="batch.html" >Batch Jobs</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Adiabatic Flame Batch</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018-20, I. Schoegl.
+        &#169; Copyright 2018-20, I. Schoegl and D. Akinpelu.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
     </div>
   </body>

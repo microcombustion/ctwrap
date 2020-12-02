@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ctwrap Parser &#8212; ctwrap 0.1.1 documentation</title>
+    <title>ctwrap Parser &#8212; ctwrap 0.2.0b documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="api.html" title="ctwrap API Reference"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.1.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="api.html" accesskey="U">ctwrap API Reference</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">ctwrap Parser</a></li> 
       </ul>
@@ -54,8 +54,95 @@
 <dt id="ctwrap.parser.Parser">
 <em class="property">class </em><code class="sig-prename descclassname">ctwrap.parser.</code><code class="sig-name descname">Parser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dct</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>A lightweight class that handles units.</p>
-<p>The handling mimics that of a python dictionary, while adding direct access to 
+<p>The handling mimics that of a python dictionary, while adding direct access to
 keyed values via attributes.</p>
+<dl class="py method">
+<dt id="ctwrap.parser.Parser.keys">
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of keys</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">KeysView</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="ctwrap.parser.load_yaml">
+<code class="sig-prename descclassname">ctwrap.parser.</code><code class="sig-name descname">load_yaml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keys</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#load_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.load_yaml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load yaml from file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – file name</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – relative/absolute path. Empty (‘’) for</p></li>
+<li><p><strong>keys</strong> (<em>str</em>) – key</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, …]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary containing the required keys</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ctwrap.parser.save_metadata">
+<code class="sig-prename descclassname">ctwrap.parser.</code><code class="sig-name descname">save_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">metadata</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#save_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.save_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function save metadata as attributes to file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> (<em>dict</em>) – file information</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em>) – metadata</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ctwrap.load_yaml">
+<code class="sig-prename descclassname">ctwrap.</code><code class="sig-name descname">load_yaml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keys</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#load_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.load_yaml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load yaml from file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – file name</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – relative/absolute path. Empty (‘’) for</p></li>
+<li><p><strong>keys</strong> (<em>str</em>) – key</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, …]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary containing the required keys</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ctwrap.save_metadata">
+<code class="sig-prename descclassname">ctwrap.</code><code class="sig-name descname">save_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">metadata</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#save_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.save_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function save metadata as attributes to file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> (<em>dict</em>) – file information</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em>) – metadata</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -109,13 +196,13 @@ keyed values via attributes.</p>
         <li class="right" >
           <a href="api.html" title="ctwrap API Reference"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.1.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="api.html" >ctwrap API Reference</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">ctwrap Parser</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018-20, I. Schoegl.
+        &#169; Copyright 2018-20, I. Schoegl and D. Akinpelu.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
     </div>
   </body>
