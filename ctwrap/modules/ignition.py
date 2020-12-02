@@ -1,8 +1,6 @@
 """ Module to run ignition simulation """
-import os
 import warnings
 from ruamel import yaml
-import h5py
 
 
 from ctwrap import Parser
@@ -95,10 +93,8 @@ def run(name, chemistry=None,
 
         states.append(reactor.thermo.state, t=time)
 
-    out = {}
-    out[name] = states
 
-    return out
+    return {name: states}
 
 
 def save(filename, data, task=None):
@@ -110,11 +106,10 @@ def save(filename, data, task=None):
         data (Dict): data to be saved
         task (str): name of task if running variations
     """
-    attrs = {}
 
-    attrs['description'] = task
-    for group, solution_array in data.items():
-        solution_array.write_hdf(filename=filename, group=group,
+    attrs = {'description': task}
+    for group, states in data.items():
+        states.write_hdf(filename=filename, group=group,
                                  mode='a', attrs=attrs)
 
 ###
