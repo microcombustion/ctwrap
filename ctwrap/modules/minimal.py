@@ -1,7 +1,6 @@
 """Minimal example for ctwrap compatible simulation module"""
 
 import time
-import pandas as pd
 
 from ruamel import yaml
 
@@ -23,7 +22,7 @@ def run(name, sleep=.2):
     print('    - `minimal`: sleeping for {} seconds ...'.format(sleep))
     time.sleep(sleep)
 
-    return {name: pd.DataFrame({'sleep': [sleep]})}
+    return {name: {'sleep': [sleep]}}
 
 
 def save(data, output=None, mode='a') :

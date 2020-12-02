@@ -23,8 +23,6 @@ __all__ = ['Simulation', 'SimulationHandler']
 indent1 = ' * '
 indent2 = '   - '
 
-Tsimulation = TypeVar('Tsimulation', bound='Simulation')
-
 
 class Simulation(object):
     """
@@ -61,7 +59,7 @@ class Simulation(object):
     def from_module(cls,
                     module: str,
                     output: Optional[Dict[str, Any]] = None) -> \
-            Union[Tsimulation, Dict[str, Any], str]:
+            Union['simulation', Dict[str, Any], str]:
         """
         Alternative constructor for `Simulation` object.
         The `from_module` instantiation call renames the class
@@ -150,7 +148,8 @@ class Simulation(object):
     def _save_metadata(self,
                        metadata: Optional[Dict[str, Any]] = None,
                        ) -> None:
-        """This function calls the module save method.
+        """
+        This function calls the module save method.
 
         Arguments:
             metadata (dict): data to be saved
@@ -165,9 +164,6 @@ class Simulation(object):
         save_metadata(self._output, metadata)
 
 
-TsimulationHandler = TypeVar('TsimulationHandler', bound='SimualationHandler')
-
-
 class SimulationHandler(object):
     """
     Class handling parameter variations.
@@ -180,7 +176,7 @@ class SimulationHandler(object):
                  output: Dict[str, Any],
                  verbosity: Optional[int] = 0):
         """
-        Constructor
+        Constructor for `SimulationHandler` object.
 
         Arguments:
             defaults (dict): dictionary containing simulation defaults
@@ -254,7 +250,7 @@ class SimulationHandler(object):
                   name: Optional[str] = None,
                   path: Optional[str] = None,
                   **kwargs: str) -> \
-            Union[TsimulationHandler, Dict[str, Any], str]:
+            Union['simulationHandler', Dict[str, Any], str]:
         """
         Alternate constructor using a dictionary as input.
 
@@ -405,7 +401,7 @@ class SimulationHandler(object):
         e = self._entry
         return {'{}_{}'.format(e, v): v for v in self._values}
 
-    def run_task(self, sim: Tsimulation, task: str, **kwargs:str):
+    def run_task(self, sim: simulation, task: str, **kwargs:str):
         """
         Function to run a specific task.
 
@@ -429,7 +425,7 @@ class SimulationHandler(object):
         obj._save_metadata(self._metadata)
 
     def run_serial(self,
-                   sim: Tsimulation,
+                   sim: simulation,
                    verbosity: Optional[int] = None,
                    **kwargs: str) -> bool:
         """
@@ -468,7 +464,7 @@ class SimulationHandler(object):
         return True
 
     def run_parallel(self,
-                     sim: Tsimulation,
+                     sim: ulation,
                      number_of_processes: Optional[int] = None,
                      verbosity: Optional[str] = None,
                      **kwargs: str) -> bool:

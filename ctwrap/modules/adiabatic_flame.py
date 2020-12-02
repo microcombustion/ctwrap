@@ -1,10 +1,8 @@
 """ Module to run adiabatic flame simulation"""
 
-import os
 import warnings
 
 from ruamel import yaml
-import h5py
 
 from ctwrap import Parser
 
@@ -105,7 +103,7 @@ def run(name, chemistry=None, upstream=None, domain=None,
     return out
 
 
-def save(filename, data, task):
+def save(filename, data, task=None):
     """
     This function saves the output from the run method
 
