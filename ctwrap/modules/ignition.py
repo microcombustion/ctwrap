@@ -1,7 +1,6 @@
 """ Module to run ignition simulation """
 import os
 import warnings
-from typing import Optional, Dict, Any
 from ruamel import yaml
 import h5py
 
@@ -40,11 +39,8 @@ def defaults():
     return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
 
 
-def run(name: str,
-        chemistry: Optional[Dict[str, Any]] = None,
-        initial: Optional[Dict[str, Any]] = None,
-        simulation: Optional[Dict[str, Any]] = None,
-        ) -> Dict[str, Any]:
+def run(name, chemistry=None,
+        initial=None, simulation=None):
     """
     Function handling reactor simulation.
     The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
@@ -105,60 +101,26 @@ def run(name: str,
     return out
 
 
-def save(data: Dict[str, Any], output: Optional[Dict[str, Any]] = None,
-         mode: Optional[str] = 'a') -> None:
+def save(filename, data, task=None):
     """
     This function saves the output from the run method
 
-     Arguments:
-         data: data to be saved
-         output: naming information
-         mode: append or write. default to append
-     """
+    Arguments:
+        filename (str): naming of file
+        data (Dict): data to be saved
+        task (str): name of task if running variations
+    """
+    attrs = {}
 
-    # file check
-    if output is None:
-        return
-
-    oname = output['file_name']
-    opath = output['path']
-    formatt = output['format']
-    force = output['force_overwrite']
-
-    if oname is None:
-        return
-
-    if opath is not None:
-        oname = os.path.join(opath, oname)
-
-    fexists = os.path.isfile(oname)
-    if not fexists and mode == 'a':
-        mode = 'w'
-    if fexists and mode == 'w' and not force:
-        msg = 'Cannot overwrite existing file `{}` (use force to override)'
-        raise RuntimeError(msg.format(oname))
-
-    if fexists:
-        with h5py.File(oname, 'r') as hdf:
-            groups = {k: 'Group' for k in hdf.keys()}
-    else:
-        groups = {}
-
-    for key in data:
-        if formatt in {'h5', 'hdf5', 'hdf'}:
-            if key in groups and mode == 'a' and not force:
-                msg = 'Cannot overwrite existing group `{}` (use force to override)'
-                raise RuntimeError(msg.format(key))
-            data[key].write_hdf(oname, group=key, mode=mode)
-        else:
-            raise ValueError("Invalid file format {}".format(formatt))
-
-        mode = 'a'
-
+    attrs['description'] = task
+    for group, solution_array in data.items():
+        solution_array.write_hdf(filename=filename, group=group,
+                                 mode='a', attrs=attrs)
 
 ###
+
 
 if __name__ == "__main__":
     config = defaults()
     out = run('main', **config)
-    save(out)
+    save('ignition.h5', out)

@@ -2,7 +2,7 @@
 
 import os
 import warnings
-from typing import Dict, Any, Optional
+
 from ruamel import yaml
 import h5py
 
@@ -36,11 +36,8 @@ def defaults():
     return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
 
 
-def run(name: str,
-        chemistry: Optional[Dict[str, Any]] = None,
-        upstream: Optional[Dict[str, Any]] = None,
-        domain: Optional[Dict[str, Any]] = None,
-        loglevel: Optional[int] = 0) -> Dict[str, Any]:
+def run(name, chemistry=None, upstream=None, domain=None,
+        loglevel= 0):
     """
     Function handling adiabatic flame simulation.
     The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
@@ -108,58 +105,22 @@ def run(name: str,
     return out
 
 
-def save(data: Dict[str, Any], output: Optional[Dict[str, Any]] = None,
-         mode: Optional[str] = 'a') -> None:
+def save(filename, data, task):
     """
     This function saves the output from the run method
 
     Arguments:
-        data: data to be saved
-        output: naming information
-        mode: append or write. default to append
+        filename (str): naming of file
+        data (Dict): data to be saved
+        task (str): name of task if running variations
     """
 
-    if output is None:
-        return
-
-    oname = output['file_name']
-    opath = output['path']
-    formatt = output['format']
-    force = output['force_overwrite']
-
-    if oname is None:
-        return
-    if opath is not None:
-        oname = os.path.join(opath, oname)
-
-    # file check
-    fexists = os.path.isfile(oname)
-
-    if not fexists and mode == 'a':
-        mode = 'w'
-    if fexists and mode == 'w' and not force:
-        msg = 'Cannot overwrite existing file `{}` (use force to override)'
-        raise RuntimeError(msg.format(oname))
-
-    if fexists:
-        with h5py.File(oname, 'r') as hdf:
-            groups = {k: 'Group' for k in hdf.keys()}
-    else:
-        groups = {}
-
-    for key in data:
-        if formatt in {'h5', 'hdf5', 'hdf'}:
-            if key in groups and mode == 'a' and not force:
-                msg = 'Cannot overwrite existing group `{}` (use force to override)'
-                raise RuntimeError(msg.format(key))
-            data[key].write_hdf(oname, group=key, mode=mode)
-        else:
-            raise ValueError("Invalid file format {}".format(formatt))
-
-        mode = 'a'
+    for group, flame in data.items():
+        flame.write_hdf(filename=filename, group=group,
+                        mode='a', description=task)
 
 
 if __name__ == "__main__":
     config = defaults()
     df = run('main', **config, loglevel=1)
-    save(df)
+    save('adiabatic_flame.h5', df)

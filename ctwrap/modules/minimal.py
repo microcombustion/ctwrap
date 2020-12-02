@@ -1,7 +1,6 @@
 """Minimal example for ctwrap compatible simulation module"""
 
 import time
-from typing import Dict, Any, Optional
 import pandas as pd
 
 from ruamel import yaml
@@ -17,7 +16,7 @@ def defaults():
     return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
 
 
-def run(name: str, sleep : Optional[float] = .2) -> Dict[str, Any]:
+def run(name, sleep=.2):
     """This function does nothing"""
 
     # initialize
@@ -27,8 +26,7 @@ def run(name: str, sleep : Optional[float] = .2) -> Dict[str, Any]:
     return {name: pd.DataFrame({'sleep': [sleep]})}
 
 
-def save(data: Dict[str, Any], output: Optional[Dict[str, Any]] = None,
-         mode: Optional[str] = 'a') -> None:
+def save(data, output=None, mode='a') :
     """this function does nothing"""
 
     return
