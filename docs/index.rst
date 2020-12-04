@@ -6,6 +6,10 @@
 ctwrap - Python Wrapper for Batch Simulations
 =============================================
 
+.. include:: ../README.rst
+
+.. include:: ../install.rst
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
