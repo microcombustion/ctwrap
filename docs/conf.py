@@ -78,6 +78,9 @@ html_theme = 'alabaster'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-# Notebooks are disabled from executing since Sphinx cannot install
-# cantera necessary to run the examples
-nbsphinx_execute = 'never'
+# save plots when executing notebooks.
+nbsphinx_execute_arguments = [
+    "--InlineBackend.figure_formats={'svg'}",
+]
+
+
