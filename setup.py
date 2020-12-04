@@ -11,7 +11,7 @@ with open(path.join(here, 'ctwrap', '_version.py')) as version_file:
 
 def readme():
     """ load readme """
-    with open('README.md') as f:
+    with open('README.rst') as f:
         return f.read()
 
 
