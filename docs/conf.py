@@ -83,4 +83,6 @@ nbsphinx_execute_arguments = [
     "--InlineBackend.figure_formats={'svg'}",
 ]
 
-
+# Notebooks are disabled from executing since Sphinx cannot install
+# cantera necessary to run the examples
+nbsphinx_execute = 'never'
