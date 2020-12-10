@@ -81,7 +81,7 @@
    "outputs": [],
    "source": [
     "# create variation object\n",
-    "fname = '../../examples/ignition.yaml'\n",
+    "fname = '../../yaml/ignition.yaml'\n",
     "sh = cw.SimulationHandler.from_yaml(fname, verbosity=1)\n",
     "sh"
    ]

@@ -35,7 +35,7 @@
           <div class="body" role="main">
             
   <h1>Source code for ctwrap.simulation</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;This ctwraper module handles batch cantera simulations variations.</span>
+<span></span><span class="sd">&quot;&quot;&quot;This module handles batch cantera simulations variations.</span>
 <span class="sd">Cantera based modules are pass to this module where they are run in batches.</span>
 <span class="sd">see `adiabatic flame example &lt;adiabatic_flame_example.ipynb&gt;`_ or</span>
 <span class="sd">`ignition_example &lt;ignition_example.ipynb&gt;`_.</span>
@@ -146,7 +146,7 @@
 <span class="sd">        simulation module ``minimal``. A simple usage example is</span>
 
 <span class="sd">        .. code-block:: Python</span>
-<span class="sd">            </span>
+
 <span class="sd">            # calls the run method in simulation module &#39;minimal`</span>
 <span class="sd">            sim.run()</span>
 
@@ -245,15 +245,15 @@
 
 <span class="sd">    An example of a minimal yaml configuration is:</span>
 
-<span class="sd">       .. code-block:: YAML</span>
+<span class="sd">    .. code-block:: YAML</span>
 
-<span class="sd">          output: # output file information</span>
-<span class="sd">          filename: minimal  # optional</span>
-<span class="sd">          variation: # variation data</span>
-<span class="sd">            entry: sleep</span>
-<span class="sd">            values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]</span>
-<span class="sd">          defaults: # defualts parameters to run the modules</span>
-<span class="sd">            sleep: 0.2</span>
+<span class="sd">        output: # output file information</span>
+<span class="sd">        filename: minimal  # optional</span>
+<span class="sd">        variation: # variation data</span>
+<span class="sd">        entry: sleep</span>
+<span class="sd">        values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]</span>
+<span class="sd">        defaults: # defualts parameters to run the modules</span>
+<span class="sd">        sleep: 0.2</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">      verbosity (int): verbosity level</span>
@@ -501,23 +501,23 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to run a specific task.</span>
 
-<span class="sd">         The :meth:`run_task` method calls the module&#39;s run and save method to run and</span>
-<span class="sd">         save the resulting output object and also afterwards calls</span>
-<span class="sd">         :py:func:`~ctwrap.parser._save_metadata` to save metadata.</span>
-<span class="sd">         A simple usage example is:</span>
+<span class="sd">        The :meth:`run_task` method calls the module&#39;s run and save method to run and</span>
+<span class="sd">        save the resulting output object and also afterwards calls</span>
+<span class="sd">        :py:func:`~ctwrap.parser._save_metadata` to save metadata.</span>
+<span class="sd">        A simple usage example is:</span>
 
-<span class="sd">            If a simulationHandler object ``sh`` was created from ``minimal.yaml``.</span>
-<span class="sd">            This :meth:`run_task` method takes ``sim``, a simulation object created using</span>
-<span class="sd">            simulation module ``minimal``, and a task see :meth:`tasks` method.</span>
-<span class="sd">            This :meth:`run_task` method runs the task calling the ``run`` method in</span>
-<span class="sd">            simulation module ``minimal``, save the resulting output using</span>
-<span class="sd">            the ``save``  method in simulation module ``minimal`` and finally</span>
-<span class="sd">            save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.</span>
+<span class="sd">        If a simulationHandler object ``sh`` was created from ``minimal.yaml``.</span>
+<span class="sd">        This :meth:`run_task` method takes ``sim``, a simulation object created using</span>
+<span class="sd">        simulation module ``minimal``, and a task see :meth:`tasks` method.</span>
+<span class="sd">        This :meth:`run_task` method runs the task calling the ``run`` method in</span>
+<span class="sd">        simulation module ``minimal``, save the resulting output using</span>
+<span class="sd">        the ``save``  method in simulation module ``minimal`` and finally</span>
+<span class="sd">        save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.</span>
 
-<span class="sd">            .. code-block:: Python</span>
+<span class="sd">        .. code-block:: Python</span>
 
-<span class="sd">                # Runs the task `sleep_0.4` using `sim` object</span>
-<span class="sd">                sh.run_task(sim, &#39;sleep_0.4&#39; )</span>
+<span class="sd">            # Runs the task `sleep_0.4` using `sim` object</span>
+<span class="sd">            sh.run_task(sim, &#39;sleep_0.4&#39; )</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            sim (object): instance of Simulation class</span>
@@ -548,18 +548,18 @@
 <span class="sd">        The :meth:`run_serial` method runs all the variations in the input</span>
 <span class="sd">        file serially. A simple usage example is:</span>
 
-<span class="sd">            If a simulationHandler object ``sh`` was created from ``minimal.yaml``.</span>
-<span class="sd">            This :meth:`run_serial` method takes ``sim``, a simulation object created using</span>
-<span class="sd">            simulation module ``minimal``. This :meth:`run_serial` method</span>
-<span class="sd">            runs all the variations in minimal configuration file calling the ``run``</span>
-<span class="sd">            method in simulation module ``minimal``,  save the resulting output using the</span>
-<span class="sd">            ``save``  method in simulation module ``minimal`` serially and finally</span>
-<span class="sd">            save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.</span>
+<span class="sd">        If a simulationHandler object ``sh`` was created from ``minimal.yaml``.</span>
+<span class="sd">        This :meth:`run_serial` method takes ``sim``, a simulation object created using</span>
+<span class="sd">        simulation module ``minimal``. This :meth:`run_serial` method</span>
+<span class="sd">        runs all the variations in minimal configuration file calling the ``run``</span>
+<span class="sd">        method in simulation module ``minimal``,  save the resulting output using the</span>
+<span class="sd">        ``save``  method in simulation module ``minimal`` serially and finally</span>
+<span class="sd">        save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.</span>
 
-<span class="sd">            .. code-block:: Python</span>
+<span class="sd">        .. code-block:: Python</span>
 
-<span class="sd">                # Runs all the variations serially</span>
-<span class="sd">                sh.run_serial(sim)</span>
+<span class="sd">            # Runs all the variations serially</span>
+<span class="sd">            sh.run_serial(sim)</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            sim (object): instance of Simulation class</span>
@@ -604,14 +604,14 @@
 <span class="sd">        file in parallel using</span>
 <span class="sd">        `python multiprocessing &lt;https://docs.python.org/3/library/multiprocessing.html&gt;`_.</span>
 <span class="sd">        A minimal example is:</span>
-<span class="sd">        </span>
-<span class="sd">            If a simulationHandler object ``sh`` was created from ``minimal.yaml``.</span>
-<span class="sd">            The :meth:`run_parallel` method takes ``sim``, a simulation object created using</span>
-<span class="sd">            simulation module ``minimal``. The :meth:`run_parallel` method</span>
-<span class="sd">            runs all the variations in minimal configuration file calling the ``run``</span>
-<span class="sd">            method in simulation module ``minimal``,  save the resulting output using the</span>
-<span class="sd">            ``save``  method in simulation module ``minimal`` in parallel and finally</span>
-<span class="sd">            save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.</span>
+
+<span class="sd">        If a simulationHandler object ``sh`` was created from ``minimal.yaml``.</span>
+<span class="sd">        The :meth:`run_parallel` method takes ``sim``, a simulation object created using</span>
+<span class="sd">        simulation module ``minimal``. The :meth:`run_parallel` method</span>
+<span class="sd">        runs all the variations in minimal configuration file calling the ``run``</span>
+<span class="sd">        method in simulation module ``minimal``,  save the resulting output using the</span>
+<span class="sd">        ``save``  method in simulation module ``minimal`` in parallel and finally</span>
+<span class="sd">        save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.</span>
 
 <span class="sd">         .. code-block:: Python</span>
 

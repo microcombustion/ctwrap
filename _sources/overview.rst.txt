@@ -34,7 +34,7 @@ the module. See the ``minimal`` yaml below.
 YAML Configuration
 ******************
 
-.. literalinclude:: ../examples/minimal.yaml
+.. literalinclude:: ../yaml/minimal.yaml
    :language: yaml
 
 
