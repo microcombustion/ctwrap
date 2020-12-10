@@ -122,9 +122,9 @@ def save_metadata(output: Dict[str, Any],
     if opath is not None:
         oname = os.path.join(opath, oname)
 
-    with h5py.File(oname, 'r+') as f:
+    with h5py.File(oname, 'r+') as hdf:
         for key, val in metadata.items():
             if isinstance(val, dict):
-                f.attrs[key] = json.dumps(val)
+                hdf.attrs[key] = json.dumps(val)
             else:
-                f.attrs[key] = val
+                hdf.attrs[key] = val
