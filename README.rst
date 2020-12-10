@@ -5,8 +5,7 @@
 ctwrap
 ======
 
-Light-weight Python wrapper for batch simulation jobs (e.g. Cantera). The source
-code is available at the `ctwrap Github repositiory <https://github.com/microcombustion/ctwrap/>`_.
+Light-weight Python wrapper for batch simulation jobs (e.g. Cantera).
 
 +++++++++++++
 Documentation
@@ -22,13 +21,13 @@ Philosophy
 
 The code was developed with the following objectives in mind. It should:
 
- * create a flexible framework for generic simulations
- * provide a command line interface
- * be easily scriptable (using YAML configuration files via `ruamel.yaml`)
- * enforce units (via `pint <https://pint.readthedocs.io/en/stable/>`_)
- * avoid clutter (data are saved in HDF containers)
- * enable parallel execution of (single-threaded) simulations (via `multiprocessing`)
- * enable simple re-import of simulation results into native Cantera objects
+* create a flexible framework for generic simulations
+* provide a command line interface
+* be easily scriptable (using YAML configuration files via `ruamel.yaml`)
+* enforce units (via `pint <https://pint.readthedocs.io/en/stable/>`_)
+* avoid clutter (data are saved in HDF containers)
+* enable parallel execution of (single-threaded) simulations (via `multiprocessing`)
+* enable simple re-import of simulation results into native Cantera objects
 
 *Example:* a parallel batch job for adiabatic flame calculations uses the simulation module
 `adiabatic_flame <pages/adiabatic_flame.py>`_
