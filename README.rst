@@ -42,13 +42,5 @@ This can be run as::
 
 Results are written to a single file ``adiabatic_flame.h5``.
 
-Adapting custom simulation tasks to be used with ctwrap is straight-forward,
-and mainly involves the creation of a Python module that largely reflects a
-regular simulation script for a single set of parameter values.
-
-*Alternatives*
-
-Parameter variations can always be run in custom loops.
-
 *Note:* the wrapper itself does not depend on a Cantera installation; only the
 simulation modules do.
