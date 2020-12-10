@@ -1,7 +1,7 @@
 # YAML file example for the `ignition` module
-# file specifes a parameter variation of the equivalence ratio 
+# file specifes a parameter variation of the equivalence ratio
 variation:
-  entry: initial.phi 
+  entry: initial.phi
   values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
 output:
   format: h5
@@ -13,7 +13,7 @@ defaults:
     fuel: 'H2'
     oxidizer: 'O2:1,AR:3.76'
   chemistry:
-    mechanism: h2o2.xml
+    mechanism: h2o2.yaml
   simulation:
     delta_t: 1.e-5
     n_points: 500

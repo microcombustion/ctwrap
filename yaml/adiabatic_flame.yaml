@@ -1,7 +1,7 @@
 # YAML file example for the `adiabatic_flame` module
-# file specifes a parameter variation of the equivalence ratio 
+# file specifes a parameter variation of the equivalence ratio
 variation:
-  entry: upstream.phi 
+  entry: upstream.phi
   values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6 ]
 output:
   format: h5
@@ -13,7 +13,7 @@ defaults:
     fuel: 'H2'
     oxidizer: 'O2:1,AR:5'
   chemistry:
-    mechanism: h2o2.xml
+    mechanism: h2o2.yaml
   domain:
     width: [30, millimeter, 'domain width']
 ctwrap: 0.1.0
