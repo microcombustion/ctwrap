@@ -634,6 +634,15 @@ class SimulationHandler(object):
             if verbosity > 1:
                 print(indent2 + msg)
 
+        if verbosity > 1:
+            print("Appending metadata")
+
+        try:
+            obj = Simulation.from_module(sim._module, self._output)
+            obj._save_metadata(self._metadata)
+        except:
+            raise
+
         return True
 
 
@@ -660,6 +669,8 @@ def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
 
     this = mp.current_process().name
 
+    obj = None
+
     if verbosity > 1:
         print(indent2 + 'starting ' + this)
 
@@ -675,9 +686,7 @@ def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
             break
 
         else:
-
             obj = Simulation.from_module(module, output)
-
             # perform task
             msg = indent1 + 'processing `{}` ({})'
             if verbosity > 0:
@@ -687,11 +696,5 @@ def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
                 obj._save(task=task)
             msg = 'case `{}` completed by {}'.format(task, this)
             tasks_that_are_done.put(msg)
-
-    if verbosity > 1:
-        print("Appending metadata")
-
-    obj = Simulation.from_module(module, output)
-    obj._save_metadata(metadata)
 
     return True
