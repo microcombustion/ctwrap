@@ -1,4 +1,4 @@
-"""Parser object."""
+"""Parser module."""
 import os
 from typing import Optional, Dict, Any, Tuple, KeysView, Union
 import json
