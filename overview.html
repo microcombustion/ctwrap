@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Overview &#8212; ctwrap 0.2.0b documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>Ctwrap is a light-weight batch simulation wrapper written in Python. The wrapper consists of three classes:
+the <a class="reference internal" href="pages/parser.html#module-ctwrap.parser" title="ctwrap.parser"><code class="xref any py py-mod docutils literal notranslate"><span class="pre">parser</span></code></a> class is used to parsed the input file and also
+handles units using <a class="reference external" href="https://pint.readthedocs.io/en/stable/">pint</a>,
+the <a class="reference internal" href="pages/simulation.html#ctwrap.simulation.Simulation" title="ctwrap.simulation.Simulation"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a> that wraps a simulation module to be run.
+More details about the module is discussed below and the
+<a class="reference internal" href="pages/simulation.html#ctwrap.simulation.SimulationHandler" title="ctwrap.simulation.SimulationHandler"><code class="xref any py py-class docutils literal notranslate"><span class="pre">SimulationHandler</span></code></a> that handles parameter variations and switches between
+multiple configurations.</p>
+<p>The wrapper requires a simulation module, a single run python module, that should consists of three
+methods: <code class="docutils literal notranslate"><span class="pre">defaults</span></code>, <code class="docutils literal notranslate"><span class="pre">run</span></code> and <code class="docutils literal notranslate"><span class="pre">save</span></code>. This isn’t much different from a convention script, all that is
+done is that  the code is <cite>organized</cite>.
+The <code class="docutils literal notranslate"><span class="pre">defaults</span></code> method should return the default input parameters.
+The <code class="docutils literal notranslate"><span class="pre">run</span></code> method runs a single simulation and returns a dictionary containing the output object.
+The save method saves the output object based on the specified
+format in the YAML input file. See the <code class="docutils literal notranslate"><span class="pre">minimal</span></code> module below.</p>
+<div class="section" id="simulation-module">
+<h2>Simulation Module<a class="headerlink" href="#simulation-module" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Minimal example for ctwrap compatible simulation module&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
+
+<span class="n">__DEFAULTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2"># default parameters for the `minimal` module</span>
+<span class="s2">sleep: 0.2</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">defaults</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Returns dictionary containing default arguments&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">__DEFAULTS</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">sleep</span><span class="o">=.</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function does nothing&quot;&quot;&quot;</span>
+
+    <span class="c1"># initialize</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    - `minimal`: sleeping for </span><span class="si">{}</span><span class="s1"> seconds ...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sleep</span><span class="p">))</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;sleep&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">sleep</span><span class="p">]}}</span>
+
+
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;this function does nothing&quot;&quot;&quot;</span>
+
+    <span class="k">return</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">()</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">save</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The inputs are passed through a YAML file. The yaml is structured into three parts: <code class="docutils literal notranslate"><span class="pre">output</span></code>,
+<code class="docutils literal notranslate"><span class="pre">variation</span></code> and <code class="docutils literal notranslate"><span class="pre">defaults</span></code>. The <code class="docutils literal notranslate"><span class="pre">output</span></code> contains information about the resulting file to be
+saved  such as the <code class="docutils literal notranslate"><span class="pre">file_name</span></code>, <code class="docutils literal notranslate"><span class="pre">path</span></code> etc. The <code class="docutils literal notranslate"><span class="pre">file_name</span></code> is optional, and in that case,
+the file is saved with the name of the module to be run. The <code class="docutils literal notranslate"><span class="pre">variation</span></code> contains <code class="docutils literal notranslate"><span class="pre">entry</span></code>
+and <code class="docutils literal notranslate"><span class="pre">values</span></code> to be varied, while the <code class="docutils literal notranslate"><span class="pre">defaults</span></code> contains the defaults input required to run
+the module. See the <code class="docutils literal notranslate"><span class="pre">minimal</span></code> yaml below.</p>
+</div>
+<div class="section" id="yaml-configuration">
+<h2>YAML Configuration<a class="headerlink" href="#yaml-configuration" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `template` module</span>
+<span class="c1"># file specifes a parameter variation of the sleep duration</span>
+<span class="nt">output</span><span class="p">:</span>
+  <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># no file output</span>
+<span class="nt">variation</span><span class="p">:</span>
+  <span class="nt">entry</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sleep</span>
+  <span class="nt">values</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">]</span>
+<span class="nt">defaults</span><span class="p">:</span>
+  <span class="nt">sleep</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
+<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>
+</pre></div>
+</div>
+<p><em>Note</em>: <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> only saves in <cite>h5</cite> format.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ctwrap</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">   Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">   Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">   Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/batch.html">   Batch Jobs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/jupyter.html">   Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/api.html">   API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="contributing.html" title="next chapter">Contributing</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018-20, I. Schoegl and D. Akinpelu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/overview.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

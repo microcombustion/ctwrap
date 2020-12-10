@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ctwrap.simulation &#8212; ctwrap 0.2.0b documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -17,30 +17,32 @@
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">ctwrap.simulation</a></li> 
-      </ul>
-    </div>  
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <h1>Source code for ctwrap.simulation</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Object handling variations.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;This ctwraper module handles batch cantera simulations variations.</span>
+<span class="sd">Cantera based modules are pass to this module where they are run in batches.</span>
+<span class="sd">see `adiabatic flame example &lt;adiabatic_flame_example.ipynb&gt;`_ or</span>
+<span class="sd">`ignition_example &lt;ignition_example.ipynb&gt;`_.</span>
+
+<span class="sd"> *Note:* Other cantera simulations module can be used with this module provided they followed the</span>
+<span class="sd"> format in `minimal &lt;minimal.py&gt;`_.</span>
+<span class="sd"> &quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
@@ -69,7 +71,11 @@
 <div class="viewcode-block" id="Simulation"><a class="viewcode-back" href="../../pages/simulation.html#ctwrap.simulation.Simulation">[docs]</a><span class="k">class</span> <span class="nc">Simulation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Simulation class wraps modules into an object.</span>
-<span class="sd">    Required module functions &#39;run&#39; and &#39;defaults&#39; are passed through</span>
+<span class="sd">    Required module functions ``run``, ``save`` and</span>
+<span class="sd">    ``defaults`` are passed through</span>
+
+<span class="sd">    .. note:: :class:`Simulation` objects should be instantiated using</span>
+<span class="sd">       :meth:`from_module` method.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        data (dict): dictionary</span>
@@ -101,15 +107,21 @@
     <span class="k">def</span> <span class="nf">from_module</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
                     <span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                     <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> \
-            <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;simulation&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+            <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Simulation&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Alternative constructor for `Simulation` object.</span>
-<span class="sd">        The `from_module` instantiation call renames the class</span>
-<span class="sd">        based on the module name.</span>
+
+<span class="sd">        The :meth:`from_module` method is intended as the main route for the creation of</span>
+<span class="sd">        `Simulation` objects. For example:</span>
+
+<span class="sd">        .. code-block:: Python</span>
+
+<span class="sd">           # creates a simulation object with the simualtion module `minimal`</span>
+<span class="sd">           sim = ctwrap.Simulation.from_module(ctwrap.modules.minimal)</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">           module (module): handle name or handle to module running the simulation</span>
-<span class="sd">           output (dict): generated by `SimulationHandler`</span>
+<span class="sd">           output (dict):  output hdf file information generated by `SimulationHandler`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># create a name that reflect the module name (CamelCase)</span>
@@ -126,7 +138,18 @@
             <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Run function holding configuration in dictionary.</span>
+<span class="sd">        Runs the simulation module&#39;s run method.</span>
+
+<span class="sd">        This :meth:`run` method is used to call the simulation module&#39;s run method.</span>
+<span class="sd">        If a simulation object ``sim`` was created with simulation module</span>
+<span class="sd">        ``minimal``, then calls this :meth:`run` method calls ``run`` method in</span>
+<span class="sd">        simulation module ``minimal``. A simple usage example is</span>
+
+<span class="sd">        .. code-block:: Python</span>
+<span class="sd">            </span>
+<span class="sd">            # calls the run method in simulation module &#39;minimal`</span>
+<span class="sd">            sim.run()</span>
+
 
 <span class="sd">        Arguments:</span>
 <span class="sd">           name (string): name of simulation run</span>
@@ -143,12 +166,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="o">.</span><span class="vm">__name__</span></div>
 
 <div class="viewcode-block" id="Simulation.defaults"><a class="viewcode-back" href="../../pages/simulation.html#ctwrap.simulation.Simulation.defaults">[docs]</a>    <span class="k">def</span> <span class="nf">defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Pass-through returning module defaults as a dictionary&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Pass-through returning simualtion module defaults as a dictionary&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save simulation data (hidden)</span>
+
+<span class="sd">        The :meth:`_save` is used to call the simulation module&#39;s save method.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            **kwargs (optional): keyword arguments</span>
@@ -191,7 +216,11 @@
                        <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function calls the module save method.</span>
+<span class="sd">        Modules saves the input file as an attribute after the</span>
+<span class="sd">        batch simulation has been completed</span>
+
+<span class="sd">        This method calls the</span>
+<span class="sd">        :py:func:`~ctwrap.parser.save_metadata` method.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            metadata (dict): data to be saved</span>
@@ -210,6 +239,25 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class handling parameter variations.</span>
 <span class="sd">    Class adds methods to switch between multiple configurations.</span>
+
+<span class="sd">    .. note:: :class:`SimulationHandler` objects should be</span>
+<span class="sd">        instantiated using the :meth:`from_yaml` method.</span>
+
+<span class="sd">    An example of a minimal yaml configuration is:</span>
+
+<span class="sd">       .. code-block:: YAML</span>
+
+<span class="sd">          output: # output file information</span>
+<span class="sd">          filename: minimal  # optional</span>
+<span class="sd">          variation: # variation data</span>
+<span class="sd">            entry: sleep</span>
+<span class="sd">            values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]</span>
+<span class="sd">          defaults: # defualts parameters to run the modules</span>
+<span class="sd">            sleep: 0.2</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">      verbosity (int): verbosity level</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -268,12 +316,19 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Alternate constructor using YAML file as input.</span>
 
+<span class="sd">        The :meth:`from_yaml` method is intended as the main route for the creation of</span>
+<span class="sd">        `SimulationHandler` objects.</span>
+
+<span class="sd">        .. code-block:: Python</span>
+
+<span class="sd">           # creates a simulationHandler object</span>
+<span class="sd">           sh = ctwrap.SimulationHandler.from_yaml(&#39;minimal.yaml&#39;)</span>
+
 <span class="sd">        Arguments:</span>
 <span class="sd">           yaml_file (string): yaml file</span>
 <span class="sd">           name (string): output name (overrides yaml)</span>
 <span class="sd">           path (string): file path (both yaml and output)</span>
-<span class="sd">           ** kwargs (optional): dependent on implementation</span>
-<span class="sd">           (e.g. verbosity, reacting)</span>
+<span class="sd">           ** kwargs (optional): dependent on implementation (e.g. verbosity, reacting)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># load configuration from yaml</span>
@@ -292,7 +347,7 @@
                   <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                   <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                   <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> \
-            <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;simulationHandler&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+            <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;SimulationHandler&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Alternate constructor using a dictionary as input.</span>
 
@@ -300,8 +355,7 @@
 <span class="sd">           content (dict): dictionary from yaml input</span>
 <span class="sd">           name (string): output name (overrides yaml)</span>
 <span class="sd">           path (string): output path (overrides yaml)</span>
-<span class="sd">           ** kwargs (optional): dependent on implementation</span>
-<span class="sd">           (e.g. verbosity, reacting)</span>
+<span class="sd">           ** kwargs (optional): dependent on implementation (e.g. verbosity, reacting)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">assert</span> <span class="s1">&#39;ctwrap&#39;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">,</span> <span class="s1">&#39;obsolete yaml file format&#39;</span>
@@ -435,17 +489,35 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">])</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;values of variation&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;tasks defined in terms of the variation entry and values&quot;&quot;&quot;</span>
         <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entry</span>
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">}</span>
 
 <div class="viewcode-block" id="SimulationHandler.run_task"><a class="viewcode-back" href="../../pages/simulation.html#ctwrap.simulation.SimulationHandler.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">:</span> <span class="n">Simulation</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to run a specific task.</span>
+
+<span class="sd">         The :meth:`run_task` method calls the module&#39;s run and save method to run and</span>
+<span class="sd">         save the resulting output object and also afterwards calls</span>
+<span class="sd">         :py:func:`~ctwrap.parser._save_metadata` to save metadata.</span>
+<span class="sd">         A simple usage example is:</span>
+
+<span class="sd">            If a simulationHandler object ``sh`` was created from ``minimal.yaml``.</span>
+<span class="sd">            This :meth:`run_task` method takes ``sim``, a simulation object created using</span>
+<span class="sd">            simulation module ``minimal``, and a task see :meth:`tasks` method.</span>
+<span class="sd">            This :meth:`run_task` method runs the task calling the ``run`` method in</span>
+<span class="sd">            simulation module ``minimal``, save the resulting output using</span>
+<span class="sd">            the ``save``  method in simulation module ``minimal`` and finally</span>
+<span class="sd">            save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.</span>
+
+<span class="sd">            .. code-block:: Python</span>
+
+<span class="sd">                # Runs the task `sleep_0.4` using `sim` object</span>
+<span class="sd">                sh.run_task(sim, &#39;sleep_0.4&#39; )</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            sim (object): instance of Simulation class</span>
@@ -473,11 +545,26 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run variation in series.</span>
 
+<span class="sd">        The :meth:`run_serial` method runs all the variations in the input</span>
+<span class="sd">        file serially. A simple usage example is:</span>
+
+<span class="sd">            If a simulationHandler object ``sh`` was created from ``minimal.yaml``.</span>
+<span class="sd">            This :meth:`run_serial` method takes ``sim``, a simulation object created using</span>
+<span class="sd">            simulation module ``minimal``. This :meth:`run_serial` method</span>
+<span class="sd">            runs all the variations in minimal configuration file calling the ``run``</span>
+<span class="sd">            method in simulation module ``minimal``,  save the resulting output using the</span>
+<span class="sd">            ``save``  method in simulation module ``minimal`` serially and finally</span>
+<span class="sd">            save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.</span>
+
+<span class="sd">            .. code-block:: Python</span>
+
+<span class="sd">                # Runs all the variations serially</span>
+<span class="sd">                sh.run_serial(sim)</span>
+
 <span class="sd">        Arguments:</span>
 <span class="sd">            sim (object): instance of Simulation class</span>
 <span class="sd">            verbosity (int, optional): verbosity</span>
-<span class="sd">            ** kwargs (optional): dependent on implementation</span>
-<span class="sd">             (e.g. verbosity, reacting)</span>
+<span class="sd">            ** kwargs (optional): dependent on implementation (e.g. verbosity, reacting)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            return True when task is completed</span>
@@ -513,12 +600,29 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run variation using multiprocessing.</span>
 
+<span class="sd">        The :meth:`run_parallel` method runs all the variations in the input</span>
+<span class="sd">        file in parallel using</span>
+<span class="sd">        `python multiprocessing &lt;https://docs.python.org/3/library/multiprocessing.html&gt;`_.</span>
+<span class="sd">        A minimal example is:</span>
+<span class="sd">        </span>
+<span class="sd">            If a simulationHandler object ``sh`` was created from ``minimal.yaml``.</span>
+<span class="sd">            The :meth:`run_parallel` method takes ``sim``, a simulation object created using</span>
+<span class="sd">            simulation module ``minimal``. The :meth:`run_parallel` method</span>
+<span class="sd">            runs all the variations in minimal configuration file calling the ``run``</span>
+<span class="sd">            method in simulation module ``minimal``,  save the resulting output using the</span>
+<span class="sd">            ``save``  method in simulation module ``minimal`` in parallel and finally</span>
+<span class="sd">            save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.</span>
+
+<span class="sd">         .. code-block:: Python</span>
+
+<span class="sd">            # Runs all the variations in parallel</span>
+<span class="sd">                sh.run_parallel(sim)</span>
+
 <span class="sd">        Arguments:</span>
 <span class="sd">            sim (object): instance of Simulation class</span>
 <span class="sd">            number_of_processes(int, optional): number of processes</span>
 <span class="sd">            verbosity(int, optional): verbosity level</span>
-<span class="sd">            ** kwargs (optional): dependent on implementation</span>
-<span class="sd">             (e.g. verbosity, reacting)</span>
+<span class="sd">            ** kwargs (optional): dependent on implementation (e.g. verbosity, reacting)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            return True when task is completed</span>
@@ -575,7 +679,7 @@
            <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
            <span class="n">verbosity</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">True</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Worker function.</span>
+<span class="sd">    Worker function for the `:meth: `run_parallel` method.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        tasks_to_accomplish (queue): multiprocessing queue of remaining task</span>
@@ -630,12 +734,40 @@
     <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">ctwrap</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">   Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">   Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">   Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/batch.html">   Batch Jobs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/jupyter.html">   Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/api.html">   API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -646,27 +778,29 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">ctwrap.simulation</a></li> 
-      </ul>
+    <div class="footer">
+      &copy;2018-20, I. Schoegl and D. Akinpelu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2018-20, I. Schoegl and D. Akinpelu.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
-    </div>
+
+    
+
+    
   </body>
 </html>

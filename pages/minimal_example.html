@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Parser Example &#8212; ctwrap 0.2.0b documentation</title>
+    <title>Minimal Example &#8212; ctwrap 0.2.0b documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -18,8 +18,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Adiabatic Flame Example" href="adiabatic_flame_example.html" />
-    <link rel="prev" title="Jupyter Notebooks" href="jupyter.html" />
+    <link rel="next" title="ctwrap API Reference" href="api.html" />
+    <link rel="prev" title="Running Simulations from the Commandline" href="commandline_example.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -284,75 +284,61 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Parser-Example">
-<h1>Parser Example<a class="headerlink" href="#Parser-Example" title="Permalink to this headline">¶</a></h1>
-<p>A brief tutorial for the <code class="docutils literal notranslate"><span class="pre">ctwrap.Parser</span></code> object, which parses YAML defined quantities within simulation modules (and also handles unit conversions).</p>
+<div class="section" id="Minimal-Example">
+<h1>Minimal Example<a class="headerlink" href="#Minimal-Example" title="Permalink to this headline">¶</a></h1>
+<p>Testing basic functions of the ctwrap package using the minimal module (which does not use Cantera, but just ‘sleeps’ for a specified amount of seconds).</p>
+<div class="section" id="1.-Set-up-Simulation-object">
+<h2>1. Set up Simulation object<a class="headerlink" href="#1.-Set-up-Simulation-object" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Simulation</span></code> object wraps the module, which can be run with default arguments.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
-<span class="kn">from</span> <span class="nn">ctwrap</span> <span class="kn">import</span> <span class="n">Parser</span>
+<span></span><span class="kn">import</span> <span class="nn">ctwrap</span> <span class="k">as</span> <span class="nn">cw</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="1.-Load-a-YAML-File">
-<h2>1. Load a YAML File<a class="headerlink" href="#1.-Load-a-YAML-File" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># load configuration from a yaml file</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../../examples/ignition.yaml&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">yml</span><span class="p">:</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yml</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
-
-<span class="n">config</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;defaults&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># this is a conventional dictionary (two levels)</span>
-<span class="n">config</span>
+<span></span><span class="n">sim</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">Simulation</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">cw</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">minimal</span><span class="p">)</span>
+<span class="n">sim</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;initial&#39;: {&#39;T&#39;: [1000.0, &#39;kelvin&#39;, &#39;initial temperature&#39;],
-  &#39;P&#39;: [1.0, &#39;atmosphere&#39;, &#39;pressure&#39;],
-  &#39;phi&#39;: [1.0, &#39;dimensionless&#39;, &#39;equivalence ratio&#39;],
-  &#39;fuel&#39;: &#39;H2&#39;,
-  &#39;oxidizer&#39;: &#39;O2:1,AR:3.76&#39;},
- &#39;chemistry&#39;: {&#39;mechanism&#39;: &#39;h2o2.xml&#39;},
- &#39;simulation&#39;: {&#39;delta_t&#39;: 1e-05,
-  &#39;n_points&#39;: 500,
-  &#39;atol&#39;: 1e-15,
-  &#39;rtol&#39;: 1e-09}}
+&lt;ctwrap.simulation.Minimal at 0x228a26b55c8&gt;
 </pre></div></div>
 </div>
 </div>
-<div class="section" id="2.-Create-Parser-Object">
-<h2>2. Create Parser Object<a class="headerlink" href="#2.-Create-Parser-Object" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="2.-Set-up-Simulation-Handler-object">
+<h2>2. Set up Simulation Handler object<a class="headerlink" href="#2.-Set-up-Simulation-Handler-object" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">SimulationHandler</span></code> object uses a YAML file as input.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># a parser object takes a dictionary as input</span>
-<span class="n">initial</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;initial&#39;</span><span class="p">])</span>
-<span class="n">initial</span>
+<span></span><span class="n">sh</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">SimulationHandler</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s1">&#39;minimal.yaml&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sh</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Simulations for entry `sleep` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -360,7 +346,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;T&#39;: [1000.0, &#39;kelvin&#39;, &#39;initial temperature&#39;], &#39;P&#39;: [1.0, &#39;atmosphere&#39;, &#39;pressure&#39;], &#39;phi&#39;: [1.0, &#39;dimensionless&#39;, &#39;equivalence ratio&#39;], &#39;fuel&#39;: &#39;H2&#39;, &#39;oxidizer&#39;: &#39;O2:1,AR:3.76&#39;}
+&lt;ctwrap.simulation.SimulationHandler at 0x228a2768c48&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -368,8 +354,8 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># and still acts much like a dictionary</span>
-<span class="n">initial</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span></span><span class="c1"># list simulation tasks</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">tasks</span>
 </pre></div>
 </div>
 </div>
@@ -379,22 +365,45 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-dict_keys([&#39;T&#39;, &#39;P&#39;, &#39;phi&#39;, &#39;fuel&#39;, &#39;oxidizer&#39;])
+{&#39;sleep_0.4&#39;: 0.4,
+ &#39;sleep_0.6&#39;: 0.6,
+ &#39;sleep_0.8&#39;: 0.8,
+ &#39;sleep_1.0&#39;: 1.0,
+ &#39;sleep_1.2&#39;: 1.2,
+ &#39;sleep_1.4&#39;: 1.4,
+ &#39;sleep_1.6&#39;: 1.6,
+ &#39;sleep_1.8&#39;: 1.8}
 </pre></div></div>
 </div>
 </div>
-<div class="section" id="3.-Access-Values-with-Units">
-<h2>3. Access Values with Units<a class="headerlink" href="#3.-Access-Values-with-Units" title="Permalink to this headline">¶</a></h2>
-<p>Unit manipulations are based on the Python package <code class="docutils literal notranslate"><span class="pre">pint</span></code></p>
+<div class="section" id="3.-Run-serial-simulation">
+<h2>3. Run serial simulation<a class="headerlink" href="#3.-Run-serial-simulation" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">run_serial</span></code> function loops through simulation tasks one by one.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># as dictionary items</span>
-<span class="n">initial</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">],</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">],</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;phi&#39;</span><span class="p">]</span>
+<span></span><span class="o">%%time</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">run_serial</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    - `minimal`: sleeping for 0.4 seconds ...
+    - `minimal`: sleeping for 0.6 seconds ...
+    - `minimal`: sleeping for 0.8 seconds ...
+    - `minimal`: sleeping for 1.0 seconds ...
+    - `minimal`: sleeping for 1.2 seconds ...
+    - `minimal`: sleeping for 1.4 seconds ...
+    - `minimal`: sleeping for 1.6 seconds ...
+    - `minimal`: sleeping for 1.8 seconds ...
+Wall time: 8.82 s
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -402,20 +411,31 @@ dict_keys([&#39;T&#39;, &#39;P&#39;, &#39;phi&#39;, &#39;fuel&#39;, &#39;oxidize
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(1000.0 &lt;Unit(&#39;kelvin&#39;)&gt;,
- 1.0 &lt;Unit(&#39;standard_atmosphere&#39;)&gt;,
- 1.0 &lt;Unit(&#39;dimensionless&#39;)&gt;)
+True
 </pre></div></div>
 </div>
+</div>
+<div class="section" id="4.-Run-parallel-simulation">
+<h2>4. Run parallel simulation<a class="headerlink" href="#4.-Run-parallel-simulation" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">run_parallel</span></code> function uses Python’s <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> to process multiple single-threaded simulation jobs at the same time.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># as attributes</span>
-<span class="n">initial</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">initial</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">initial</span><span class="o">.</span><span class="n">phi</span>
+<span></span><span class="o">%%time</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">run_parallel</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ * running simulation using 4 cores
+Wall time: 4.65 s
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
@@ -423,106 +443,7 @@ dict_keys([&#39;T&#39;, &#39;P&#39;, &#39;phi&#39;, &#39;fuel&#39;, &#39;oxidize
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(1000.0 &lt;Unit(&#39;kelvin&#39;)&gt;,
- 1.0 &lt;Unit(&#39;standard_atmosphere&#39;)&gt;,
- 1.0 &lt;Unit(&#39;dimensionless&#39;)&gt;)
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># convert to desired unit</span>
-<span class="n">initial</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;pascal&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-101325.0 pascal</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># convert to desired unit (magnitude)</span>
-<span class="n">initial</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;pascal&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-101325.0
-</pre></div></div>
-</div>
-</div>
-<div class="section" id="4.-Access-Values-without-Units">
-<h2>4. Access Values without Units<a class="headerlink" href="#4.-Access-Values-without-Units" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># values that do not have units</span>
-<span class="n">initial</span><span class="o">.</span><span class="n">fuel</span><span class="p">,</span> <span class="n">initial</span><span class="o">.</span><span class="n">oxidizer</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(&#39;H2&#39;, &#39;O2:1,AR:3.76&#39;)
-</pre></div></div>
-</div>
-</div>
-<div class="section" id="5.-Access-Raw-Values">
-<h2>5. Access Raw Values<a class="headerlink" href="#5.-Access-Raw-Values" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">initial</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[1.0, &#39;atmosphere&#39;, &#39;pressure&#39;]
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">initial</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s1">&#39;oxidizer&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&#39;O2:1,AR:3.76&#39;
+True
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -568,8 +489,8 @@ dict_keys([&#39;T&#39;, &#39;P&#39;, &#39;phi&#39;, &#39;fuel&#39;, &#39;oxidize
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="jupyter.html">Jupyter Notebooks</a><ul>
-      <li>Previous: <a href="jupyter.html" title="previous chapter">Jupyter Notebooks</a></li>
-      <li>Next: <a href="adiabatic_flame_example.html" title="next chapter">Adiabatic Flame Example</a></li>
+      <li>Previous: <a href="commandline_example.html" title="previous chapter">Running Simulations from the Commandline</a></li>
+      <li>Next: <a href="api.html" title="next chapter">ctwrap API Reference</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -604,7 +525,7 @@ dict_keys([&#39;T&#39;, &#39;P&#39;, &#39;phi&#39;, &#39;fuel&#39;, &#39;oxidize
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/pages/parser_example.ipynb.txt"
+      <a href="../_sources/pages/minimal_example.ipynb.txt"
           rel="nofollow">Page source</a>
     </div>
 
