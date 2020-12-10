@@ -13,7 +13,7 @@ import ctwrap as cw
 
 PWD = Path(__file__).parents[0]
 ROOT = PWD.parents[0]
-EXAMPLES = '{}'.format(ROOT / 'examples')
+EXAMPLES = '{}'.format(ROOT / 'yaml')
 
 
 class TestParser(unittest.TestCase):
