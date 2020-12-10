@@ -97,7 +97,7 @@ class Simulation(object):
 
         return type(name, (cls,), {})(module, output)
 
-    def run(self, name: Optional[str] ='defaults',
+    def run(self, name: Optional[str] = 'defaults',
             config: Optional[Dict[str, Any]] = None,
             **kwargs: str) -> None:
         """
@@ -129,7 +129,7 @@ class Simulation(object):
         self._module = self._module.__name__
 
     def defaults(self) -> Dict[str, Any]:
-        """Pass-through returning simualtion module defaults as a dictionary"""
+        """Pass-through returning simulation module defaults as a dictionary"""
         return self._module.defaults()
 
     def _save(self, mode="a", task=None, **kwargs: str) -> None:
@@ -460,7 +460,7 @@ class SimulationHandler(object):
         e = self._entry
         return {'{}_{}'.format(e, v): v for v in self._values}
 
-    def run_task(self, sim: Simulation, task: str, **kwargs:str):
+    def run_task(self, sim: Simulation, task: str, **kwargs: str):
         """
         Function to run a specific task.
 
@@ -685,13 +685,13 @@ def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
             obj.run(task, config, **kwargs)
             with lock:
                 obj._save(task=task)
-
             msg = 'case `{}` completed by {}'.format(task, this)
             tasks_that_are_done.put(msg)
 
     if verbosity > 1:
         print("Appending metadata")
 
+    obj = Simulation.from_module(module, output)
     obj._save_metadata(metadata)
 
     return True
