@@ -20,7 +20,7 @@ import multiprocessing as mp
 import queue  # imported for using queue.Empty exception
 
 # ctwrap specific import
-from .parser import load_yaml, save_metadata
+from .parser import parse, write, load_yaml, save_metadata
 
 
 supported = ('.h5', '.hdf', '.hdf5')
@@ -427,6 +427,9 @@ class SimulationHandler(object):
             if len(key_list) == 1:
                 if isinstance(sub, list):
                     sub[0] = value
+                elif isinstance(sub, str):
+                    _, unit, comment = parse(sub)
+                    sub = write(value, unit, comment)
                 else:
                     sub = value
             else:

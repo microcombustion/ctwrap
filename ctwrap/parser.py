@@ -6,11 +6,72 @@ from pint import UnitRegistry
 from copy import deepcopy
 from ruamel import yaml
 import h5py
+import re
+
+
+__all__ = ['parse', 'Parser', 'load_yaml', 'save_metadata']
 
 
 ureg = UnitRegistry()
 
-__all__ = ['Parser', 'load_yaml', 'save_metadata']
+
+def parse(val: str):
+    """Parse string expression:
+
+    Arguments:
+       val: String expression
+
+    Returns:
+       `Tuple` containing value, unit, and comment
+    """
+
+    if not isinstance(val, str):
+        raise TypeError("Method requires string input")
+
+    value = re.findall(r'[-+]?\d*\.\d*|\d+', val)
+    if not (value and val[:len(value[0])] == value[0]):
+        return val, None, None
+
+    # string starts with value
+    value = value[0]
+    val = val[len(value):]
+
+    comment = re.findall(r'\(.*?\)', val)
+    if comment and val[-len(comment[-1]):] == comment[-1]:
+        val = val[:-len(comment[-1])]
+        comment = comment[-1][1:-1] # strip parentheses
+    else:
+        comment = None
+
+    val = val.strip()
+    if val:
+        unit = val
+    else:
+        unit = 'dimensionless'
+
+    return value, unit, comment
+
+
+def write(value: Union[int, float, str], unit: Optional[str]=None, comment: Optional[str]=None):
+    """Format value / unit / comment combination into parseable string
+
+    Arguments:
+       value: Value
+       unit: String describing unit
+       comment: Comment
+
+    Return:
+       Formatted string
+    """
+    out = '{}'.format(value)
+
+    if unit is not None and unit != 'dimensionless':
+        out += ' {}'.format(unit)
+
+    if comment is not None:
+        out += ' ({})'.format(comment)
+
+    return out
 
 
 class Parser(object):
@@ -28,7 +89,6 @@ class Parser(object):
         Argument:
             dct (dict) : dictionary to be parsed
         """
-
         self.raw = dct
 
     def __getattr__(self, attr: str) -> str:
@@ -39,7 +99,7 @@ class Parser(object):
              attr (str): attribute
 
         Returns:
-            Atrribute
+            Attribute
         """
 
         if attr not in self.raw:
@@ -47,24 +107,31 @@ class Parser(object):
 
         return self[attr]
 
-    def __getitem__(self, key: str) -> Union[str, bool, float, Tuple]:
+    def __getitem__(self, key: str) -> Union[str, bool, int, float, ureg.Quantity]:
         """
         Get item
 
-        Argument:
+        Arguments:
             key (str): key
 
         Returns:
             Corresponding values from the key
-
         """
-
         val = self.raw[key]
 
-        if isinstance(val, (str, bool, int, float)):
+        if isinstance(val, (bool, int, float)):
             return val
-        elif isinstance(val, list) and len(val) > 0:
-            return ureg.Quantity(val[0], ureg[val[1]])
+
+        if isinstance(val, str):
+            value, unit, comment = parse(val)
+            if value and unit:
+                return ureg.Quantity(value + unit)
+            return val
+
+        if isinstance(val, (list, tuple)) and len(val) > 1:
+            return ureg.Quantity(val[0], val[1])
+
+        raise NotImplementedError("Cannot parse {}".format(value))
 
     def __repr__(self):
         return repr(self.raw)
