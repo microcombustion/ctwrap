@@ -64,10 +64,17 @@
 </div>
 <div class="section" id="simulation-module">
 <h2>Simulation Module<a class="headerlink" href="#simulation-module" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Module to run adiabatic flame simulation&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Simulation module running adiabatic flame test</span>
 
+<span class="sd">Code is based on stock Cantera example:</span>
+<span class="sd">https://cantera.org/examples/python/onedim/adiabatic_flame.py.html</span>
+
+<span class="sd">Differences between stock cantera example and ctwrap version are:</span>
+
+<span class="sd">* Parameter values are passed using a `Parser` object (equivalent to dictionary)</span>
+<span class="sd">* Content is broken down into methods to load values, run the simulation, and save output</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-
 <span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
 
 <span class="kn">from</span> <span class="nn">ctwrap</span> <span class="kn">import</span> <span class="n">Parser</span>
@@ -80,7 +87,9 @@
         <span class="s2">&quot;This module will not work without an installation of Cantera&quot;</span><span class="p">,</span>
         <span class="ne">UserWarning</span><span class="p">)</span>
 
-<span class="n">__DEFAULTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+
+<span class="c1"># define default values for simulation parameters</span>
+<span class="n">DEFAULTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2"># default parameters for the `freeflame` module</span>
 <span class="s2">upstream:</span>
 <span class="s2">  T: [300., kelvin, &#39;temperature&#39;]</span>
@@ -89,7 +98,7 @@
 <span class="s2">  fuel: &#39;H2&#39;</span>
 <span class="s2">  oxidizer: &#39;O2:1.,AR:5&#39;</span>
 <span class="s2">chemistry:</span>
-<span class="s2">  mechanism: h2o2.xml</span>
+<span class="s2">  mechanism: h2o2.yaml</span>
 <span class="s2">domain:</span>
 <span class="s2">  width: [30, millimeter, &#39;domain width&#39;]</span>
 <span class="s2">&quot;&quot;&quot;</span>
@@ -97,11 +106,10 @@
 
 <span class="k">def</span> <span class="nf">defaults</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Returns dictionary containing default arguments&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">__DEFAULTS</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">upstream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">loglevel</span><span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">upstream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function handling adiabatic flame simulation.</span>
 <span class="sd">    The function uses the class &#39;ctwrap.Parser&#39; in conjunction with &#39;pint.Quantity&#39;</span>
@@ -185,6 +193,7 @@
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Main function &quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">()</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">save</span><span class="p">(</span><span class="s1">&#39;adiabatic_flame.h5&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>

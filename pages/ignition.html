@@ -67,10 +67,18 @@
 </div>
 <div class="section" id="simulation-module">
 <h2>Simulation Module<a class="headerlink" href="#simulation-module" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Module to run ignition simulation &quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Simulation module running ignition test</span>
+
+<span class="sd">Code is based on stock Cantera example:</span>
+<span class="sd">https://cantera.org/examples/python/reactors/reactor1.py.html</span>
+
+<span class="sd">Differences between stock cantera example and ctwrap version are:</span>
+
+<span class="sd">* Parameter values are passed using a `Parser` object (equivalent to dictionary)</span>
+<span class="sd">* Content is broken down into methods to load values, run the simulation, and save output</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
-
 
 <span class="kn">from</span> <span class="nn">ctwrap</span> <span class="kn">import</span> <span class="n">Parser</span>
 
@@ -82,8 +90,9 @@
         <span class="s2">&quot;This module will not work without an installation of Cantera&quot;</span><span class="p">,</span>
         <span class="ne">UserWarning</span><span class="p">)</span>
 
-<span class="c1"># default configuration</span>
-<span class="n">__DEFAULTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+
+<span class="c1"># define default values for simulation parameters</span>
+<span class="n">DEFAULTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2"># default parameters for the `ignition` module</span>
 <span class="s2">initial:</span>
 <span class="s2">  T: [1000., kelvin, &#39;temperature&#39;]</span>
@@ -92,7 +101,7 @@
 <span class="s2">  fuel: &#39;H2&#39;</span>
 <span class="s2">  oxidizer: &#39;O2:1.,AR:3.76&#39;</span>
 <span class="s2">chemistry:</span>
-<span class="s2">  mechanism: h2o2.xml</span>
+<span class="s2">  mechanism: h2o2.yaml</span>
 <span class="s2">simulation:</span>
 <span class="s2">  delta_t: 1.e-5</span>
 <span class="s2">  n_points: 500</span>
@@ -103,7 +112,7 @@
 
 <span class="k">def</span> <span class="nf">defaults</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Returns dictionary containing default arguments&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">__DEFAULTS</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -123,13 +132,11 @@
 <span class="sd">        Dictionary containing Cantera SolutionArray</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># initialize</span>
-
-    <span class="c1"># gas object</span>
+    <span class="c1"># initialize gas object</span>
     <span class="n">mech</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">chemistry</span><span class="p">)</span><span class="o">.</span><span class="n">mechanism</span>
     <span class="n">gas</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">Solution</span><span class="p">(</span><span class="n">mech</span><span class="p">)</span>
 
-    <span class="c1"># temperature, pressure, and composition</span>
+    <span class="c1"># set temperature, pressure, and composition</span>
     <span class="n">initial</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">initial</span><span class="p">)</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">initial</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;kelvin&#39;</span><span class="p">)</span>
     <span class="n">P</span> <span class="o">=</span> <span class="n">initial</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;pascal&#39;</span><span class="p">)</span>
@@ -148,20 +155,15 @@
     <span class="n">delta_t</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">delta_t</span>
     <span class="n">n_points</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">n_points</span>
 
-    <span class="c1"># SolutionArray</span>
+    <span class="c1"># define SolutionArray and run simulation</span>
     <span class="n">states</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">SolutionArray</span><span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">])</span>
-
-    <span class="c1"># Run simulation</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">time</span>
 
-    <span class="c1"># loop: note that advance() returns boolean</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_points</span><span class="p">):</span>
 
         <span class="n">time</span> <span class="o">+=</span> <span class="n">delta_t</span>
         <span class="n">sim</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
-
         <span class="n">states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reactor</span><span class="o">.</span><span class="n">thermo</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
-
 
     <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">states</span><span class="p">}</span>
 
@@ -179,12 +181,11 @@
     <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="n">task</span><span class="p">}</span>
     <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">states</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">states</span><span class="o">.</span><span class="n">write_hdf</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span>
-                                 <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">)</span>
-
-<span class="c1">###</span>
+                         <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Main function &quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">()</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span>
     <span class="n">save</span><span class="p">(</span><span class="s1">&#39;ignition.h5&#39;</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
