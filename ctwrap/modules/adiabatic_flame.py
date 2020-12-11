@@ -1,7 +1,14 @@
-""" Module to run adiabatic flame simulation"""
+"""Simulation module running adiabatic flame test
 
+Code is based on stock Cantera example:
+https://cantera.org/examples/python/onedim/adiabatic_flame.py.html
+
+Differences between stock cantera example and ctwrap version are:
+
+* Parameter values are passed using a `Parser` object (equivalent to dictionary)
+* Content is broken down into methods to load values, run the simulation, and save output
+"""
 import warnings
-
 from ruamel import yaml
 
 from ctwrap import Parser
@@ -14,7 +21,9 @@ except ImportError as err:
         "This module will not work without an installation of Cantera",
         UserWarning)
 
-__DEFAULTS = """\
+
+# define default values for simulation parameters
+DEFAULTS = """\
 # default parameters for the `freeflame` module
 upstream:
   T: [300., kelvin, 'temperature']
@@ -23,7 +32,7 @@ upstream:
   fuel: 'H2'
   oxidizer: 'O2:1.,AR:5'
 chemistry:
-  mechanism: h2o2.xml
+  mechanism: h2o2.yaml
 domain:
   width: [30, millimeter, 'domain width']
 """
@@ -31,11 +40,10 @@ domain:
 
 def defaults():
     """Returns dictionary containing default arguments"""
-    return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
+    return yaml.load(DEFAULTS, Loader=yaml.SafeLoader)
 
 
-def run(name, chemistry=None, upstream=None, domain=None,
-        loglevel= 0):
+def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
     """
     Function handling adiabatic flame simulation.
     The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
@@ -119,6 +127,7 @@ def save(filename, data, task=None):
 
 
 if __name__ == "__main__":
+    """ Main function """
     config = defaults()
     df = run('main', **config, loglevel=1)
     save('adiabatic_flame.h5', df)

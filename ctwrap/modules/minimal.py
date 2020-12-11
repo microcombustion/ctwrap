@@ -1,38 +1,25 @@
-"""Minimal example for ctwrap compatible simulation module"""
-
+"""Simulation module illustrating minimal ctwrap example"""
 import time
-
-from ruamel import yaml
-
-__DEFAULTS = """\
-# default parameters for the `minimal` module
-sleep: 0.2
-"""
 
 
 def defaults():
     """Returns dictionary containing default arguments"""
-    return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
+    return {'sleep': 0.2}
 
 
 def run(name, sleep=.2):
-    """This function does nothing"""
-
-    # initialize
+    """This method 'sleeps' for the specified duration"""
     print('    - `minimal`: sleeping for {} seconds ...'.format(sleep))
     time.sleep(sleep)
-
     return {name: {'sleep': [sleep]}}
 
 
 def save(data, output=None, mode='a') :
-    """this function does nothing"""
-
+    """This method is required by ctwrap (but does nothing in this example)"""
     return
 
 
 if __name__ == "__main__":
-
+    """ Main function """
     config = defaults()
     out = run('main', **config)
-    save(out)
