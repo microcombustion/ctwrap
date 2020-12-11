@@ -134,7 +134,7 @@
 
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="bp">cls</span><span class="p">,),</span> <span class="p">{})(</span><span class="n">module</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Simulation.run"><a class="viewcode-back" href="../../pages/simulation.html#ctwrap.simulation.Simulation.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span><span class="s1">&#39;defaults&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="Simulation.run"><a class="viewcode-back" href="../../pages/simulation.html#ctwrap.simulation.Simulation.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;defaults&#39;</span><span class="p">,</span>
             <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -166,7 +166,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="o">.</span><span class="vm">__name__</span></div>
 
 <div class="viewcode-block" id="Simulation.defaults"><a class="viewcode-back" href="../../pages/simulation.html#ctwrap.simulation.Simulation.defaults">[docs]</a>    <span class="k">def</span> <span class="nf">defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Pass-through returning simualtion module defaults as a dictionary&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Pass-through returning simulation module defaults as a dictionary&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -497,7 +497,7 @@
         <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entry</span>
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">}</span>
 
-<div class="viewcode-block" id="SimulationHandler.run_task"><a class="viewcode-back" href="../../pages/simulation.html#ctwrap.simulation.SimulationHandler.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">:</span> <span class="n">Simulation</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="SimulationHandler.run_task"><a class="viewcode-back" href="../../pages/simulation.html#ctwrap.simulation.SimulationHandler.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">:</span> <span class="n">Simulation</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to run a specific task.</span>
 
@@ -657,7 +657,7 @@
             <span class="n">p</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
                 <span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tasks_to_accomplish</span><span class="p">,</span> <span class="n">finished_tasks</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">_module</span><span class="p">,</span> <span class="n">lock</span><span class="p">,</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">))</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">))</span>
             <span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
             <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
@@ -671,12 +671,16 @@
             <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s2">&quot;Appending metadata&quot;</span><span class="p">)</span>
+
+        <span class="n">sim</span><span class="o">.</span><span class="n">_save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">tasks_to_accomplish</span><span class="p">,</span> <span class="n">tasks_that_are_done</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lock</span><span class="p">,</span>
            <span class="n">output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-           <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
            <span class="n">verbosity</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">True</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Worker function for the `:meth: `run_parallel` method.</span>
@@ -687,7 +691,7 @@
 <span class="sd">        module (str): name of handler to be run</span>
 <span class="sd">        lock (lock): multiprocessing lock</span>
 <span class="sd">        output (dict): dictionary containing output information</span>
-<span class="sd">        metadata (dict): dictioanry containing metadata</span>
+<span class="sd">        metadata (dict): dictionary containing metadata</span>
 <span class="sd">        verbosity (int): verbosity level</span>
 
 <span class="sd">    Returns:</span>
@@ -712,9 +716,7 @@
             <span class="k">break</span>
 
         <span class="k">else</span><span class="p">:</span>
-
             <span class="n">obj</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
-
             <span class="c1"># perform task</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="n">indent1</span> <span class="o">+</span> <span class="s1">&#39;processing `</span><span class="si">{}</span><span class="s1">` (</span><span class="si">{}</span><span class="s1">)&#39;</span>
             <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -722,14 +724,8 @@
             <span class="n">obj</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">_save</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
-
             <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;case `</span><span class="si">{}</span><span class="s1">` completed by </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">this</span><span class="p">)</span>
             <span class="n">tasks_that_are_done</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Appending metadata&quot;</span><span class="p">)</span>
-
-    <span class="n">obj</span><span class="o">.</span><span class="n">_save_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
