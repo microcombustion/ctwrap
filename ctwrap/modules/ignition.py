@@ -22,7 +22,7 @@ except ImportError as err:
         UserWarning)
 
 
-# define default values for simulation parameters
+# define default values for simulation parameters (specified as list)
 DEFAULTS = """\
 # default parameters for the `ignition` module
 initial:

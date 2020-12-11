@@ -22,19 +22,19 @@ except ImportError as err:
         UserWarning)
 
 
-# define default values for simulation parameters
+# define default values for simulation parameters (string notation)
 DEFAULTS = """\
-# default parameters for the `freeflame` module
+# default parameters for the `adiabatic_flame` module
 upstream:
-  T: [300., kelvin, 'temperature']
-  P: [1., atmosphere, 'pressure']
-  phi: [.55, dimensionless, 'equivalence ratio']
-  fuel: 'H2'
-  oxidizer: 'O2:1.,AR:5'
+  T: 300. kelvin (temperature)
+  P: 1. atmosphere (pressure)
+  phi: .55 (equivalence ratio)
+  fuel: H2
+  oxidizer: O2:1.,AR:5
 chemistry:
   mechanism: h2o2.yaml
 domain:
-  width: [30, millimeter, 'domain width']
+  width: 30 millimeter (domain width)
 """
 
 

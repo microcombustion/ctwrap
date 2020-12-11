@@ -16,20 +16,6 @@ ROOT = PWD.parents[0]
 EXAMPLES = '{}'.format(ROOT / 'yaml')
 
 
-class TestParser(unittest.TestCase):
-
-    def test_parser(self):
-
-        defaults = cw.parser.load_yaml(
-            'ignition.yaml', path=EXAMPLES, keys=['defaults'])
-        p = cw.Parser(defaults[0]['initial'])
-        self.assertIsInstance(p.T, pq.Quantity)
-        self.assertIsInstance(p.T.m, float)
-        self.assertEqual(str(p.T.units), 'kelvin')
-        self.assertEqual(p.T.m - 273.15, p.T.m_as('degC'))
-        self.assertIsInstance(p.fuel, str)
-
-
 class TestWrap(unittest.TestCase):
 
     _module = cw.modules.minimal
