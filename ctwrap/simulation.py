@@ -620,7 +620,7 @@ class SimulationHandler(object):
             p = mp.Process(
                 target=worker,
                 args=(tasks_to_accomplish, finished_tasks, sim._module, lock,
-                      self._output, self._metadata, verbosity))
+                      self._output, verbosity))
             processes.append(p)
             p.start()
 
@@ -635,20 +635,15 @@ class SimulationHandler(object):
                 print(indent2 + msg)
 
         if verbosity > 1:
-            print("Appending metadata")
+            print(indent1 + "Appending metadata")
 
-        try:
-            obj = Simulation.from_module(sim._module, self._output)
-            obj._save_metadata(self._metadata)
-        except:
-            raise
+        sim._save_metadata(self._metadata)
 
         return True
 
 
 def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
            output: Dict[str, Any],
-           metadata: Dict[str, Any],
            verbosity: int) -> True:
     """
     Worker function for the `:meth: `run_parallel` method.
@@ -659,7 +654,7 @@ def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
         module (str): name of handler to be run
         lock (lock): multiprocessing lock
         output (dict): dictionary containing output information
-        metadata (dict): dictioanry containing metadata
+        metadata (dict): dictionary containing metadata
         verbosity (int): verbosity level
 
     Returns:
@@ -668,8 +663,6 @@ def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
     """
 
     this = mp.current_process().name
-
-    obj = None
 
     if verbosity > 1:
         print(indent2 + 'starting ' + this)
