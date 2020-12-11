@@ -1,7 +1,15 @@
-""" Module to run ignition simulation """
+"""Simulation module running ignition test
+
+Code is based on stock Cantera example:
+https://cantera.org/examples/python/reactors/reactor1.py.html
+
+Differences between stock cantera example and ctwrap version are:
+
+* Parameter values are passed using a `Parser` object (equivalent to dictionary)
+* Content is broken down into methods to load values, run the simulation, and save output
+"""
 import warnings
 from ruamel import yaml
-
 
 from ctwrap import Parser
 
@@ -13,8 +21,9 @@ except ImportError as err:
         "This module will not work without an installation of Cantera",
         UserWarning)
 
-# default configuration
-__DEFAULTS = """\
+
+# define default values for simulation parameters
+DEFAULTS = """\
 # default parameters for the `ignition` module
 initial:
   T: [1000., kelvin, 'temperature']
@@ -23,7 +32,7 @@ initial:
   fuel: 'H2'
   oxidizer: 'O2:1.,AR:3.76'
 chemistry:
-  mechanism: h2o2.xml
+  mechanism: h2o2.yaml
 simulation:
   delta_t: 1.e-5
   n_points: 500
@@ -34,7 +43,7 @@ simulation:
 
 def defaults():
     """Returns dictionary containing default arguments"""
-    return yaml.load(__DEFAULTS, Loader=yaml.SafeLoader)
+    return yaml.load(DEFAULTS, Loader=yaml.SafeLoader)
 
 
 def run(name, chemistry=None,
@@ -54,13 +63,11 @@ def run(name, chemistry=None,
         Dictionary containing Cantera SolutionArray
     """
 
-    # initialize
-
-    # gas object
+    # initialize gas object
     mech = Parser(chemistry).mechanism
     gas = ct.Solution(mech)
 
-    # temperature, pressure, and composition
+    # set temperature, pressure, and composition
     initial = Parser(initial)
     T = initial.T.m_as('kelvin')
     P = initial.P.m_as('pascal')
@@ -79,20 +86,15 @@ def run(name, chemistry=None,
     delta_t = par.delta_t
     n_points = par.n_points
 
-    # SolutionArray
+    # define SolutionArray and run simulation
     states = ct.SolutionArray(gas, extra=['t'])
-
-    # Run simulation
     time = sim.time
 
-    # loop: note that advance() returns boolean
     for i in range(n_points):
 
         time += delta_t
         sim.advance(time)
-
         states.append(reactor.thermo.state, t=time)
-
 
     return {name: states}
 
@@ -110,12 +112,11 @@ def save(filename, data, task=None):
     attrs = {'description': task}
     for group, states in data.items():
         states.write_hdf(filename=filename, group=group,
-                                 mode='a', attrs=attrs)
-
-###
+                         mode='a', attrs=attrs)
 
 
 if __name__ == "__main__":
+    """ Main function """
     config = defaults()
     out = run('main', **config)
     save('ignition.h5', out)
