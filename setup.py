@@ -39,7 +39,5 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        'pandas>=0.24.0', 'numpy',
-        'ruamel.yaml', 'pint',
-        'h5py', 'matplotlib',],
+        'numpy', 'ruamel.yaml', 'pint', 'h5py'],
     zip_safe=False)
