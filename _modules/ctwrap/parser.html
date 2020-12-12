@@ -43,6 +43,7 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
 
@@ -53,13 +54,13 @@
 
 
 <div class="viewcode-block" id="parse"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.parse">[docs]</a><span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse string expression:</span>
+    <span class="sd">&quot;&quot;&quot;Parse string expression containg value and unit</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">       val: String expression</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">       `Tuple` containing value, unit, and comment</span>
+<span class="sd">       `Tuple` containing value and unit</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -67,18 +68,11 @@
 
     <span class="n">value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[-+]?\d*\.\d*|\d+&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">value</span> <span class="ow">and</span> <span class="n">val</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">==</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="k">return</span> <span class="n">val</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">val</span><span class="p">,</span> <span class="kc">None</span>
 
     <span class="c1"># string starts with value</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">):]</span>
-
-    <span class="n">comment</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\(.*?\)&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">comment</span> <span class="ow">and</span> <span class="n">val</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">comment</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):]</span> <span class="o">==</span> <span class="n">comment</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">comment</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span>
-        <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># strip parentheses</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">comment</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
@@ -86,16 +80,15 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;dimensionless&#39;</span>
 
-    <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">comment</span></div>
+    <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">unit</span></div>
 
 
-<span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Format value / unit / comment combination into parseable string</span>
+<span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Format value / unit combination into parseable string</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">       value: Value</span>
 <span class="sd">       unit: String describing unit</span>
-<span class="sd">       comment: Comment</span>
 
 <span class="sd">    Return:</span>
 <span class="sd">       Formatted string</span>
@@ -104,9 +97,6 @@
 
     <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">unit</span> <span class="o">!=</span> <span class="s1">&#39;dimensionless&#39;</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">+=</span> <span class="s1">&#39; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">comment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">out</span> <span class="o">+=</span> <span class="s1">&#39; (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">out</span>
 
@@ -160,12 +150,14 @@
             <span class="k">return</span> <span class="n">val</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="n">value</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">unit</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="n">unit</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">val</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Definition of values by lists/tuples is superseded by value/unit strings&quot;</span><span class="p">,</span>
+                          <span class="ne">PendingDeprecationWarning</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Cannot parse </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
