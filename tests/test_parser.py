@@ -19,31 +19,21 @@ class TestParse(unittest.TestCase):
 
     def test_string(self):
 
-        value, unit, comment = cw.parse('hello world')
+        value, unit = cw.parse('hello world')
         self.assertEqual(value, 'hello world')
         self.assertIsNone(unit)
-        self.assertIsNone(comment)
 
     def test_full(self):
 
-        value, unit, comment = cw.parse('1 spam (eggs)')
+        value, unit = cw.parse('1 spam')
         self.assertEqual(value, '1')
         self.assertEqual(unit, 'spam')
-        self.assertEqual(comment, 'eggs')
 
     def test_no_unit(self):
 
-        value, unit, comment = cw.parse('2. (spam eggs)')
+        value, unit = cw.parse('2.')
         self.assertEqual(value, '2.')
         self.assertEqual(unit, 'dimensionless')
-        self.assertEqual(comment, 'spam eggs')
-
-    def test_no_comment(self):
-
-        value, unit, comment = cw.parse('2.3 spam eggs')
-        self.assertEqual(value, '2.3')
-        self.assertEqual(unit, 'spam eggs')
-        self.assertIsNone(comment)
 
 
 class TestWrite(unittest.TestCase):
@@ -55,23 +45,18 @@ class TestWrite(unittest.TestCase):
 
     def test_full(self):
 
-        value = cw.write(1, 'spam', 'eggs')
-        self.assertEqual(value, '1 spam (eggs)')
+        value = cw.write(1, 'spam')
+        self.assertEqual(value, '1 spam')
 
     def test_no_unit1(self):
 
-        value = cw.write(2., None, 'spam eggs')
-        self.assertEqual(value, '2.0 (spam eggs)')
+        value = cw.write(2., None)
+        self.assertEqual(value, '2.0')
 
     def test_no_unit2(self):
 
-        value = cw.write(2., 'dimensionless', 'spam eggs')
-        self.assertEqual(value, '2.0 (spam eggs)')
-
-    def test_no_comment(self):
-
-        value = cw.write(2.3, 'spam eggs')
-        self.assertEqual(value, '2.3 spam eggs')
+        value = cw.write(2., 'dimensionless')
+        self.assertEqual(value, '2.0')
 
 
 class TestParser(unittest.TestCase):

@@ -428,8 +428,8 @@ class SimulationHandler(object):
                 if isinstance(sub, list):
                     sub[0] = value
                 elif isinstance(sub, str):
-                    _, unit, comment = parse(sub)
-                    sub = write(value, unit, comment)
+                    _, unit = parse(sub)
+                    sub = write(value, unit)
                 else:
                     sub = value
             else:

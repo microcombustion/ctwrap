@@ -7,11 +7,11 @@ output:
   format: h5
 defaults:
   initial:
-    T: [1000., kelvin, 'initial temperature']
-    P: [1., atmosphere, 'pressure']
-    phi: [1., dimensionless, 'equivalence ratio']
-    fuel: 'H2'
-    oxidizer: 'O2:1,AR:3.76'
+    T: 1000. kelvin # initial temperature
+    P: 1. atmosphere # pressure
+    phi: 1. # equivalence ratio
+    fuel: H2
+    oxidizer: O2:1,AR:3.76
   chemistry:
     mechanism: h2o2.yaml
   simulation:
@@ -19,4 +19,4 @@ defaults:
     n_points: 500
     atol: 1.e-15
     rtol: 1.e-9
-ctwrap: 0.1.0
+ctwrap: 0.2.0

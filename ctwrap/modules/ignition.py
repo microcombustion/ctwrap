@@ -26,11 +26,11 @@ except ImportError as err:
 DEFAULTS = """\
 # default parameters for the `ignition` module
 initial:
-  T: [1000., kelvin, 'temperature']
-  P: [1., atmosphere, 'pressure']
-  phi: [1., dimensionless, 'equivalence ratio']
-  fuel: 'H2'
-  oxidizer: 'O2:1.,AR:3.76'
+  T: 1000. kelvin # temperature
+  P: 1. atmosphere # pressure
+  phi: 1. # equivalence ratio
+  fuel: H2
+  oxidizer: O2:1.,AR:3.76
 chemistry:
   mechanism: h2o2.yaml
 simulation:
@@ -72,7 +72,7 @@ def run(name, chemistry=None,
     T = initial.T.m_as('kelvin')
     P = initial.P.m_as('pascal')
     gas.TP = T, P
-    phi = initial.phi.m
+    phi = initial.phi
     gas.set_equivalence_ratio(phi, initial.fuel, initial.oxidizer)
 
     # define a reactor network
