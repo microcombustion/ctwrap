@@ -26,15 +26,15 @@ except ImportError as err:
 DEFAULTS = """\
 # default parameters for the `adiabatic_flame` module
 upstream:
-  T: 300. kelvin (temperature)
-  P: 1. atmosphere (pressure)
-  phi: .55 (equivalence ratio)
+  T: 300. kelvin # temperature
+  P: 1. atmosphere # pressure
+  phi: .55 # equivalence ratio
   fuel: H2
   oxidizer: O2:1.,AR:5
 chemistry:
   mechanism: h2o2.yaml
 domain:
-  width: 30 millimeter (domain width)
+  width: 30 millimeter # domain width
 """
 
 
@@ -72,7 +72,7 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
     T = upstream.T.m_as('kelvin')
     P = upstream.P.m_as('pascal')
     gas.TP = T, P
-    phi = upstream.phi.m
+    phi = upstream.phi
     gas.set_equivalence_ratio(phi, upstream.fuel, upstream.oxidizer)
 
     # set up flame object

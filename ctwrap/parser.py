@@ -6,6 +6,7 @@ from pint import UnitRegistry
 from copy import deepcopy
 from ruamel import yaml
 import h5py
+import warnings
 import re
 
 
@@ -16,13 +17,13 @@ ureg = UnitRegistry()
 
 
 def parse(val: str):
-    """Parse string expression:
+    """Parse string expression containg value and unit
 
     Arguments:
        val: String expression
 
     Returns:
-       `Tuple` containing value, unit, and comment
+       `Tuple` containing value and unit
     """
 
     if not isinstance(val, str):
@@ -30,18 +31,11 @@ def parse(val: str):
 
     value = re.findall(r'[-+]?\d*\.\d*|\d+', val)
     if not (value and val[:len(value[0])] == value[0]):
-        return val, None, None
+        return val, None
 
     # string starts with value
     value = value[0]
     val = val[len(value):]
-
-    comment = re.findall(r'\(.*?\)', val)
-    if comment and val[-len(comment[-1]):] == comment[-1]:
-        val = val[:-len(comment[-1])]
-        comment = comment[-1][1:-1] # strip parentheses
-    else:
-        comment = None
 
     val = val.strip()
     if val:
@@ -49,16 +43,15 @@ def parse(val: str):
     else:
         unit = 'dimensionless'
 
-    return value, unit, comment
+    return value, unit
 
 
-def write(value: Union[int, float, str], unit: Optional[str]=None, comment: Optional[str]=None):
-    """Format value / unit / comment combination into parseable string
+def write(value: Union[int, float, str], unit: Optional[str]=None):
+    """Format value / unit combination into parseable string
 
     Arguments:
        value: Value
        unit: String describing unit
-       comment: Comment
 
     Return:
        Formatted string
@@ -67,9 +60,6 @@ def write(value: Union[int, float, str], unit: Optional[str]=None, comment: Opti
 
     if unit is not None and unit != 'dimensionless':
         out += ' {}'.format(unit)
-
-    if comment is not None:
-        out += ' ({})'.format(comment)
 
     return out
 
@@ -123,12 +113,14 @@ class Parser(object):
             return val
 
         if isinstance(val, str):
-            value, unit, comment = parse(val)
+            value, unit = parse(val)
             if value and unit:
-                return ureg.Quantity(value + unit)
+                return ureg.Quantity(val)
             return val
 
         if isinstance(val, (list, tuple)) and len(val) > 1:
+            warnings.warn("Definition of values by lists/tuples is superseded by value/unit strings",
+                          PendingDeprecationWarning)
             return ureg.Quantity(val[0], val[1])
 
         raise NotImplementedError("Cannot parse {}".format(value))
