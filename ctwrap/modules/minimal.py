@@ -1,4 +1,6 @@
-"""Simulation module illustrating minimal ctwrap example"""
+"""Simulation module illustrating minimal ctwrap example
+Note: ``save`` method is not used here.
+"""
 import time
 
 
@@ -12,11 +14,6 @@ def run(name, sleep=.2):
     print('    - `minimal`: sleeping for {} seconds ...'.format(sleep))
     time.sleep(sleep)
     return {name: {'sleep': [sleep]}}
-
-
-def save(data, output=None, mode='a') :
-    """This method is required by ctwrap (but does nothing in this example)"""
-    return
 
 
 if __name__ == "__main__":
