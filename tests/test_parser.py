@@ -8,6 +8,8 @@ from pathlib import Path
 import pint.quantity as pq
 
 import ctwrap as cw
+from ctwrap.parser import _parse as parse
+from ctwrap.parser import _write as write
 
 
 PWD = Path(__file__).parents[0]
@@ -19,25 +21,25 @@ class TestParse(unittest.TestCase):
 
     def test_string(self):
 
-        value, unit = cw.parse('hello world')
+        value, unit = parse('hello world')
         self.assertEqual(value, 'hello world')
         self.assertIsNone(unit)
 
     def test_full(self):
 
-        value, unit = cw.parse('1 spam')
+        value, unit = parse('1 spam')
         self.assertEqual(value, '1')
         self.assertEqual(unit, 'spam')
 
     def test_no_unit1(self):
 
-        value, unit = cw.parse('2.')
+        value, unit = parse('2.')
         self.assertEqual(value, '2.')
         self.assertIsNone(unit)
 
     def test_no_unit2(self):
 
-        value, unit = cw.parse('2. ')
+        value, unit = parse('2. ')
         self.assertEqual(value, '2.')
         self.assertEqual(unit, 'dimensionless')
 
@@ -46,22 +48,22 @@ class TestWrite(unittest.TestCase):
 
     def test_string(self):
 
-        value = cw.write('hello world')
+        value = write('hello world')
         self.assertEqual(value, 'hello world')
 
     def test_full(self):
 
-        value = cw.write(1, 'spam')
+        value = write(1, 'spam')
         self.assertEqual(value, '1 spam')
 
     def test_no_unit1(self):
 
-        value = cw.write(2., None)
+        value = write(2., None)
         self.assertEqual(value, '2.0')
 
     def test_no_unit2(self):
 
-        value = cw.write(2., 'dimensionless')
+        value = write(2., 'dimensionless')
         self.assertEqual(value, '2.0')
 
 
