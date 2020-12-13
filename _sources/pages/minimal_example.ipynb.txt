@@ -20,7 +20,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": null,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -29,20 +29,9 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "data": {
-      "text/plain": [
-       "<ctwrap.simulation.Minimal at 0x228a26b55c8>"
-      ]
-     },
-     "execution_count": 2,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
+   "outputs": [],
    "source": [
     "sim = cw.Simulation.from_module(cw.modules.minimal)\n",
     "sim"
@@ -59,55 +48,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Simulations for entry `sleep` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]\n"
-     ]
-    },
-    {
-     "data": {
-      "text/plain": [
-       "<ctwrap.simulation.SimulationHandler at 0x228a2768c48>"
-      ]
-     },
-     "execution_count": 4,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
+   "outputs": [],
    "source": [
-    "sh = cw.SimulationHandler.from_yaml('minimal.yaml', verbosity=1)\n",
+    "fname = '../../yaml/minimal.yaml'\n",
+    "sh = cw.SimulationHandler.from_yaml(fname, verbosity=1)\n",
     "sh"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "data": {
-      "text/plain": [
-       "{'sleep_0.4': 0.4,\n",
-       " 'sleep_0.6': 0.6,\n",
-       " 'sleep_0.8': 0.8,\n",
-       " 'sleep_1.0': 1.0,\n",
-       " 'sleep_1.2': 1.2,\n",
-       " 'sleep_1.4': 1.4,\n",
-       " 'sleep_1.6': 1.6,\n",
-       " 'sleep_1.8': 1.8}"
-      ]
-     },
-     "execution_count": 5,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
+   "outputs": [],
    "source": [
     "# list simulation tasks\n",
     "sh.tasks"
@@ -124,35 +78,9 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "    - `minimal`: sleeping for 0.4 seconds ...\n",
-      "    - `minimal`: sleeping for 0.6 seconds ...\n",
-      "    - `minimal`: sleeping for 0.8 seconds ...\n",
-      "    - `minimal`: sleeping for 1.0 seconds ...\n",
-      "    - `minimal`: sleeping for 1.2 seconds ...\n",
-      "    - `minimal`: sleeping for 1.4 seconds ...\n",
-      "    - `minimal`: sleeping for 1.6 seconds ...\n",
-      "    - `minimal`: sleeping for 1.8 seconds ...\n",
-      "Wall time: 8.82 s\n"
-     ]
-    },
-    {
-     "data": {
-      "text/plain": [
-       "True"
-      ]
-     },
-     "execution_count": 6,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
+   "outputs": [],
    "source": [
     "%%time\n",
     "sh.run_serial(sim, verbosity=0)"
@@ -169,28 +97,9 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      " * running simulation using 4 cores\n",
-      "Wall time: 4.65 s\n"
-     ]
-    },
-    {
-     "data": {
-      "text/plain": [
-       "True"
-      ]
-     },
-     "execution_count": 7,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
+   "outputs": [],
    "source": [
     "%%time\n",
     "sh.run_parallel(sim, verbosity=1)"
