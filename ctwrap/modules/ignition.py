@@ -49,7 +49,7 @@ def run(name, chemistry=None,
     Function handling reactor simulation.
 
     Arguments:
-        name (str): name of the task
+        name (str): output group name
         chemistry  (dict): reflects yaml 'configuration:chemistry'
         initial    (dict): reflects yaml 'configuration:initial'
         simulation (dict): reflects yaml 'configuration:simulation'
