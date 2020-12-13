@@ -176,6 +176,7 @@ class Simulation(object):
             raise ValueError("Invalid file format {}".format(formatt))
 
     def _save_metadata(self,
+                       output: Optional[Dict[str, Any]] = None,
                        metadata: Optional[Dict[str, Any]] = None,
                        ) -> None:
         """
@@ -187,15 +188,17 @@ class Simulation(object):
 
         Arguments:
             metadata (dict): data to be saved
+            output (dict): output file information
         """
 
-        if metadata is None:
+        if output is None:
+            output = self._output
+
+        if metadata is None or output is None:
             return
 
-        if self._output is None:
-            return
-
-        save_metadata(self._output, metadata)
+        save_metadata(output, metadata)
+        return
 
 
 class SimulationHandler(object):
@@ -345,54 +348,54 @@ class SimulationHandler(object):
            fpath (string, optional): output path (overrides yaml)
 
         Returns:
-            Dictionary containng output information
+            Dictionary containing output information
         """
+        out = None
 
-        if dct is None:
-            dct = {}
+        if dct is not None:
 
-        # establish defaults
-        out = dct.copy()
-        out['path'] = None  # should never be specified inside of yaml
-        if 'format' not in out:
-            out['format'] = ''
-        if 'force_overwrite' not in out:
-            out['force_overwrite'] = False
+            # establish defaults
+            out = dct.copy()
+            out['path'] = None  # should never be specified inside of yaml
+            if 'format' not in out:
+                out['format'] = ''
+            if 'force_overwrite' not in out:
+                out['force_overwrite'] = False
 
-        fformat = out['format']
+            fformat = out['format']
 
-        # file name keyword overrides dictionary
-        if fname is not None:
+            # file name keyword overrides dictionary
+            if fname is not None:
 
-            # fname may contain path information
-            head, fname = os.path.split(fname)
-            if len(head) and fpath is not None:
-                raise RuntimeError('contradictory specification')
-            elif len(head):
-                fpath = head
+                # fname may contain path information
+                head, fname = os.path.split(fname)
+                if len(head) and fpath is not None:
+                    raise RuntimeError('contradictory specification')
+                elif len(head):
+                    fpath = head
 
-            fname, ext = os.path.splitext(fname)
-            if ext in supported:
-                fformat = ext
+                fname, ext = os.path.splitext(fname)
+                if ext in supported:
+                    fformat = ext
 
-            out['name'] = fname
+                out['name'] = fname
 
-        # file path keyword overrides dictionary
-        if fpath is not None:
-            out['path'] = fpath
+            # file path keyword overrides dictionary
+            if fpath is not None:
+                out['path'] = fpath
 
-        # file format
-        if fformat is None:
-            pass
-        elif len(fformat):
-            out['format'] = fformat.lstrip('.')
-        else:
-            out['format'] = 'h5'
+            # file format
+            if fformat is None:
+                pass
+            elif len(fformat):
+                out['format'] = fformat.lstrip('.')
+            else:
+                out['format'] = 'h5'
 
-        if fformat is None:
-            out['file_name'] = None
-        else:
-            out['file_name'] = '.'.join([out['name'], out['format']])
+            if fformat is None:
+                out['file_name'] = None
+            else:
+                out['file_name'] = '.'.join([out['name'], out['format']])
 
         return out
 
@@ -502,7 +505,8 @@ class SimulationHandler(object):
 
         obj.run(task, config, **kwargs)
         obj._save(task=task)
-        obj._save_metadata(self._metadata)
+        if self._output is not None:
+            obj._save_metadata(self._output, self._metadata)
 
     def run_serial(self,
                    sim: Simulation,
@@ -552,10 +556,10 @@ class SimulationHandler(object):
 
             # run simulation
             config = self.configuration(t)
-
             obj.run(t, config, **kwargs)
             obj._save(task=t)
-        obj._save_metadata(self._metadata)
+        if self._output is not None:
+            obj._save_metadata(self._output, self._metadata)
         return True
 
     def run_parallel(self,
@@ -637,10 +641,10 @@ class SimulationHandler(object):
             if verbosity > 1:
                 print(indent2 + msg)
 
-        if verbosity > 1:
-            print(indent1 + "Appending metadata")
-
-        sim._save_metadata(self._metadata)
+        if self._output is not None:
+            if verbosity > 1:
+                print(indent1 + "Appending metadata")
+            sim._save_metadata(self._output, self._metadata)
 
         return True
 

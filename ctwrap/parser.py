@@ -187,3 +187,5 @@ def save_metadata(output: Dict[str, Any],
                 hdf.attrs[key] = json.dumps(val)
             else:
                 hdf.attrs[key] = val
+
+    return
