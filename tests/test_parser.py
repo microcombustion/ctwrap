@@ -68,7 +68,57 @@ class TestWrite(unittest.TestCase):
         self.assertEqual(value, '2.0')
 
 
-class TestParser(unittest.TestCase):
+class TestPassing(unittest.TestCase):
+
+    _entry = 'hello world'
+
+    def test_parser(self):
+
+        p = cw.Parser(self._entry)
+        self.assertEqual(self._entry, p.raw)
+
+
+class TestKeyVal(TestPassing):
+
+    _entry = {'key': 1.}
+
+
+class TestKeyStr(TestPassing):
+
+    _entry = {'spam': 'eggs'}
+
+
+class TestParser(TestPassing):
+
+    _entry = cw.Parser({'key': 1.})
+
+    def test_parser(self):
+
+        p = cw.Parser(self._entry)
+        self.assertEqual(self._entry.raw, p.raw)
+
+
+class TestFailing(unittest.TestCase):
+
+    _entry = None
+
+    def test_parser(self):
+
+        with self.assertRaises(TypeError):
+            cw.Parser(self._entry)
+
+
+class TestInt(TestFailing):
+
+    _entry = 1
+
+
+class TestFloat(TestFailing):
+
+    _entry = 3.14
+
+
+class TestYAML(unittest.TestCase):
 
     def test_minimal(self):
 
@@ -82,6 +132,7 @@ class TestParser(unittest.TestCase):
         self.assertIsInstance(dd1['defaults'], cw.Parser)
         dd2 = {key: val for key, val in p.items()}
         self.assertEqual(dd1.keys(), dd2.keys())
+        self.assertEqual(dd1['defaults'], dd2['defaults'])
 
     def test_ignition(self):
 
