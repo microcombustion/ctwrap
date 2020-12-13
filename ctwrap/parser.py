@@ -1,5 +1,6 @@
 """Parser module."""
 import os
+from pathlib import Path
 from typing import Optional, Dict, Any, Tuple, KeysView, Generator, Union
 import json
 from pint import UnitRegistry
@@ -135,6 +136,39 @@ class Parser(object):
         """Return parser items"""
         out = {key: Parser(val) for key, val in self.raw.items()}
         return out.items()
+
+    @classmethod
+    def from_yaml(
+            cls,
+            yml: str,
+            path: Optional[str]=None,
+            keys: Optional[str]=None) -> 'Parser':
+        """Load parser from YAML
+
+        Arguments:
+            yml: File name or YAML string
+            path: Relative/absolute path. Empty ('') for
+            keys: List of keys
+        """
+        fname = Path(yml)
+        if path is not None:
+            fname = Path(path) / fname
+
+        try:
+            _ = fname.is_file() # will raise error
+            with open(fname) as stream:
+                out = yaml.load(stream, Loader=yaml.SafeLoader)
+        except OSError:
+            out = yaml.load(yml, Loader=yaml.SafeLoader)
+
+        if keys is None:
+            return cls(out)
+
+        return cls({k: out[k] for k in keys})
+
+    def to_yaml(self):
+        """Convert Parser content to YAML string"""
+        return yaml.dump(self.raw, Dumper=yaml.SafeDumper)
 
 
 def load_yaml(fname: str,
