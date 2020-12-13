@@ -170,7 +170,12 @@ class Simulation(object):
 
         if formatt in supported:
             self._module = importlib.import_module(self._module)
-            self._module.save(filename, self.data, task)
+            try:
+                self._module.save(filename, self.data, task)
+            except AttributeError:
+                print("{} simulation module has no method 'save' but output format "
+                      "was defined in configuration file".format(self._module.__name__))
+                raise
             self._module = self._module.__name__
         else:
             raise ValueError("Invalid file format {}".format(formatt))
@@ -350,52 +355,52 @@ class SimulationHandler(object):
         Returns:
             Dictionary containing output information
         """
-        out = None
 
-        if dct is not None:
+        if dct is None:
+            return None
 
-            # establish defaults
-            out = dct.copy()
-            out['path'] = None  # should never be specified inside of yaml
-            if 'format' not in out:
-                out['format'] = ''
-            if 'force_overwrite' not in out:
-                out['force_overwrite'] = False
+        # establish defaults
+        out = dct.copy()
+        out['path'] = None  # should never be specified inside of yaml
+        if 'format' not in out:
+            out['format'] = ''
+        if 'force_overwrite' not in out:
+            out['force_overwrite'] = False
 
-            fformat = out['format']
+        fformat = out['format']
 
-            # file name keyword overrides dictionary
-            if fname is not None:
+        # file name keyword overrides dictionary
+        if fname is not None:
 
-                # fname may contain path information
-                head, fname = os.path.split(fname)
-                if len(head) and fpath is not None:
-                    raise RuntimeError('contradictory specification')
-                elif len(head):
-                    fpath = head
+            # fname may contain path information
+            head, fname = os.path.split(fname)
+            if len(head) and fpath is not None:
+                raise RuntimeError('contradictory specification')
+            elif len(head):
+                fpath = head
 
-                fname, ext = os.path.splitext(fname)
-                if ext in supported:
-                    fformat = ext
+            fname, ext = os.path.splitext(fname)
+            if ext in supported:
+                fformat = ext
 
-                out['name'] = fname
+            out['name'] = fname
 
-            # file path keyword overrides dictionary
-            if fpath is not None:
-                out['path'] = fpath
+        # file path keyword overrides dictionary
+        if fpath is not None:
+            out['path'] = fpath
 
-            # file format
-            if fformat is None:
-                pass
-            elif len(fformat):
-                out['format'] = fformat.lstrip('.')
-            else:
-                out['format'] = 'h5'
+        # file format
+        if fformat is None:
+            pass
+        elif len(fformat):
+            out['format'] = fformat.lstrip('.')
+        else:
+            out['format'] = 'h5'
 
-            if fformat is None:
-                out['file_name'] = None
-            else:
-                out['file_name'] = '.'.join([out['name'], out['format']])
+        if fformat is None:
+            out['file_name'] = None
+        else:
+            out['file_name'] = '.'.join([out['name'], out['format']])
 
         return out
 
