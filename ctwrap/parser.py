@@ -179,32 +179,6 @@ class Parser(object):
         return None
 
 
-def load_yaml(fname: str,
-              path: Optional[str] = None,
-              keys: Optional[str] = None) -> Tuple[Any, ...]:
-    """Load yaml from file
-
-    Arguments:
-        fname: file name
-        path: relative/absolute path. Empty ('') for
-        keys: key
-
-    Returns:
-        Dictionary containing the required keys
-    """
-
-    if path not in ['', None]:
-        fname = (os.sep).join([path, fname])
-
-    with open(fname) as yml:
-        out = yaml.load(yml, Loader=yaml.SafeLoader)
-
-    if keys is None:
-        return out
-    else:
-        return tuple([deepcopy(out[k]) for k in keys])
-
-
 def save_metadata(output: Dict[str, Any],
                   metadata: Dict[str, Any]) -> None:
     """Function save metadata as attributes to file
