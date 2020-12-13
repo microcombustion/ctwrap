@@ -22,7 +22,7 @@ import multiprocessing as mp
 import queue  # imported for using queue.Empty exception
 
 # ctwrap specific import
-from .parser import _parse, _write, save_metadata, Parser
+from .parser import _parse, _write, Parser
 
 
 supported = ('.h5', '.hdf', '.hdf5')
@@ -201,8 +201,34 @@ class Simulation(object):
         if metadata is None or output is None:
             return
 
+        def save_metadata(output: Dict[str, Any],
+                        metadata: Dict[str, Any]) -> None:
+            """Function save metadata as attributes to file
+
+            Arguments:
+                output: file information
+                metadata: metadata
+            """
+
+            oname = output['file_name']
+            opath = output['path']
+            formatt = output['format']
+            force = output['force_overwrite']
+
+            if oname is None:
+                return
+            if opath is not None:
+                oname = os.path.join(opath, oname)
+
+            with h5py.File(oname, 'r+') as hdf:
+                for key, val in metadata.items():
+                    if isinstance(val, dict):
+                        hdf.attrs[key] = yaml.dump(val, Dumper=yaml.SafeDumper)
+                    else:
+                        hdf.attrs[key] = val
+
+
         save_metadata(output, metadata)
-        return
 
 
 class SimulationHandler(object):
