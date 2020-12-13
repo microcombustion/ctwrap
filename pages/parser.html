@@ -41,10 +41,21 @@
 <p>Parser module.</p>
 <dl class="py class">
 <dt id="ctwrap.parser.Parser">
-<em class="property">class </em><code class="sig-prename descclassname">ctwrap.parser.</code><code class="sig-name descname">Parser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dct</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">ctwrap.parser.</code><code class="sig-name descname">Parser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>A lightweight class that handles units.</p>
 <p>The handling mimics that of a python dictionary, while adding direct access to
 keyed values via attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>raw</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Dictionary to be parsed</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ctwrap.parser.Parser.items">
+<code class="sig-name descname">items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser.items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return parser items</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="ctwrap.parser.Parser.keys">
 <code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser.keys" title="Permalink to this definition">¶</a></dt>
@@ -56,6 +67,12 @@ keyed values via attributes.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt id="ctwrap.parser.Parser.values">
+<code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return parser values</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -65,9 +82,9 @@ keyed values via attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fname</strong> (<em>str</em>) – file name</p></li>
-<li><p><strong>path</strong> (<em>str</em>) – relative/absolute path. Empty (‘’) for</p></li>
-<li><p><strong>keys</strong> (<em>str</em>) – key</p></li>
+<li><p><strong>fname</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file name</p></li>
+<li><p><strong>path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – relative/absolute path. Empty (‘’) for</p></li>
+<li><p><strong>keys</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – key</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -100,8 +117,8 @@ keyed values via attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>output</strong> (<em>dict</em>) – file information</p></li>
-<li><p><strong>metadata</strong> (<em>dict</em>) – metadata</p></li>
+<li><p><strong>output</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – file information</p></li>
+<li><p><strong>metadata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – metadata</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
