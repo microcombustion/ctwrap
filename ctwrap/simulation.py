@@ -8,9 +8,11 @@ see `adiabatic flame example <adiabatic_flame_example.ipynb>`_ or
  """
 
 import os
+from pathlib import Path
 from copy import deepcopy
 import importlib
 import h5py
+from ruamel import yaml
 
 from typing import Dict, Any, Optional, TypeVar, Union
 
@@ -20,7 +22,7 @@ import multiprocessing as mp
 import queue  # imported for using queue.Empty exception
 
 # ctwrap specific import
-from .parser import _parse, _write, load_yaml, save_metadata
+from .parser import _parse, _write, save_metadata, Parser
 
 
 supported = ('.h5', '.hdf', '.hdf5')
@@ -110,7 +112,6 @@ class Simulation(object):
             # calls the run method in simulation module 'minimal`
             sim.run()
 
-
         Arguments:
            name (string): name of simulation run
            config (dict, optional): configuration
@@ -121,6 +122,7 @@ class Simulation(object):
 
         if config is None:
             config = self._module.defaults()
+        config = Parser(config)
 
         self.data = self._module.run(name, **config, **kwargs)
         self._module = self._module.__name__
@@ -295,12 +297,18 @@ class SimulationHandler(object):
         """
 
         # load configuration from yaml
-        content = load_yaml(yaml_file, path)
+        fname = Path(yaml_file)
+        if path is not None:
+            fname = Path(path) / fname
+
+        with open(fname) as stream:
+            content = yaml.load(stream, Loader=yaml.SafeLoader)
+
         output = content.get('output', {})
 
         # naming priorities: keyword / yaml / automatic
         if name is None:
-            name = '.'.join(yaml_file.split('.')[:-1])
+            name = '{}'.format(Path(yaml_file).parents[0] / fname.stem)
             name = output.get('name', name)
 
         return cls.from_dict(content, name=name, path=path, **kwargs)

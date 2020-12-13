@@ -9,7 +9,6 @@ Differences between stock cantera example and ctwrap version are:
 * Content is broken down into methods to load values, run the simulation, and save output
 """
 import warnings
-from ruamel import yaml
 
 from ctwrap import Parser
 
@@ -40,7 +39,7 @@ domain:
 
 def defaults():
     """Returns dictionary containing default arguments"""
-    return yaml.load(DEFAULTS, Loader=yaml.SafeLoader)
+    return Parser.from_yaml(DEFAULTS)
 
 
 def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
@@ -51,9 +50,9 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
 
     Arguments:
         name (str): name of the task
-        chemistry (dict): reflects yaml 'configuration:chemistry'
-        upstream  (dict): reflects yaml 'configuration:upstream'
-        domain    (dict): reflects yaml 'configuration:simulation'
+        chemistry (Parser): reflects yaml 'configuration:chemistry'
+        upstream  (Parser): reflects yaml 'configuration:upstream'
+        domain    (Parser): reflects yaml 'configuration:simulation'
         loglevel   (int): amount of diagnostic output (0 to 8)
 
     Returns:
@@ -64,11 +63,9 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
 
     # IdealGasMix object used to compute mixture properties, set to the state of the
     # upstream fuel-air mixture
-    mech = Parser(chemistry).mechanism
-    gas = ct.Solution(mech)
+    gas = ct.Solution(chemistry.mechanism)
 
     # temperature, pressure, and composition
-    upstream = Parser(upstream)
     T = upstream.T.m_as('kelvin')
     P = upstream.P.m_as('pascal')
     gas.TP = T, P
@@ -76,7 +73,7 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
     gas.set_equivalence_ratio(phi, upstream.fuel, upstream.oxidizer)
 
     # set up flame object
-    width = Parser(domain).width.m_as('meter')
+    width = domain.width.m_as('meter')
     f = ct.FreeFlame(gas, width=width)
     f.set_refine_criteria(ratio=3, slope=0.06, curve=0.12)
     if loglevel > 0:
