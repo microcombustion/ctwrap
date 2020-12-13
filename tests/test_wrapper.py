@@ -23,6 +23,11 @@ class TestWrap(unittest.TestCase):
     _yaml = 'minimal.yaml'
     _hdf = None
 
+    def tearDown(self):
+        if self._hdf:
+            [hdf.unlink() for hdf in Path(EXAMPLES).glob('*.h5')]
+            [hdf.unlink() for hdf in Path(ROOT).glob('*.h5')]
+
     def test_simulation(self):
         sim = cw.Simulation.from_module(self._module)
         self.assertIsNone(sim.data)
@@ -44,7 +49,6 @@ class TestWrap(unittest.TestCase):
         if self._hdf:
             hdf = Path(EXAMPLES) / self._hdf
             self.assertTrue(hdf.is_file())
-            hdf.unlink()
 
     def test_parallel(self):
         sim = cw.Simulation.from_module(self._module)
@@ -54,7 +58,6 @@ class TestWrap(unittest.TestCase):
         if self._hdf:
             hdf = Path(EXAMPLES) / self._hdf
             self.assertTrue(hdf.is_file())
-            hdf.unlink()
 
     def test_commandline(self):
         cmd = 'ctwrap'
@@ -72,7 +75,6 @@ class TestWrap(unittest.TestCase):
         if self._hdf:
             hdf = Path(EXAMPLES) / self._hdf
             self.assertTrue(hdf.is_file())
-            hdf.unlink()
 
 
 class TestIgnition(TestWrap):
