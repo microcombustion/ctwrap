@@ -29,9 +29,15 @@ class TestParse(unittest.TestCase):
         self.assertEqual(value, '1')
         self.assertEqual(unit, 'spam')
 
-    def test_no_unit(self):
+    def test_no_unit1(self):
 
         value, unit = cw.parse('2.')
+        self.assertEqual(value, '2.')
+        self.assertIsNone(unit)
+
+    def test_no_unit2(self):
+
+        value, unit = cw.parse('2. ')
         self.assertEqual(value, '2.')
         self.assertEqual(unit, 'dimensionless')
 
@@ -60,6 +66,19 @@ class TestWrite(unittest.TestCase):
 
 
 class TestParser(unittest.TestCase):
+
+    def test_minimal(self):
+
+        defaults = cw.parser.load_yaml(
+            'minimal.yaml', path=EXAMPLES)
+        p = cw.Parser(defaults)
+        self.assertEqual(len(p), len(defaults))
+        self.assertEqual(p.keys(), defaults.keys())
+        self.assertIn('defaults', p)
+        dd1 = {**p}
+        self.assertIsInstance(dd1['defaults'], cw.Parser)
+        dd2 = {key: val for key, val in p.items()}
+        self.assertEqual(dd1.keys(), dd2.keys())
 
     def test_ignition(self):
 
