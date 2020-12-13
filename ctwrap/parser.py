@@ -1,6 +1,7 @@
 """Parser module."""
 from pathlib import Path
 from typing import Optional, Dict, Any, Tuple, KeysView, Generator, Union
+from copy import deepcopy
 from pint import UnitRegistry
 from ruamel import yaml
 import warnings
@@ -73,6 +74,11 @@ class Parser(object):
 
     def __init__(self, raw: Dict[str, Any]) -> None:
         """Constructor"""
+        if isinstance(raw, Parser):
+            raw = deepcopy(raw.raw)
+        if not isinstance(raw, (dict, str)):
+            raise TypeError("Cannot construct 'Parser' object from {} "
+                            "with type '{}'".format(raw, type(raw)))
         self.raw = raw
 
     def __repr__(self):
@@ -110,6 +116,12 @@ class Parser(object):
         """Length corresponds to number of keys"""
         return len(self.raw)
 
+    def __eq__(self, other: 'Parser'):
+        """Check equality"""
+        if isinstance(other, Parser):
+            return self.raw == other.raw
+        return False
+
     def __iter__(self) -> Generator:
         """Returns itself as an iterator."""
         for k in self.raw.keys():
@@ -142,9 +154,9 @@ class Parser(object):
         """Load parser from YAML
 
         Arguments:
-            yml: File name or YAML string
-            path: Relative/absolute path. Empty ('') for
-            keys: List of keys
+           yml: File name or YAML string
+           path: Relative/absolute path
+           keys: List of keys
         """
         fname = Path(yml)
         if path is not None:
