@@ -11,13 +11,13 @@ import warnings
 import re
 
 
-__all__ = ['parse', 'Parser', 'load_yaml', 'save_metadata']
+__all__ = ['Parser', 'load_yaml', 'save_metadata']
 
 
 ureg = UnitRegistry()
 
 
-def parse(val: str):
+def _parse(val: str):
     """Parse string expression containg value and unit
 
     Arguments:
@@ -47,7 +47,7 @@ def parse(val: str):
     return value, unit
 
 
-def write(value: Union[int, float, str], unit: Optional[str]=None):
+def _write(value: Union[int, float, str], unit: Optional[str]=None):
     """Format value / unit combination into parseable string
 
     Arguments:
@@ -95,7 +95,7 @@ class Parser(object):
         val = self.raw[key]
 
         if isinstance(val, str):
-            value, unit = parse(val)
+            value, unit = _parse(val)
             if value and unit:
                 return ureg.Quantity(val)
             return val
@@ -103,7 +103,7 @@ class Parser(object):
         if isinstance(val, dict):
             return Parser(val)
 
-        if isinstance(val, (list, tuple)) and len(val) > 1:
+        if isinstance(val, (list, tuple)) and len(val) == 3:
             warnings.warn("Definition of values by lists/tuples is superseded by value/unit strings",
                           PendingDeprecationWarning)
             return ureg.Quantity(val[0], val[1])
@@ -169,6 +169,14 @@ class Parser(object):
     def to_yaml(self):
         """Convert Parser content to YAML string"""
         return yaml.dump(self.raw, Dumper=yaml.SafeDumper)
+
+    def get(self, key, default=None):
+        """Get key"""
+        if key in self:
+            return self[key]
+        if default:
+            return default
+        return None
 
 
 def load_yaml(fname: str,

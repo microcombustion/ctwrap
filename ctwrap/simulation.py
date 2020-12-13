@@ -20,7 +20,7 @@ import multiprocessing as mp
 import queue  # imported for using queue.Empty exception
 
 # ctwrap specific import
-from .parser import parse, write, load_yaml, save_metadata
+from .parser import _parse, _write, load_yaml, save_metadata
 
 
 supported = ('.h5', '.hdf', '.hdf5')
@@ -215,22 +215,20 @@ class SimulationHandler(object):
 
     .. code-block:: YAML
 
-        output: # output file information
-        filename: minimal  # optional
         variation: # variation data
-        entry: sleep
-        values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
-        defaults: # defualts parameters to run the modules
-        sleep: 0.2
+          entry: sleep
+          values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
+        defaults: # default parameters to run the modules
+          sleep: 0.2
 
     Attributes:
-      verbosity (int): verbosity level
+       verbosity (int): verbosity level
 
     Arguments:
-        defaults: Dictionary containing simulation defaults
-        variation: Dictionary containing 'entry' and 'values'
-        output: Dictionary specifying file output
-        verbosity: Verbosity level
+       defaults: Dictionary containing simulation defaults
+       variation: Dictionary containing 'entry' and 'values'
+       output: Dictionary specifying file output
+       verbosity: Verbosity level
     """
 
     def __init__(self,
@@ -429,8 +427,8 @@ class SimulationHandler(object):
                 if isinstance(sub, list):
                     sub[0] = value
                 elif isinstance(sub, str):
-                    _, unit = parse(sub)
-                    sub = write(value, unit)
+                    _, unit = _parse(sub)
+                    sub = _write(value, unit)
                 else:
                     sub = value
             else:
