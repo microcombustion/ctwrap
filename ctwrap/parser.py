@@ -1,17 +1,13 @@
 """Parser module."""
-import os
 from pathlib import Path
 from typing import Optional, Dict, Any, Tuple, KeysView, Generator, Union
-import json
 from pint import UnitRegistry
-from copy import deepcopy
 from ruamel import yaml
-import h5py
 import warnings
 import re
 
 
-__all__ = ['Parser', 'load_yaml', 'save_metadata']
+__all__ = ['Parser']
 
 
 ureg = UnitRegistry()
@@ -177,32 +173,3 @@ class Parser(object):
         if default:
             return default
         return None
-
-
-def save_metadata(output: Dict[str, Any],
-                  metadata: Dict[str, Any]) -> None:
-    """Function save metadata as attributes to file
-
-    Arguments:
-        output: file information
-        metadata: metadata
-    """
-
-    oname = output['file_name']
-    opath = output['path']
-    formatt = output['format']
-    force = output['force_overwrite']
-
-    if oname is None:
-        return
-    if opath is not None:
-        oname = os.path.join(opath, oname)
-
-    with h5py.File(oname, 'r+') as hdf:
-        for key, val in metadata.items():
-            if isinstance(val, dict):
-                hdf.attrs[key] = json.dumps(val)
-            else:
-                hdf.attrs[key] = val
-
-    return
