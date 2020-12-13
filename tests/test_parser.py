@@ -6,6 +6,7 @@
 import unittest
 from pathlib import Path
 import pint.quantity as pq
+from ruamel import yaml
 
 import ctwrap as cw
 from ctwrap.parser import _parse as parse
@@ -14,7 +15,7 @@ from ctwrap.parser import _write as write
 
 PWD = Path(__file__).parents[0]
 ROOT = PWD.parents[0]
-EXAMPLES = '{}'.format(ROOT / 'yaml')
+EXAMPLES = ROOT / 'yaml'
 
 
 class TestParse(unittest.TestCase):
@@ -71,7 +72,8 @@ class TestParser(unittest.TestCase):
 
     def test_minimal(self):
 
-        defaults = cw.parser.load_yaml('minimal.yaml', path=EXAMPLES)
+        with open(EXAMPLES / 'minimal.yaml') as stream:
+            defaults = yaml.load(stream, Loader=yaml.SafeLoader)
         p = cw.Parser.from_yaml('minimal.yaml', path=EXAMPLES)
         self.assertEqual(len(p), len(defaults))
         self.assertEqual(p.keys(), defaults.keys())
@@ -83,19 +85,19 @@ class TestParser(unittest.TestCase):
 
     def test_ignition(self):
 
-        defaults = cw.parser.load_yaml(
-            'ignition.yaml', path=EXAMPLES, keys=['defaults'])
-        initial = defaults[0]['initial']
+        with open(EXAMPLES / 'ignition.yaml') as stream:
+            yml = yaml.load(stream, Loader=yaml.SafeLoader)
+        initial = yml['defaults']['initial']
         self.assertIsInstance(initial['T'], float)
         self.assertIsInstance(initial['fuel'], str)
 
     def test_adiabatic_flame(self):
 
-        defaults = cw.parser.load_yaml(
+        parser = cw.Parser.from_yaml(
             'adiabatic_flame.yaml', path=EXAMPLES, keys=['defaults'])
-        p = cw.Parser(defaults[0]['upstream'])
-        self.assertIsInstance(p.T, pq.Quantity)
-        self.assertIsInstance(p.T.m, float)
-        self.assertEqual(str(p.T.units), 'kelvin')
-        self.assertEqual(p.T.m - 273.15, p.T.m_as('degC'))
-        self.assertIsInstance(p.fuel, str)
+        up = parser.defaults.upstream
+        self.assertIsInstance(up.T, pq.Quantity)
+        self.assertIsInstance(up.T.m, float)
+        self.assertEqual(str(up.T.units), 'kelvin')
+        self.assertEqual(up.T.m - 273.15, up.T.m_as('degC'))
+        self.assertIsInstance(up.fuel, str)
