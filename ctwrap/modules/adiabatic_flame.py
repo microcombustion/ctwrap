@@ -49,7 +49,7 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
     for handling and conversion of units.
 
     Arguments:
-        name (str): name of the task
+        name (str): output group name
         chemistry (Parser): reflects yaml 'configuration:chemistry'
         upstream  (Parser): reflects yaml 'configuration:upstream'
         domain    (Parser): reflects yaml 'configuration:simulation'
@@ -91,7 +91,7 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
     msg = '    {0:s}: mixture-averaged flamespeed = {1:7f} m/s'
     print(msg.format(name, f.velocity[0]))
 
-    group = name + "<mix>"
+    group = name + "_mix"
     out[group] = f
 
     # Solve with multi-component transport properties
@@ -102,7 +102,7 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
     msg = '    {0:s}: multi-component flamespeed  = {1:7f} m/s'
     print(msg.format(name, f.velocity[0]))
 
-    group = name + "<multi>"
+    group = name + "_multi"
     out[group] = f
 
     return out

@@ -6,8 +6,6 @@ see `adiabatic flame example <adiabatic_flame_example.ipynb>`_ or
  *Note:* Other cantera simulations module can be used with this module provided they followed the
  format in `minimal <minimal.py>`_.
  """
-
-import os
 from pathlib import Path
 from copy import deepcopy
 import importlib
@@ -172,10 +170,10 @@ class Simulation(object):
         force = self._output['force_overwrite']
 
         if filepath is not None:
-            filename = os.path.join(filepath, filename)
+            filename = Path(filepath)/ filename
 
         # file check
-        fexists = os.path.isfile(filename)
+        fexists = Path.is_file(filename)
 
         if fexists:
             with h5py.File(filename, 'r') as hdf:
@@ -236,7 +234,7 @@ class Simulation(object):
             if oname is None:
                 return
             if opath is not None:
-                oname = os.path.join(opath, oname)
+                oname = Path(opath) / oname
 
             with h5py.File(oname, 'r+') as hdf:
                 for key, val in metadata.items():
@@ -244,7 +242,6 @@ class Simulation(object):
                         hdf.attrs[key] = json.dumps(val)
                     else:
                         hdf.attrs[key] = val
-
 
         save_metadata(output, metadata)
 
@@ -423,13 +420,15 @@ class SimulationHandler(object):
         if fname is not None:
 
             # fname may contain path information
-            head, fname = os.path.split(fname)
-            if len(head) and fpath is not None:
+            head = Path(fname).parent
+            fname = Path(fname).name
+            if str(head) != "." and fpath is not None:
                 raise RuntimeError('contradictory specification')
-            elif len(head):
+            elif str(head) != ".":
                 fpath = head
 
-            fname, ext = os.path.splitext(fname)
+            fname = Path(fname).stem
+            ext = Path(fname).suffix
             if ext in supported:
                 fformat = ext
 
@@ -513,7 +512,7 @@ class SimulationHandler(object):
         if self._output['path'] is None:
             return self._output['file_name']
         else:
-            return os.path.join(self._output['path'], self._output['file_name'])
+            return Path(self._output['path']) / self._output['file_name']
 
     @property
     def tasks(self):
@@ -558,7 +557,8 @@ class SimulationHandler(object):
         # run simulation
         config = self.configuration(task)
 
-        obj.run(task, config, **kwargs)
+        group = "output_00"
+        obj.run(group, config, **kwargs)
         obj._save(task=task)
         if self._output is not None:
             obj._save_metadata(self._output, self._metadata)
@@ -605,13 +605,15 @@ class SimulationHandler(object):
 
         tasks = [t for t in self.tasks]
         tasks.sort()
-        for t in tasks:
+        for i, t in enumerate(tasks):
+            print(t)
             if verbosity > 0:
                 print(indent1 + 'processing `{}`'.format(t))
 
             # run simulation
             config = self.configuration(t)
-            obj.run(t, config, **kwargs)
+            group = "output_{:0>2d}".format(i)
+            obj.run(group, config, **kwargs)
             obj._save(task=t)
         if self._output is not None:
             obj._save_metadata(self._output, self._metadata)
@@ -670,9 +672,10 @@ class SimulationHandler(object):
         finished_tasks = mp.Queue()
         tasks = [t for t in self.tasks]
         tasks.sort()
-        for t in tasks:
+        for i, t in enumerate(tasks):
             config = self.configuration(t)
-            tasks_to_accomplish.put((t, config, kwargs))
+            group = "output_{:0>2d}".format(i)
+            tasks_to_accomplish.put((t, group, config, kwargs))
 
         lock = mp.Lock()
 
@@ -732,7 +735,7 @@ def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
     while True:
         try:
             # retrieve next simulation task
-            task, config, kwargs = tasks_to_accomplish.get_nowait()
+            task, group, config, kwargs = tasks_to_accomplish.get_nowait()
 
         except queue.Empty:
             # no tasks left
@@ -746,7 +749,7 @@ def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
             msg = indent1 + 'processing `{}` ({})'
             if verbosity > 0:
                 print(msg.format(task, this))
-            obj.run(task, config, **kwargs)
+            obj.run(group, config, **kwargs)
             with lock:
                 obj._save(task=task)
             msg = 'case `{}` completed by {}'.format(task, this)
