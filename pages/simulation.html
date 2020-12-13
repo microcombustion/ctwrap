@@ -148,13 +148,11 @@ Class adds methods to switch between multiple configurations.</p>
 instantiated using the <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.from_yaml" title="ctwrap.simulation.SimulationHandler.from_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_yaml()</span></code></a> method.</p>
 </div>
 <p>An example of a minimal yaml configuration is:</p>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">output</span><span class="p">:</span> <span class="c1"># output file information</span>
-<span class="nt">filename</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">minimal</span>  <span class="c1"># optional</span>
-<span class="nt">variation</span><span class="p">:</span> <span class="c1"># variation data</span>
-<span class="nt">entry</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sleep</span>
-<span class="nt">values</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">]</span>
-<span class="nt">defaults</span><span class="p">:</span> <span class="c1"># defualts parameters to run the modules</span>
-<span class="nt">sleep</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">variation</span><span class="p">:</span> <span class="c1"># variation data</span>
+  <span class="nt">entry</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sleep</span>
+  <span class="nt">values</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">]</span>
+<span class="nt">defaults</span><span class="p">:</span> <span class="c1"># default parameters to run the modules</span>
+  <span class="nt">sleep</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
 </pre></div>
 </div>
 <dl class="py attribute">
@@ -254,7 +252,7 @@ simulation module <code class="docutils literal notranslate"><span class="pre">m
 runs all the variations in minimal configuration file calling the <code class="docutils literal notranslate"><span class="pre">run</span></code>
 method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>,  save the resulting output using the
 <code class="docutils literal notranslate"><span class="pre">save</span></code>  method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code> in parallel and finally
-save the <cite>metatada</cite> using <a class="reference internal" href="parser.html#ctwrap.parser.save_metadata" title="ctwrap.parser.save_metadata"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code></a> method.</p>
+save the <cite>metatada</cite> using <code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code> method.</p>
 <blockquote>
 <div><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Runs all the variations in parallel</span>
     <span class="n">sh</span><span class="o">.</span><span class="n">run_parallel</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
@@ -291,7 +289,7 @@ simulation module <code class="docutils literal notranslate"><span class="pre">m
 runs all the variations in minimal configuration file calling the <code class="docutils literal notranslate"><span class="pre">run</span></code>
 method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>,  save the resulting output using the
 <code class="docutils literal notranslate"><span class="pre">save</span></code>  method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code> serially and finally
-save the <cite>metatada</cite> using <a class="reference internal" href="parser.html#ctwrap.parser.save_metadata" title="ctwrap.parser.save_metadata"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code></a> method.</p>
+save the <cite>metatada</cite> using <code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code> method.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Runs all the variations serially</span>
 <span class="n">sh</span><span class="o">.</span><span class="n">run_serial</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
 </pre></div>
@@ -327,7 +325,7 @@ simulation module <code class="docutils literal notranslate"><span class="pre">m
 This <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_task" title="ctwrap.simulation.SimulationHandler.run_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_task()</span></code></a> method runs the task calling the <code class="docutils literal notranslate"><span class="pre">run</span></code> method in
 simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>, save the resulting output using
 the <code class="docutils literal notranslate"><span class="pre">save</span></code>  method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code> and finally
-save the <cite>metatada</cite> using <a class="reference internal" href="parser.html#ctwrap.parser.save_metadata" title="ctwrap.parser.save_metadata"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code></a> method.</p>
+save the <cite>metatada</cite> using <code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code> method.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Runs the task `sleep_0.4` using `sim` object</span>
 <span class="n">sh</span><span class="o">.</span><span class="n">run_task</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="s1">&#39;sleep_0.4&#39;</span> <span class="p">)</span>
 </pre></div>

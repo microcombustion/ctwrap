@@ -51,6 +51,30 @@ keyed values via attributes.</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt id="ctwrap.parser.Parser.from_yaml">
+<em class="property">classmethod </em><code class="sig-name descname">from_yaml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">yml</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keys</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser.from_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser.from_yaml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load parser from YAML</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>yml</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – File name or YAML string</p></li>
+<li><p><strong>path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Relative/absolute path. Empty (‘’) for</p></li>
+<li><p><strong>keys</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – List of keys</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ctwrap.parser.Parser" title="ctwrap.parser.Parser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ctwrap.parser.Parser.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get key</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="ctwrap.parser.Parser.items">
 <code class="sig-name descname">items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser.items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser.items" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return parser items</p>
@@ -68,63 +92,17 @@ keyed values via attributes.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="ctwrap.parser.Parser.to_yaml">
+<code class="sig-name descname">to_yaml</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser.to_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser.to_yaml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert Parser content to YAML string</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="ctwrap.parser.Parser.values">
 <code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser.values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return parser values</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt id="ctwrap.parser.load_yaml">
-<code class="sig-prename descclassname">ctwrap.parser.</code><code class="sig-name descname">load_yaml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keys</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#load_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.load_yaml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load yaml from file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fname</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file name</p></li>
-<li><p><strong>path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – relative/absolute path. Empty (‘’) for</p></li>
-<li><p><strong>keys</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – key</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, …]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Dictionary containing the required keys</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="ctwrap.parser.parse">
-<code class="sig-prename descclassname">ctwrap.parser.</code><code class="sig-name descname">parse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.parse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse string expression containg value and unit</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>val</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – String expression</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><cite>Tuple</cite> containing value and unit</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="ctwrap.parser.save_metadata">
-<code class="sig-prename descclassname">ctwrap.parser.</code><code class="sig-name descname">save_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">metadata</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#save_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.save_metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function save metadata as attributes to file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>output</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – file information</p></li>
-<li><p><strong>metadata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – metadata</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
 </dd></dl>
 
 </div>

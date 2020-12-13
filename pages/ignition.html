@@ -49,8 +49,8 @@
   <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
 <span class="nt">defaults</span><span class="p">:</span>
   <span class="nt">initial</span><span class="p">:</span>
-    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000. kelvin</span> <span class="c1"># initial temperature</span>
-    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1. atmosphere</span> <span class="c1"># pressure</span>
+    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000.</span> <span class="c1"># temperature (Kelvin)</span>
+    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">101325.</span> <span class="c1"># pressure (Pascal)</span>
     <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.</span> <span class="c1"># equivalence ratio</span>
     <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">H2</span>
     <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1,AR:3.76</span>
@@ -74,13 +74,10 @@
 
 <span class="sd">Differences between stock cantera example and ctwrap version are:</span>
 
-<span class="sd">* Parameter values are passed using a `Parser` object (equivalent to dictionary)</span>
 <span class="sd">* Content is broken down into methods to load values, run the simulation, and save output</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
-
-<span class="kn">from</span> <span class="nn">ctwrap</span> <span class="kn">import</span> <span class="n">Parser</span>
 
 
 <span class="k">try</span><span class="p">:</span>
@@ -95,8 +92,8 @@
 <span class="n">DEFAULTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2"># default parameters for the `ignition` module</span>
 <span class="s2">initial:</span>
-<span class="s2">  T: 1000. kelvin # temperature</span>
-<span class="s2">  P: 1. atmosphere # pressure</span>
+<span class="s2">  T: 1000. # temperature (kelvin)</span>
+<span class="s2">  P: 101325. # pressure (Pascal)</span>
 <span class="s2">  phi: 1. # equivalence ratio</span>
 <span class="s2">  fuel: H2</span>
 <span class="s2">  oxidizer: O2:1.,AR:3.76</span>
@@ -119,8 +116,6 @@
         <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">simulation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function handling reactor simulation.</span>
-<span class="sd">    The function uses the class &#39;ctwrap.Parser&#39; in conjunction with &#39;pint.Quantity&#39;</span>
-<span class="sd">    for handling and conversion of units.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        name (str): name of the task</span>
@@ -133,27 +128,25 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># initialize gas object</span>
-    <span class="n">mech</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">chemistry</span><span class="p">)</span><span class="o">.</span><span class="n">mechanism</span>
+    <span class="n">mech</span> <span class="o">=</span> <span class="n">chemistry</span><span class="p">[</span><span class="s1">&#39;mechanism&#39;</span><span class="p">]</span>
     <span class="n">gas</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">Solution</span><span class="p">(</span><span class="n">mech</span><span class="p">)</span>
 
     <span class="c1"># set temperature, pressure, and composition</span>
-    <span class="n">initial</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">initial</span><span class="p">)</span>
-    <span class="n">T</span> <span class="o">=</span> <span class="n">initial</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;kelvin&#39;</span><span class="p">)</span>
-    <span class="n">P</span> <span class="o">=</span> <span class="n">initial</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;pascal&#39;</span><span class="p">)</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span>
     <span class="n">gas</span><span class="o">.</span><span class="n">TP</span> <span class="o">=</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span>
-    <span class="n">phi</span> <span class="o">=</span> <span class="n">initial</span><span class="o">.</span><span class="n">phi</span>
-    <span class="n">gas</span><span class="o">.</span><span class="n">set_equivalence_ratio</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">initial</span><span class="o">.</span><span class="n">fuel</span><span class="p">,</span> <span class="n">initial</span><span class="o">.</span><span class="n">oxidizer</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;phi&#39;</span><span class="p">]</span>
+    <span class="n">gas</span><span class="o">.</span><span class="n">set_equivalence_ratio</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;fuel&#39;</span><span class="p">],</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;oxidizer&#39;</span><span class="p">])</span>
 
     <span class="c1"># define a reactor network</span>
     <span class="n">reactor</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">IdealGasConstPressureReactor</span><span class="p">(</span><span class="n">gas</span><span class="p">)</span>
     <span class="n">sim</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">ReactorNet</span><span class="p">([</span><span class="n">reactor</span><span class="p">])</span>
 
     <span class="c1"># set simulation parameters</span>
-    <span class="n">par</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">simulation</span><span class="p">)</span>
-    <span class="n">sim</span><span class="o">.</span><span class="n">atol</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">atol</span>
-    <span class="n">sim</span><span class="o">.</span><span class="n">rtol</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">rtol</span>
-    <span class="n">delta_t</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">delta_t</span>
-    <span class="n">n_points</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">n_points</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">atol</span> <span class="o">=</span> <span class="n">simulation</span><span class="p">[</span><span class="s1">&#39;atol&#39;</span><span class="p">]</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">rtol</span> <span class="o">=</span> <span class="n">simulation</span><span class="p">[</span><span class="s1">&#39;rtol&#39;</span><span class="p">]</span>
+    <span class="n">delta_t</span> <span class="o">=</span> <span class="n">simulation</span><span class="p">[</span><span class="s1">&#39;delta_t&#39;</span><span class="p">]</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">simulation</span><span class="p">[</span><span class="s1">&#39;n_points&#39;</span><span class="p">]</span>
 
     <span class="c1"># define SolutionArray and run simulation</span>
     <span class="n">states</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">SolutionArray</span><span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">])</span>
@@ -174,7 +167,7 @@
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        filename (str): naming of file</span>
-<span class="sd">        data (Dict): data to be saved</span>
+<span class="sd">        data (dict): data to be saved</span>
 <span class="sd">        task (str): name of task if running variations</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

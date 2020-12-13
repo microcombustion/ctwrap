@@ -45,9 +45,11 @@
 <span class="sd"> &quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -57,7 +59,7 @@
 <span class="kn">import</span> <span class="nn">queue</span>  <span class="c1"># imported for using queue.Empty exception</span>
 
 <span class="c1"># ctwrap specific import</span>
-<span class="kn">from</span> <span class="nn">.parser</span> <span class="kn">import</span> <span class="n">parse</span><span class="p">,</span> <span class="n">write</span><span class="p">,</span> <span class="n">load_yaml</span><span class="p">,</span> <span class="n">save_metadata</span>
+<span class="kn">from</span> <span class="nn">.parser</span> <span class="kn">import</span> <span class="n">_parse</span><span class="p">,</span> <span class="n">_write</span><span class="p">,</span> <span class="n">Parser</span>
 
 
 <span class="n">supported</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;.hdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.hdf5&#39;</span><span class="p">)</span>
@@ -147,7 +149,6 @@
 <span class="sd">            # calls the run method in simulation module &#39;minimal`</span>
 <span class="sd">            sim.run()</span>
 
-
 <span class="sd">        Arguments:</span>
 <span class="sd">           name (string): name of simulation run</span>
 <span class="sd">           config (dict, optional): configuration</span>
@@ -158,6 +159,7 @@
 
         <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="o">.</span><span class="vm">__name__</span></div>
@@ -236,8 +238,34 @@
         <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="n">save_metadata</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
-        <span class="k">return</span></div>
+        <span class="k">def</span> <span class="nf">save_metadata</span><span class="p">(</span><span class="n">output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+                        <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;Function save metadata as attributes to file</span>
+
+<span class="sd">            Arguments:</span>
+<span class="sd">                output: file information</span>
+<span class="sd">                metadata: metadata</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="n">oname</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
+            <span class="n">opath</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span>
+            <span class="n">formatt</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span>
+            <span class="n">force</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;force_overwrite&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">oname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">opath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">oname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">opath</span><span class="p">,</span> <span class="n">oname</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">oname</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="n">hdf</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Dumper</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeDumper</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">hdf</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+
+        <span class="n">save_metadata</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SimulationHandler"><a class="viewcode-back" href="../../pages/simulation.html#ctwrap.simulation.SimulationHandler">[docs]</a><span class="k">class</span> <span class="nc">SimulationHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -252,22 +280,20 @@
 
 <span class="sd">    .. code-block:: YAML</span>
 
-<span class="sd">        output: # output file information</span>
-<span class="sd">        filename: minimal  # optional</span>
 <span class="sd">        variation: # variation data</span>
-<span class="sd">        entry: sleep</span>
-<span class="sd">        values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]</span>
-<span class="sd">        defaults: # defualts parameters to run the modules</span>
-<span class="sd">        sleep: 0.2</span>
+<span class="sd">          entry: sleep</span>
+<span class="sd">          values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]</span>
+<span class="sd">        defaults: # default parameters to run the modules</span>
+<span class="sd">          sleep: 0.2</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">      verbosity (int): verbosity level</span>
+<span class="sd">       verbosity (int): verbosity level</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        defaults: Dictionary containing simulation defaults</span>
-<span class="sd">        variation: Dictionary containing &#39;entry&#39; and &#39;values&#39;</span>
-<span class="sd">        output: Dictionary specifying file output</span>
-<span class="sd">        verbosity: Verbosity level</span>
+<span class="sd">       defaults: Dictionary containing simulation defaults</span>
+<span class="sd">       variation: Dictionary containing &#39;entry&#39; and &#39;values&#39;</span>
+<span class="sd">       output: Dictionary specifying file output</span>
+<span class="sd">       verbosity: Verbosity level</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -334,12 +360,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># load configuration from yaml</span>
-        <span class="n">content</span> <span class="o">=</span> <span class="n">load_yaml</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">/</span> <span class="n">fname</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+
         <span class="n">output</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="p">{})</span>
 
         <span class="c1"># naming priorities: keyword / yaml / automatic</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">yaml_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">fname</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -466,8 +498,8 @@
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="n">sub</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">_</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
-                    <span class="n">sub</span> <span class="o">=</span> <span class="n">write</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">_parse</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
+                    <span class="n">sub</span> <span class="o">=</span> <span class="n">_write</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">sub</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">else</span><span class="p">:</span>

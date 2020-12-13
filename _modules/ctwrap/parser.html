@@ -36,24 +36,21 @@
             
   <h1>Source code for ctwrap.parser</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Parser module.&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">KeysView</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">pint</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;parse&#39;</span><span class="p">,</span> <span class="s1">&#39;Parser&#39;</span><span class="p">,</span> <span class="s1">&#39;load_yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;save_metadata&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Parser&#39;</span><span class="p">]</span>
 
 
 <span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="parse"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.parse">[docs]</a><span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_parse</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse string expression containg value and unit</span>
 
 <span class="sd">    Arguments:</span>
@@ -80,10 +77,10 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;dimensionless&#39;</span>
 
-    <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">unit</span></div>
+    <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">unit</span>
 
 
-<span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Format value / unit combination into parseable string</span>
 
 <span class="sd">    Arguments:</span>
@@ -131,7 +128,7 @@
         <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">value</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="n">value</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">_parse</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">unit</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">val</span>
@@ -139,7 +136,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">Parser</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Definition of values by lists/tuples is superseded by value/unit strings&quot;</span><span class="p">,</span>
                           <span class="ne">PendingDeprecationWarning</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -171,62 +168,48 @@
 <div class="viewcode-block" id="Parser.items"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return parser items&quot;&quot;&quot;</span>
         <span class="n">out</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">Parser</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="Parser.from_yaml"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.from_yaml">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">yml</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Parser&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load parser from YAML</span>
 
-<div class="viewcode-block" id="load_yaml"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.load_yaml">[docs]</a><span class="k">def</span> <span class="nf">load_yaml</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-              <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-              <span class="n">keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Load yaml from file</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            yml: File name or YAML string</span>
+<span class="sd">            path: Relative/absolute path. Empty (&#39;&#39;) for</span>
+<span class="sd">            keys: List of keys</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">yml</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">/</span> <span class="n">fname</span>
 
-<span class="sd">    Arguments:</span>
-<span class="sd">        fname: file name</span>
-<span class="sd">        path: relative/absolute path. Empty (&#39;&#39;) for</span>
-<span class="sd">        keys: key</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="c1"># will raise error</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yml</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        Dictionary containing the required keys</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">path</span><span class="p">,</span> <span class="n">fname</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">out</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">})</span></div>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">yml</span><span class="p">:</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yml</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+<div class="viewcode-block" id="Parser.to_yaml"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.to_yaml">[docs]</a>    <span class="k">def</span> <span class="nf">to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert Parser content to YAML string&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span> <span class="n">Dumper</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeDumper</span><span class="p">)</span></div>
 
-    <span class="k">if</span> <span class="n">keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">out</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">])</span></div>
-
-
-<div class="viewcode-block" id="save_metadata"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.save_metadata">[docs]</a><span class="k">def</span> <span class="nf">save_metadata</span><span class="p">(</span><span class="n">output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-                  <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Function save metadata as attributes to file</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">        output: file information</span>
-<span class="sd">        metadata: metadata</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">oname</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
-    <span class="n">opath</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span>
-    <span class="n">formatt</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span>
-    <span class="n">force</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;force_overwrite&#39;</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="n">oname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span>
-    <span class="k">if</span> <span class="n">opath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">oname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">opath</span><span class="p">,</span> <span class="n">oname</span><span class="p">)</span>
-
-    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">oname</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">hdf</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">hdf</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-
-    <span class="k">return</span></div>
+<div class="viewcode-block" id="Parser.get"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get key&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">default</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span>
+        <span class="k">return</span> <span class="kc">None</span></div></div>
 </pre></div>
 
           </div>
