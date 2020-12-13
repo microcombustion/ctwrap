@@ -1,6 +1,6 @@
 """Parser module."""
 import os
-from typing import Optional, Dict, Any, Tuple, KeysView, Union
+from typing import Optional, Dict, Any, Tuple, KeysView, Generator, Union
 import json
 from pint import UnitRegistry
 from copy import deepcopy
@@ -29,7 +29,7 @@ def parse(val: str):
     if not isinstance(val, str):
         raise TypeError("Method requires string input")
 
-    value = re.findall(r'[-+]?\d*\.\d*|\d+', val)
+    value = re.findall(r'^([-+]?\d*\.\d*(?=\s)|\d+(?=\s))', val)
     if not (value and val[:len(value[0])] == value[0]):
         return val, None
 
@@ -53,7 +53,7 @@ def write(value: Union[int, float, str], unit: Optional[str]=None):
        value: Value
        unit: String describing unit
 
-    Return:
+    Returns:
        Formatted string
     """
     out = '{}'.format(value)
@@ -65,32 +65,24 @@ def write(value: Union[int, float, str], unit: Optional[str]=None):
 
 
 class Parser(object):
-    """
-    A lightweight class that handles units.
+    """A lightweight class that handles units.
 
     The handling mimics that of a python dictionary, while adding direct access to
     keyed values via attributes.
+
+    Arguments:
+        raw: Dictionary to be parsed
     """
 
-    def __init__(self, dct: Dict[str, Any]) -> None:
-        """
-        Constructor
+    def __init__(self, raw: Dict[str, Any]) -> None:
+        """Constructor"""
+        self.raw = raw
 
-        Argument:
-            dct (dict) : dictionary to be parsed
-        """
-        self.raw = dct
+    def __repr__(self):
+        return repr(self.raw)
 
     def __getattr__(self, attr: str) -> str:
-        """
-        Get attribute
-
-        Arguments:
-             attr (str): attribute
-
-        Returns:
-            Attribute
-        """
+        """Make dictionary entries accessible as attributes"""
 
         if attr not in self.raw:
             raise AttributeError("unknown attribute '{}'".format(attr))
@@ -98,19 +90,8 @@ class Parser(object):
         return self[attr]
 
     def __getitem__(self, key: str) -> Union[str, bool, int, float, ureg.Quantity]:
-        """
-        Get item
-
-        Arguments:
-            key (str): key
-
-        Returns:
-            Corresponding values from the key
-        """
+        """Make class subscriptable"""
         val = self.raw[key]
-
-        if isinstance(val, (bool, int, float)):
-            return val
 
         if isinstance(val, str):
             value, unit = parse(val)
@@ -118,33 +99,54 @@ class Parser(object):
                 return ureg.Quantity(val)
             return val
 
+        if isinstance(val, dict):
+            return Parser(val)
+
         if isinstance(val, (list, tuple)) and len(val) > 1:
             warnings.warn("Definition of values by lists/tuples is superseded by value/unit strings",
                           PendingDeprecationWarning)
             return ureg.Quantity(val[0], val[1])
 
-        raise NotImplementedError("Cannot parse {}".format(value))
+        return val
 
-    def __repr__(self):
-        return repr(self.raw)
+    def __len__(self):
+        """Length corresponds to number of keys"""
+        return len(self.raw)
+
+    def __iter__(self) -> Generator:
+        """Returns itself as an iterator."""
+        for k in self.raw.keys():
+            yield k
+
+    def __contains__(self, key: str) -> bool:
+        """Check whether object contains channel."""
+        return key in self.raw
 
     def keys(self) -> KeysView[str]:
-        """
-        Returns list of keys
-        """
+        """Returns list of keys"""
         return self.raw.keys()
+
+    def values(self):
+        """Return parser values"""
+        out = {key: Parser(val) for key, val in self.raw.items()}
+        return out.values()
+
+    def items(self):
+        """Return parser items"""
+        out = {key: Parser(val) for key, val in self.raw.items()}
+        return out.items()
 
 
 def load_yaml(fname: str,
               path: Optional[str] = None,
               keys: Optional[str] = None) -> Tuple[Any, ...]:
-    """
-    Load yaml from file
+    """Load yaml from file
 
     Arguments:
-        fname (str) : file name
-        path (str) : relative/absolute path. Empty ('') for
-        keys (str) : key
+        fname: file name
+        path: relative/absolute path. Empty ('') for
+        keys: key
+
     Returns:
         Dictionary containing the required keys
     """
@@ -163,12 +165,11 @@ def load_yaml(fname: str,
 
 def save_metadata(output: Dict[str, Any],
                   metadata: Dict[str, Any]) -> None:
-    """
-    Function save metadata as attributes to file
+    """Function save metadata as attributes to file
 
     Arguments:
-        output (dict): file information
-        metadata (dict): metadata
+        output: file information
+        metadata: metadata
     """
 
     oname = output['file_name']
