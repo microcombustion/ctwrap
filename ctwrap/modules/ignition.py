@@ -5,13 +5,10 @@ https://cantera.org/examples/python/reactors/reactor1.py.html
 
 Differences between stock cantera example and ctwrap version are:
 
-* Parameter values are passed using a `Parser` object (equivalent to dictionary)
 * Content is broken down into methods to load values, run the simulation, and save output
 """
 import warnings
 from ruamel import yaml
-
-from ctwrap import Parser
 
 
 try:
@@ -26,8 +23,8 @@ except ImportError as err:
 DEFAULTS = """\
 # default parameters for the `ignition` module
 initial:
-  T: 1000. kelvin # temperature
-  P: 1. atmosphere # pressure
+  T: 1000. # temperature (kelvin)
+  P: 101325. # pressure (Pascal)
   phi: 1. # equivalence ratio
   fuel: H2
   oxidizer: O2:1.,AR:3.76
@@ -50,8 +47,6 @@ def run(name, chemistry=None,
         initial=None, simulation=None):
     """
     Function handling reactor simulation.
-    The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
-    for handling and conversion of units.
 
     Arguments:
         name (str): name of the task
@@ -64,27 +59,25 @@ def run(name, chemistry=None,
     """
 
     # initialize gas object
-    mech = Parser(chemistry).mechanism
+    mech = chemistry['mechanism']
     gas = ct.Solution(mech)
 
     # set temperature, pressure, and composition
-    initial = Parser(initial)
-    T = initial.T.m_as('kelvin')
-    P = initial.P.m_as('pascal')
+    T = initial['T']
+    P = initial['P']
     gas.TP = T, P
-    phi = initial.phi
-    gas.set_equivalence_ratio(phi, initial.fuel, initial.oxidizer)
+    phi = initial['phi']
+    gas.set_equivalence_ratio(phi, initial['fuel'], initial['oxidizer'])
 
     # define a reactor network
     reactor = ct.IdealGasConstPressureReactor(gas)
     sim = ct.ReactorNet([reactor])
 
     # set simulation parameters
-    par = Parser(simulation)
-    sim.atol = par.atol
-    sim.rtol = par.rtol
-    delta_t = par.delta_t
-    n_points = par.n_points
+    sim.atol = simulation['atol']
+    sim.rtol = simulation['rtol']
+    delta_t = simulation['delta_t']
+    n_points = simulation['n_points']
 
     # define SolutionArray and run simulation
     states = ct.SolutionArray(gas, extra=['t'])
@@ -105,7 +98,7 @@ def save(filename, data, task=None):
 
     Arguments:
         filename (str): naming of file
-        data (Dict): data to be saved
+        data (dict): data to be saved
         task (str): name of task if running variations
     """
 

@@ -69,9 +69,8 @@ class TestParser(unittest.TestCase):
 
     def test_minimal(self):
 
-        defaults = cw.parser.load_yaml(
-            'minimal.yaml', path=EXAMPLES)
-        p = cw.Parser(defaults)
+        defaults = cw.parser.load_yaml('minimal.yaml', path=EXAMPLES)
+        p = cw.Parser.from_yaml('minimal.yaml', path=EXAMPLES)
         self.assertEqual(len(p), len(defaults))
         self.assertEqual(p.keys(), defaults.keys())
         self.assertIn('defaults', p)
@@ -84,12 +83,9 @@ class TestParser(unittest.TestCase):
 
         defaults = cw.parser.load_yaml(
             'ignition.yaml', path=EXAMPLES, keys=['defaults'])
-        p = cw.Parser(defaults[0]['initial'])
-        self.assertIsInstance(p.T, pq.Quantity)
-        self.assertIsInstance(p.T.m, float)
-        self.assertEqual(str(p.T.units), 'kelvin')
-        self.assertEqual(p.T.m - 273.15, p.T.m_as('degC'))
-        self.assertIsInstance(p.fuel, str)
+        initial = defaults[0]['initial']
+        self.assertIsInstance(initial['T'], float)
+        self.assertIsInstance(initial['fuel'], str)
 
     def test_adiabatic_flame(self):
 
