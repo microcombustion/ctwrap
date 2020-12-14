@@ -33,6 +33,28 @@ def _replace_entry(nested, key_list, value):
     return nested
 
 
+def _sweep_matrix(defaults, tasks):
+    """Replace entries along multiple axes (recursive)
+
+    Arguments:
+       defaults: Default parameters
+       tasks: Dictionary of variations
+    """
+    key = list(tasks.keys())[0]
+    values = tasks.pop(key)
+    entry = key.split('.')
+
+    out = []
+    for value in values:
+        new = _replace_entry(deepcopy(defaults), entry, value)
+        if tasks:
+            out.extend(_sweep_matrix(new, tasks.copy()))
+        else:
+            out.append(new)
+
+    return out
+
+
 class Strategy:
     """Base class for batch simulation strategies"""
 
@@ -114,7 +136,7 @@ class Sequence(Strategy):
     """Variation of a single parameter
 
     Arguments:
-       sweep: Dictionary specifying sequence
+       sweep: Dictionary specifying single parameter sequence
     """
 
     def __init__(self, sweep: Dict[str, Any]):
@@ -128,36 +150,35 @@ class Sequence(Strategy):
 
     def create_tasks(self, defaults):
         ""
-        item = list(self.sweep.items())[0]
-        entry = item[0].split('.')
-        tasks = item[1]
-
-        out = []
-        for value in tasks:
-            new = _replace_entry(deepcopy(defaults), entry, value)
-            out.append(new)
-
-        return out
+        return _sweep_matrix(defaults, self.sweep)
 
 
 class Matrix(Strategy):
-    """Variation of multiple parameters"""
+    """Variation of multiple parameters
+
+    Arguments:
+       matrix: Dictionary specifying multiple parameter sequences
+    """
 
     def __init__(self, matrix):
         self._check_input(matrix, 2, False)
         self.matrix = matrix
 
-    # def create_tasks(self):
-    #     raise NotImplementedError("tbd")
+    def create_tasks(self, defaults):
+        ""
+        return _sweep_matrix(defaults, self.matrix)
 
 
 class Sobol(Strategy):
-    """Pseudo-random variation of multiple parameters"""
+    """Pseudo-randomly sampled parameter space via Sobol sequence
+
+    Not implemented; there is prior work in Ayoobi and Schoegl, PROCI 2015
+    """
+    # Note: old work is Python 2 / Cantera 2.1
 
     def __init__(self, ranges):
         self._check_input(ranges, 1, False)
         self.ranges = ranges
-        raise NotImplementedError("todo")
 
     # def create_tasks(self):
     #     raise NotImplementedError("tbd")
