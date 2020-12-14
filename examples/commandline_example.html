@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Parser Example &#8212; ctwrap 0.2.0b documentation</title>
+    <title>Running Simulations from the Commandline &#8212; ctwrap 0.2.0b documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -19,8 +19,8 @@
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Adiabatic Flame Example" href="adiabatic_flame_example.html" />
-    <link rel="prev" title="Jupyter Notebooks" href="jupyter.html" />
+    <link rel="next" title="Minimal Example" href="minimal_example.html" />
+    <link rel="prev" title="Ignition Example" href="ignition_example.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -285,238 +285,275 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Parser-Example">
-<h1>Parser Example<a class="headerlink" href="#Parser-Example" title="Permalink to this headline">¶</a></h1>
-<p>A brief tutorial for the <code class="docutils literal notranslate"><span class="pre">ctwrap.Parser</span></code> object, which parses YAML defined quantities within simulation modules (and also handles unit conversions).</p>
-<div class="nbinput nblast docutils container">
+<div class="section" id="Running-Simulations-from-the-Commandline">
+<h1>Running Simulations from the Commandline<a class="headerlink" href="#Running-Simulations-from-the-Commandline" title="Permalink to this headline">¶</a></h1>
+<p>All inputs are specified in YAML configuration files.</p>
+<p>Example makes are run on the command line within jupyter (using <a class="reference external" href="https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-system">system magic</a> via <code class="docutils literal notranslate"><span class="pre">!</span></code>)</p>
+<div class="section" id="1.-Help">
+<h2>1. Help<a class="headerlink" href="#1.-Help" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
-<span class="kn">from</span> <span class="nn">ctwrap</span> <span class="kn">import</span> <span class="n">Parser</span>
+<span></span><span class="c1"># display help</span>
+<span class="o">!</span> ctwrap --help
 </pre></div>
 </div>
 </div>
-<div class="section" id="1.-Load-a-YAML-File">
-<h2>1. Load a YAML File<a class="headerlink" href="#1.-Load-a-YAML-File" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput nblast docutils container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: ctwrap [-h] [--output OUTPUT] [-v] [--parallel] module_name yaml_config
+
+Simulation of constant pressure ignition (ctwrap).
+
+positional arguments:
+  module_name      wrapped module (specifies Python import path as
+                   &lt;module_name&gt; or ctwrap.modules.&lt;module_name&gt;)
+  yaml_config      yaml configuration file
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --output OUTPUT  name of output file
+  -v, --verbosity  verbosity level
+  --parallel       run parallel calculations
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="2.-minimal-Module">
+<h2>2. <code class="docutils literal notranslate"><span class="pre">minimal</span></code> Module<a class="headerlink" href="#2.-minimal-Module" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># load configuration from a yaml file</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../../yaml/adiabatic_flame.yaml&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">yml</span><span class="p">:</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yml</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+<span></span>%%time
+# run minimal module
+! ctwrap minimal ../../yaml/minimal.yaml
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    - `minimal`: sleeping for 0.4 seconds ...
+    - `minimal`: sleeping for 0.6 seconds ...
+    - `minimal`: sleeping for 0.8 seconds ...
+    - `minimal`: sleeping for 1.0 seconds ...
+    - `minimal`: sleeping for 1.2 seconds ...
+    - `minimal`: sleeping for 1.4 seconds ...
+    - `minimal`: sleeping for 1.6 seconds ...
+    - `minimal`: sleeping for 1.8 seconds ...
+Wall time: 10.4 s
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>%%time
+# run minimal module
+! ctwrap minimal ../../yaml/minimal.yaml --parallel
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    - `minimal`: sleeping for 0.4 seconds ...
+    - `minimal`: sleeping for 1.2 seconds ...
+    - `minimal`: sleeping for 0.6 seconds ...
+    - `minimal`: sleeping for 1.4 seconds ...
+    - `minimal`: sleeping for 0.8 seconds ...
+    - `minimal`: sleeping for 1.6 seconds ...
+    - `minimal`: sleeping for 1.0 seconds ...
+    - `minimal`: sleeping for 1.8 seconds ...
+Wall time: 6.18 s
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="3.-ignition-Module">
+<h2>3. <code class="docutils literal notranslate"><span class="pre">ignition</span></code> Module<a class="headerlink" href="#3.-ignition-Module" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>%%time
+# run parameter variation
+! ctwrap ignition ../../yaml/ignition.yaml -v --output ignition_example.h5
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+################################################################################
+Running simulations: module `ctwrap.modules.ignition`
+Conditions specified in `../../yaml/ignition.yaml`
+################################################################################
+Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
+ * processing `initial.phi_0.4`
+ * processing `initial.phi_0.6`
+ * processing `initial.phi_0.8`
+ * processing `initial.phi_1.0`
+ * processing `initial.phi_1.2`
+ * processing `initial.phi_1.4`
+ * processing `initial.phi_1.6`
+ * processing `initial.phi_1.8`
+Wall time: 2.06 s
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># delete output file</span>
+<span class="o">!</span> rm ignition_example.h5
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>%%time
+# run parameter variation
+! ctwrap ignition ../../yaml/ignition.yaml -v --output ignition_example.h5 --parallel
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ * processing `initial.phi_1.2` (Process-3)
+ * processing `initial.phi_0.6` (Process-4)
+ * processing `initial.phi_1.4` (Process-4)
+Wall time: 3.8 s * processing `initial.phi_0.4` (Process-1)
+ * processing `initial.phi_1.0` (Process-1)
+ * processing `initial.phi_1.6` (Process-1)
+ * processing `initial.phi_0.8` (Process-2)
+ * processing `initial.phi_1.8` (Process-2)
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;defaults&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># this is a conventional dictionary (two levels)</span>
-<span class="n">config</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-{&#39;upstream&#39;: {&#39;T&#39;: &#39;300. kelvin&#39;,
-  &#39;P&#39;: &#39;1. atmosphere&#39;,
-  &#39;phi&#39;: 0.55,
-  &#39;fuel&#39;: &#39;H2&#39;,
-  &#39;oxidizer&#39;: &#39;O2:1,AR:5&#39;},
- &#39;chemistry&#39;: {&#39;mechanism&#39;: &#39;h2o2.yaml&#39;},
- &#39;domain&#39;: {&#39;width&#39;: &#39;30 millimeter&#39;}}
+################################################################################
+Running simulations: module `ctwrap.modules.ignition`
+Conditions specified in `../../yaml/ignition.yaml`
+################################################################################
+Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
+ * running simulation using 4 cores
 </pre></div></div>
 </div>
 </div>
-<div class="section" id="2.-Create-Parser-Object">
-<h2>2. Create Parser Object<a class="headerlink" href="#2.-Create-Parser-Object" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># a parser object takes a dictionary as input</span>
-<span class="n">upstream</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;upstream&#39;</span><span class="p">])</span>
-<span class="n">upstream</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-{&#39;T&#39;: &#39;300. kelvin&#39;, &#39;P&#39;: &#39;1. atmosphere&#39;, &#39;phi&#39;: 0.55, &#39;fuel&#39;: &#39;H2&#39;, &#39;oxidizer&#39;: &#39;O2:1,AR:5&#39;}
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># and still acts much like a dictionary</span>
-<span class="n">upstream</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-dict_keys([&#39;T&#39;, &#39;P&#39;, &#39;phi&#39;, &#39;fuel&#39;, &#39;oxidizer&#39;])
-</pre></div></div>
-</div>
-</div>
-<div class="section" id="3.-Access-Values-with-Units">
-<h2>3. Access Values with Units<a class="headerlink" href="#3.-Access-Values-with-Units" title="Permalink to this headline">¶</a></h2>
-<p>Unit manipulations are based on the Python package <code class="docutils literal notranslate"><span class="pre">pint</span></code></p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># as dictionary items</span>
-<span class="n">upstream</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">],</span> <span class="n">upstream</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">],</span> <span class="n">upstream</span><span class="p">[</span><span class="s1">&#39;phi&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(300.0 &lt;Unit(&#39;kelvin&#39;)&gt;, 1.0 &lt;Unit(&#39;standard_atmosphere&#39;)&gt;, 0.55)
-</pre></div></div>
-</div>
+<div class="section" id="4.-adiabatic_flame-Module">
+<h2>4. <code class="docutils literal notranslate"><span class="pre">adiabatic_flame</span></code> Module<a class="headerlink" href="#4.-adiabatic_flame-Module" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># as attributes</span>
-<span class="n">upstream</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">upstream</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="n">upstream</span><span class="o">.</span><span class="n">phi</span>
+<span></span>%%time
+# run parameter variation
+! ctwrap adiabatic_flame ../../yaml/adiabatic_flame.yaml --output adiabatic_flame_example
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(300.0 &lt;Unit(&#39;kelvin&#39;)&gt;, 1.0 &lt;Unit(&#39;standard_atmosphere&#39;)&gt;, 0.55)
+    upstream.phi_0.4: mixture-averaged flamespeed = 0.201060 m/s
+    upstream.phi_0.4: multi-component flamespeed  = 0.215257 m/s
+    upstream.phi_0.6: mixture-averaged flamespeed = 0.924044 m/s
+    upstream.phi_0.6: multi-component flamespeed  = 0.934700 m/s
+    upstream.phi_0.8: mixture-averaged flamespeed = 1.735115 m/s
+    upstream.phi_0.8: multi-component flamespeed  = 1.720498 m/s
+    upstream.phi_1.0: mixture-averaged flamespeed = 2.321981 m/s
+    upstream.phi_1.0: multi-component flamespeed  = 2.289829 m/s
+    upstream.phi_1.2: mixture-averaged flamespeed = 2.716008 m/s
+    upstream.phi_1.2: multi-component flamespeed  = 2.671847 m/s
+    upstream.phi_1.4: mixture-averaged flamespeed = 2.951058 m/s
+    upstream.phi_1.4: multi-component flamespeed  = 2.899538 m/s
+    upstream.phi_1.6: mixture-averaged flamespeed = 3.051440 m/s
+    upstream.phi_1.6: multi-component flamespeed  = 2.997036 m/s
+    upstream.phi_1.8: mixture-averaged flamespeed = 3.045362 m/s
+    upstream.phi_1.8: multi-component flamespeed  = 2.992069 m/s
+    upstream.phi_2.0: mixture-averaged flamespeed = 2.973848 m/s
+    upstream.phi_2.0: multi-component flamespeed  = 2.924864 m/s
+    upstream.phi_2.2: mixture-averaged flamespeed = 2.860112 m/s
+    upstream.phi_2.2: multi-component flamespeed  = 2.817632 m/s
+    upstream.phi_2.4: mixture-averaged flamespeed = 2.726691 m/s
+    upstream.phi_2.4: multi-component flamespeed  = 2.691092 m/s
+    upstream.phi_2.6: mixture-averaged flamespeed = 2.586446 m/s
+    upstream.phi_2.6: multi-component flamespeed  = 2.558409 m/s
+Wall time: 11.6 s
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># convert to desired unit</span>
-<span class="n">upstream</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;pascal&#39;</span><span class="p">)</span>
+<span></span><span class="c1"># delete output file</span>
+<span class="o">!</span>rm adiabatic_flame_example.h5
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-101325.0 pascal</div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># convert to desired unit (magnitude)</span>
-<span class="n">upstream</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;pascal&#39;</span><span class="p">)</span>
+<span></span>%%time
+# run parameter variation
+! ctwrap adiabatic_flame ../../yaml/adiabatic_flame.yaml --output adiabatic_flame_example.h5 --parallel
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-101325.0
-</pre></div></div>
-</div>
-</div>
-<div class="section" id="4.-Access-Values-without-Units">
-<h2>4. Access Values without Units<a class="headerlink" href="#4.-Access-Values-without-Units" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># values that do not have units</span>
-<span class="n">upstream</span><span class="o">.</span><span class="n">fuel</span><span class="p">,</span> <span class="n">upstream</span><span class="o">.</span><span class="n">oxidizer</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(&#39;H2&#39;, &#39;O2:1,AR:5&#39;)
-</pre></div></div>
-</div>
-</div>
-<div class="section" id="5.-Access-Raw-Values">
-<h2>5. Access Raw Values<a class="headerlink" href="#5.-Access-Raw-Values" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">upstream</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&#39;1. atmosphere&#39;
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">upstream</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s1">&#39;oxidizer&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&#39;O2:1,AR:5&#39;
+    upstream.phi_0.6: mixture-averaged flamespeed = 0.924044 m/s
+    upstream.phi_0.6: multi-component flamespeed  = 0.934700 m/s
+    upstream.phi_1.2: mixture-averaged flamespeed = 2.716008 m/s
+    upstream.phi_1.2: multi-component flamespeed  = 2.671847 m/s
+    upstream.phi_2.0: mixture-averaged flamespeed = 2.973848 m/s
+    upstream.phi_2.0: multi-component flamespeed  = 2.924864 m/s
+    upstream.phi_0.8: mixture-averaged flamespeed = 1.735115 m/s
+    upstream.phi_0.8: multi-component flamespeed  = 1.720498 m/s
+    upstream.phi_1.4: mixture-averaged flamespeed = 2.951058 m/s
+    upstream.phi_1.4: multi-component flamespeed  = 2.899538 m/s
+    upstream.phi_2.2: mixture-averaged flamespeed = 2.860112 m/s
+    upstream.phi_2.2: multi-component flamespeed  = 2.817632 m/s
+    upstream.phi_1.0: mixture-averaged flamespeed = 2.321981 m/s
+    upstream.phi_1.0: multi-component flamespeed  = 2.289829 m/s
+    upstream.phi_1.6: mixture-averaged flamespeed = 3.051440 m/s
+    upstream.phi_1.6: multi-component flamespeed  = 2.997036 m/s
+    upstream.phi_2.4: mixture-averaged flamespeed = 2.726691 m/s
+    upstream.phi_2.4: multi-component flamespeed  = 2.691092 m/s
+    upstream.phi_0.4: mixture-averaged flamespeed = 0.201060 m/s
+    upstream.phi_0.4: multi-component flamespeed  = 0.215257 m/s
+    upstream.phi_1.8: mixture-averaged flamespeed = 3.045362 m/s
+    upstream.phi_1.8: multi-component flamespeed  = 2.992069 m/s
+    upstream.phi_2.6: mixture-averaged flamespeed = 2.586446 m/s
+    upstream.phi_2.6: multi-component flamespeed  = 2.558409 m/s
+Wall time: 7.09 s
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -528,9 +565,7 @@ dict_keys([&#39;T&#39;, &#39;P&#39;, &#39;phi&#39;, &#39;fuel&#39;, &#39;oxidize
 </pre></div>
 </div>
 </div>
-<script type="application/vnd.jupyter.widget-state+json">
-{"state": {}, "version_major": 2, "version_minor": 0}
-</script></div>
+</div>
 </div>
 
 
@@ -564,8 +599,8 @@ dict_keys([&#39;T&#39;, &#39;P&#39;, &#39;phi&#39;, &#39;fuel&#39;, &#39;oxidize
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="jupyter.html">Jupyter Notebooks</a><ul>
-      <li>Previous: <a href="jupyter.html" title="previous chapter">Jupyter Notebooks</a></li>
-      <li>Next: <a href="adiabatic_flame_example.html" title="next chapter">Adiabatic Flame Example</a></li>
+      <li>Previous: <a href="ignition_example.html" title="previous chapter">Ignition Example</a></li>
+      <li>Next: <a href="minimal_example.html" title="next chapter">Minimal Example</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -600,7 +635,7 @@ dict_keys([&#39;T&#39;, &#39;P&#39;, &#39;phi&#39;, &#39;fuel&#39;, &#39;oxidize
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/examples/parser_example.ipynb.txt"
+      <a href="../_sources/examples/commandline_example.ipynb.txt"
           rel="nofollow">Page source</a>
     </div>
 

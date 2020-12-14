@@ -1,0 +1,137 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Minimal Example\n",
+    "Testing basic functions of the ctwrap package using the minimal module \n",
+    "(which does not use Cantera, but just 'sleeps' for a specified amount of seconds)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 1. Set up Simulation object\n",
+    "\n",
+    "The `Simulation` object wraps the module, which can be run with default arguments."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import ctwrap as cw"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sim = cw.Simulation.from_module(cw.modules.minimal)\n",
+    "sim"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 2. Set up Simulation Handler object\n",
+    "\n",
+    "The `SimulationHandler` object uses a YAML file as input."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "fname = '../../yaml/minimal.yaml'\n",
+    "sh = cw.SimulationHandler.from_yaml(fname, verbosity=1)\n",
+    "sh"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# list simulation tasks\n",
+    "sh.tasks"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 3. Run serial simulation\n",
+    "\n",
+    "The `run_serial` function loops through simulation tasks one by one."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%%time\n",
+    "sh.run_serial(sim, verbosity=0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 4. Run parallel simulation\n",
+    "\n",
+    "The `run_parallel` function uses Python's `multiprocessing` to process multiple single-threaded simulation jobs at the same time."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%%time\n",
+    "sh.run_parallel(sim, verbosity=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
