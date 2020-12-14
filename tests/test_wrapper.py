@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 import subprocess
 import pint.quantity as pq
+import importlib
 
 import ctwrap as cw
 
@@ -31,6 +32,7 @@ class TestWrap(unittest.TestCase):
     _task = 'sleep_0.4'
     _yaml = 'minimal.yaml'
     _hdf = None
+    _path = None
 
     def tearDown(self):
         if self._hdf:
@@ -70,7 +72,12 @@ class TestWrap(unittest.TestCase):
 
     def test_commandline(self):
         cmd = 'ctwrap'
-        name = self._module.__name__.split('.')[-1]
+        if isinstance(self._module, str):
+            name = self._module
+        else:
+            name = self._module.__name__.split('.')[-1]
+            if self._path:
+                name = "{}".format(Path(self._path) / '{}.py'.format(name))
         yaml = "{}".format(Path(EXAMPLES) / self._yaml)
         pars = [name, yaml, '--parallel']
 
@@ -84,6 +91,17 @@ class TestWrap(unittest.TestCase):
         if self._hdf:
             hdf = Path(EXAMPLES) / self._hdf
             self.assertTrue(hdf.is_file())
+
+
+class TestCustom(TestWrap):
+
+    _module = importlib.import_module('custom')
+    _path = 'tests'
+
+
+class TestPath(TestWrap):
+
+    _module = '{}'.format(PWD / 'custom.py')
 
 
 class TestIgnition(TestWrap):
