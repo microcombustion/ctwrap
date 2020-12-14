@@ -13,6 +13,7 @@ from copy import deepcopy
 import importlib
 import h5py
 from ruamel import yaml
+import warnings
 
 from typing import Dict, Any, Optional, TypeVar, Union
 
@@ -23,6 +24,7 @@ import queue  # imported for using queue.Empty exception
 
 # ctwrap specific import
 from .parser import _parse, _write, Parser
+from .strategy import Strategy, Sequence, Matrix
 
 
 supported = ('.h5', '.hdf', '.hdf5')
@@ -243,9 +245,9 @@ class SimulationHandler(object):
 
     .. code-block:: YAML
 
-        variation: # variation data
-          entry: sleep
-          values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
+        strategy: # variation data
+          sequence:
+            sleep: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
         defaults: # default parameters to run the modules
           sleep: 0.2
 
@@ -254,16 +256,17 @@ class SimulationHandler(object):
 
     Arguments:
        defaults: Dictionary containing simulation defaults
-       variation: Dictionary containing 'entry' and 'values'
+       strategy: Dictionary specifying batch simulation strategy
        output: Dictionary specifying file output
        verbosity: Verbosity level
     """
 
     def __init__(self,
                  defaults: Dict[str, Any],
-                 variation: Dict[str, Any],
-                 output: Dict[str, Any],
-                 verbosity: Optional[int] = 0):
+                 strategy: Optional[Dict[str, Any]]=None,
+                 output: Optional[Dict[str, Any]]=None,
+                 verbosity: Optional[int]=0,
+                 variation: Optional[Dict[str, Any]]=None):
         """Constructor for `SimulationHandler` object."""
 
         # parse arguments
@@ -272,16 +275,18 @@ class SimulationHandler(object):
         self._output = output
         self.verbosity = verbosity
 
-        # obtain parameter variation
-        assert isinstance(variation,
-                          dict), 'variation needs to be a dictionary'
+        if variation and isinstance(variation, dict):
+            self._strategy = Sequence.from_legacy(variation)
+            warnings.warn("Old implementation", PendingDeprecationWarning)
+        elif strategy and isinstance(strategy, dict):
+            self._strategy = Strategy.load(**strategy)
+        else:
+            raise ValueError("Missing or invalid argument: need 'strategy' or 'variation' dictionary")
 
-        msg = 'missing entry `{}` in `variation`'
-        for key in ['entry', 'values']:
-            assert key in variation, msg.format(key)
-
-        self._entry = variation['entry']
-        self._values = variation['values']
+        if not isinstance(self._strategy, Sequence):
+            raise NotImplementedError("Todo")
+        # todo: replace hard coded strategy with tasks handled by Strategy objects
+        self._entry, self._values = list(self._strategy.sweep.items())[0]
 
         # vals = self._variation_tuple[1]
         if self.verbosity and self._values is not None:
@@ -289,7 +294,10 @@ class SimulationHandler(object):
                 self._entry, self._values))
 
         if self._output is not None:
-            var = variation.copy()
+            if variation:
+                var = variation.copy()
+            else:
+                var = strategy.copy()
             var['tasks'] = [t for t in self.tasks]
             var['tasks'].sort()
 
@@ -357,12 +365,13 @@ class SimulationHandler(object):
         assert 'ctwrap' in content, 'obsolete yaml file format'
         assert 'defaults' in content, 'obsolete yaml file format'
         defaults = content['defaults']
+        strategy = content.get('strategy', None)
         variation = content.get('variation', None)
         output = content.get('output', None)
 
         output = cls._parse_output(output, fname=name, fpath=path)
 
-        return cls(defaults, variation, output, **kwargs)
+        return cls(defaults, strategy=strategy, output=output, variation=variation, **kwargs)
 
     @staticmethod
     def _parse_output(dct: Dict[str, Any],
