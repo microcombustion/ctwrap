@@ -12,6 +12,7 @@ from pathlib import Path
 from copy import deepcopy
 import importlib
 import h5py
+import json
 from ruamel import yaml
 import warnings
 
@@ -225,7 +226,7 @@ class Simulation(object):
             with h5py.File(oname, 'r+') as hdf:
                 for key, val in metadata.items():
                     if isinstance(val, dict):
-                        hdf.attrs[key] = yaml.dump(val, Dumper=yaml.SafeDumper)
+                        hdf.attrs[key] = json.dumps(val)
                     else:
                         hdf.attrs[key] = val
 
