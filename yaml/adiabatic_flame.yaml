@@ -1,8 +1,8 @@
 # YAML file example for the `adiabatic_flame` module
 # file specifes a parameter variation of the equivalence ratio
-variation:
-  entry: upstream.phi
-  values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6]
+strategy:
+  sequence:
+    upstream.phi: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6]
 output:
   format: h5
 defaults:
