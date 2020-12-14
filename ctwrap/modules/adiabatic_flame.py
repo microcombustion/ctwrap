@@ -114,7 +114,7 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
     return out
 
 
-def save(filename, data, task=None):
+def save(filename, data, task=None,  groups=None, **kwargs):
     """
     This function saves the output from the run method
 
@@ -122,11 +122,19 @@ def save(filename, data, task=None):
         filename (str): naming of file
         data (Dict): data to be saved
         task (str): name of task if running variations
+        groups (list): group names if file exists
+        kwargs (dict): output information
     """
+    mode = "a"
+
+    force = kwargs.get('force_overwrite', False)
+    species = kwargs.get('species', 'X')
 
     for group, flame in data.items():
-        flame.write_hdf(filename=filename, group=group,
-                        mode='a', description=task)
+        if force is True and group in groups:
+            mode = 'w'
+        flame.write_hdf(filename=filename, group=group, species=species,
+                        mode=mode, description=task)
 
 
 if __name__ == "__main__":

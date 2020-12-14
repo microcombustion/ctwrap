@@ -5,6 +5,7 @@ strategy:
     initial.phi: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
 output:
   format: h5
+  force_overwrite: True
 defaults:
   initial:
     T: 1000. # temperature (Kelvin)

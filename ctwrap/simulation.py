@@ -182,11 +182,14 @@ class Simulation(object):
                         msg = 'Cannot overwrite existing ' \
                               'group `{}` (use force to override)'
                         raise RuntimeError(msg.format(group))
+                groups = hdf.keys()
+        else:
+            groups = []
 
         if formatt in supported:
             self._module = importlib.import_module(self._module)
             try:
-                self._module.save(filename, self.data, task)
+                self._module.save(filename, self.data, task, groups, **self._output)
             except AttributeError:
                 print("{} simulation module has no method 'save' but output format "
                       "was defined in configuration file".format(self._module.__name__))
@@ -309,16 +312,22 @@ class SimulationHandler(object):
         if self._output is not None:
             if variation:
                 var = variation.copy()
+
             else:
                 var = strategy.copy()
             var['tasks'] = [t for t in self.tasks]
             var['tasks'].sort()
 
             # assemble information
-            self._metadata = {
-                'defaults': self._defaults,
-                'variation': var,
-            }
+            if variation:
+                self._metadata = {
+                    'defaults': self._defaults,
+                    'variation': var,
+                }
+            else:
+                self._metadata = {'defaults': self._defaults,
+                                  'strategy': var,
+                                  }
 
     @classmethod
     def from_yaml(cls, yaml_file: str,

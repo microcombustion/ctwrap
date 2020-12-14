@@ -93,7 +93,7 @@ def run(name, chemistry=None,
     return {name: states}
 
 
-def save(filename, data, task=None):
+def save(filename, data, task=None, groups=None, **kwargs):
     """
     This function saves the output from the run method
 
@@ -101,12 +101,24 @@ def save(filename, data, task=None):
         filename (str): naming of file
         data (dict): data to be saved
         task (str): name of task if running variations
+        groups (list): group names if file exists
+        kwargs (dict): output information
     """
+    mode = 'a'
+    force = kwargs.get('force_overwrite', False)
+    cols = kwargs.get('properties', None)
+
+    subgroup = None
+    append = False
+
+    # todo: implement subgroup for higher dimensional space
 
     attrs = {'description': task}
     for group, states in data.items():
-        states.write_hdf(filename=filename, group=group,
-                         mode='a', attrs=attrs)
+        if force is True and group in groups and append is False:
+            mode = 'w'
+        states.write_hdf(filename=filename, group=group, subgroup=subgroup,
+                         cols=cols, mode=mode, append=append, attrs=attrs)
 
 
 if __name__ == "__main__":
