@@ -9,8 +9,7 @@ import importlib
 
 import warnings
 warnings.filterwarnings(action='once')
-warnings.filterwarnings("ignore",
-                        "object name is not a valid Python identifier:")
+# pylint: disable=no-member
 
 def main():
     """Main."""

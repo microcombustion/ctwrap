@@ -228,8 +228,8 @@ class Simulation(object):
 
             oname = output['file_name']
             opath = output['path']
-            formatt = output['format']
-            force = output['force_overwrite']
+            #formatt = output['format']
+            #force = output['force_overwrite']
 
             if oname is None:
                 return
@@ -681,7 +681,7 @@ class SimulationHandler(object):
 
         # creating processes
         processes = []
-        for w in range(number_of_processes):
+        for _ in range(number_of_processes):
             p = mp.Process(
                 target=worker,
                 args=(tasks_to_accomplish, finished_tasks, sim._module, lock,

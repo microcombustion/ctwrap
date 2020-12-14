@@ -4,7 +4,7 @@
 # This file uses 'legacy' syntax (ctwrap 0.1.0) and will result
 # in 'PendingDeprecationWarning's being raised. Differences are:
 # - field 'variation' is superseded by 'strategy' (different syntax)
-# - units/comments specification as lists is superseded by strings
+# - value/unit/comment specification as lists is superseded by strings
 #   with regular YAML comments
 variation:
   entry: initial.phi

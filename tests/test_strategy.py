@@ -9,8 +9,10 @@ import pint.quantity as pq
 from ruamel import yaml
 
 import warnings
+# add exception as pywintypes imports a deprecated module
 warnings.filterwarnings("ignore", ".*the imp module is deprecated*")
 
+# pylint: disable=import-error
 import ctwrap as cw
 from ctwrap.strategy import _replace_entry, _sweep_matrix
 
