@@ -102,7 +102,7 @@ class TestLocal(TestWrap):
     # a module in the current folder
 
     _module = None
-    _path = str(PWD.relative_to(ROOT))
+    _path = str(PWD.relative_to(Path.cwd()))
 
     @classmethod
     def setUpClass(cls):
