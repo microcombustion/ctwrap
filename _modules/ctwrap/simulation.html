@@ -266,8 +266,8 @@
 
             <span class="n">oname</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
             <span class="n">opath</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span>
-            <span class="n">formatt</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span>
-            <span class="n">force</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;force_overwrite&#39;</span><span class="p">]</span>
+            <span class="c1">#formatt = output[&#39;format&#39;]</span>
+            <span class="c1">#force = output[&#39;force_overwrite&#39;]</span>
 
             <span class="k">if</span> <span class="n">oname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span>
@@ -719,7 +719,7 @@
 
         <span class="c1"># creating processes</span>
         <span class="n">processes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_processes</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_processes</span><span class="p">):</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
                 <span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tasks_to_accomplish</span><span class="p">,</span> <span class="n">finished_tasks</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">_module</span><span class="p">,</span> <span class="n">lock</span><span class="p">,</span>
