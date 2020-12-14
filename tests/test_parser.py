@@ -8,6 +8,9 @@ from pathlib import Path
 import pint.quantity as pq
 from ruamel import yaml
 
+import warnings
+warnings.filterwarnings("ignore", ".*the imp module is deprecated*")
+
 import ctwrap as cw
 from ctwrap.parser import _parse as parse
 from ctwrap.parser import _write as write

@@ -9,6 +9,9 @@ import subprocess
 import pint.quantity as pq
 import importlib
 
+import warnings
+warnings.filterwarnings("ignore", ".*the imp module is deprecated*")
+
 import ctwrap as cw
 
 
