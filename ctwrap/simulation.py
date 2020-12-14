@@ -58,15 +58,15 @@ class Simulation(object):
 
         assert isinstance(module, str), 'need module name'
 
-        # ensure that module is well formed
-        msg = 'module `{}` is missing attribute `{}`'
-        for attr in ['defaults', 'run']:
-            assert hasattr(importlib.import_module(module), attr), \
-                msg.format(module, attr)
-
         self._module = module
         self._output = output
         self.data = None
+
+        # ensure that module is well formed
+        mod = self._load_module()
+        msg = 'module `{}` is missing attribute `{}`'
+        for attr in ['defaults', 'run']:
+            assert hasattr(mod, attr), msg.format(module, attr)
 
     @classmethod
     def from_module(cls,
@@ -90,7 +90,10 @@ class Simulation(object):
         """
 
         # create a name that reflect the module name (CamelCase)
-        if isinstance(module, str):
+        if isinstance(module, (str, Path)) and Path(module).is_file():
+            name = Path(module).stem
+            module = '{}'.format(Path(module))
+        elif isinstance(module, str):
             name = module.split('.')[-1]
         else:
             name = module.__name__.split('.')[-1]
@@ -98,6 +101,18 @@ class Simulation(object):
         name = ''.join([m.title() for m in name.split('_')])
 
         return type(name, (cls,), {})(module, output)
+
+    def _load_module(self):
+        """Load simulation module"""
+        if Path(self._module).is_file():
+            fname = Path(self._module)
+            # https://stackoverflow.com/questions/19009932/import-arbitrary-python-source-file-python-3-3
+            spec_file = importlib.util.spec_from_file_location(fname.stem, fname)
+            spec_module = importlib.util.module_from_spec(spec_file)
+            spec_file.loader.exec_module(spec_module)
+            return spec_module
+
+        return importlib.import_module(self._module)
 
     def run(self, name: Optional[str] = 'defaults',
             config: Optional[Dict[str, Any]] = None,
@@ -121,7 +136,7 @@ class Simulation(object):
            **kwargs (optional): depends on implementation of __init__
         """
 
-        self._module = importlib.import_module(self._module)
+        self._module = self._load_module()
 
         if config is None:
             config = self._module.defaults()
