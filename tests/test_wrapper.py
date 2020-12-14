@@ -10,8 +10,10 @@ import pint.quantity as pq
 import importlib
 
 import warnings
+# add exception as pywintypes imports a deprecated module
 warnings.filterwarnings("ignore", ".*the imp module is deprecated*")
 
+# pylint: disable=import-error
 import ctwrap as cw
 
 
@@ -110,10 +112,7 @@ class TestLocal(TestWrap):
         cls._module = importlib.import_module('custom')
 
     @classmethod
-    def tearDownClass(self):
-        if self._hdf:
-            [hdf.unlink() for hdf in Path(EXAMPLES).glob('*.h5')]
-            [hdf.unlink() for hdf in Path(ROOT).glob('*.h5')]
+    def tearDownClass(cls):
         (PWD / 'custom.py').unlink()
 
 
@@ -136,10 +135,6 @@ class TestAdiabaticFlame(TestWrap):
     _task = 'upstream.phi_0.4'
     _yaml = 'adiabatic_flame.yaml'
     _hdf = 'adiabatic_flame.h5'
-
-    def test_commandline(self):
-        # disable until deprecationwarnings are fixed
-        pass
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ import warnings
 from ruamel import yaml
 
 
+# pylint: disable=no-member
 try:
     import cantera as ct
 except ImportError as err:
@@ -83,7 +84,7 @@ def run(name, chemistry=None,
     states = ct.SolutionArray(gas, extra=['t'])
     time = sim.time
 
-    for i in range(n_points):
+    for _ in range(n_points):
 
         time += delta_t
         sim.advance(time)
