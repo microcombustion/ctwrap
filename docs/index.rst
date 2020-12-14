@@ -20,10 +20,7 @@ Table of Contents
       Overview <overview.rst>
       Contributing <contributing.rst>
       Batch Jobs <pages/batch.rst>
-      Jupyter Notebooks <pages/jupyter.rst>
+      Jupyter Notebooks <examples/jupyter.rst>
       API Reference <pages/api.rst>
 
 .. include:: ../README.rst
-
-
-
