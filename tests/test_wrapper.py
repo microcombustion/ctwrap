@@ -16,6 +16,15 @@ ROOT = PWD.parents[0]
 EXAMPLES = '{}'.format(ROOT / 'yaml')
 
 
+class TestLegacy(unittest.TestCase):
+
+    def test_handler(self):
+        with self.assertWarnsRegex(PendingDeprecationWarning, "Old implementation"):
+            sh = cw.SimulationHandler.from_yaml('legacy.yaml', path=PWD)
+        self.assertIsInstance(sh.tasks, dict)
+        self.assertIn('initial.phi_0.4', sh.tasks)
+
+
 class TestWrap(unittest.TestCase):
 
     _module = cw.modules.minimal
