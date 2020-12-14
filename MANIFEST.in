@@ -1,13 +1,13 @@
 include MANIFEST.in
 include LICENSE
-include README.md
-include CONTRIBUTING.md
+include README.rst
+include INSTALL.rst
+include CONTRIBUTING.rst
 include setup.py
 
 include ctwrap/*.py
 include ctwrap/modules/*.py
-include ctwrap/fileio/*.py
 include ctwrap/bin/*.py
-include ctwrap/examples/*.ipynb
-include ctwrap/examples/*.yaml
-include ctwrap/examples/*.md
+include docs/examples/*.ipynb
+include docs/examples/*.py
+include yaml/*.yaml
