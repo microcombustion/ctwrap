@@ -112,7 +112,7 @@ class TestStrategy(unittest.TestCase):
 
     def test_legacy(self):
 
-        mm = cw.Parser.from_yaml('legacy.yaml', path=PWD)
+        mm = cw.Parser.from_yaml('legacy.yaml', path=EXAMPLES)
         seq = cw.Sequence.from_legacy(mm.variation.raw)
         self.assertEqual(seq.sweep['initial.phi'], mm.variation.raw['values'])
 
