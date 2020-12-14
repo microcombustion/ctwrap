@@ -161,16 +161,22 @@
     <span class="n">group</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_mix&quot;</span>
     <span class="n">out</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
 
+    <span class="n">f_sol</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">to_solution_array</span><span class="p">()</span>
+
     <span class="c1"># Solve with multi-component transport properties</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">transport_model</span> <span class="o">=</span> <span class="s1">&#39;Multi&#39;</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">loglevel</span><span class="p">)</span>  <span class="c1"># don&#39;t use &#39;auto&#39; on subsequent solves</span>
+    <span class="n">gas</span><span class="o">.</span><span class="n">TP</span> <span class="o">=</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span>
+    <span class="n">gas</span><span class="o">.</span><span class="n">set_equivalence_ratio</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">upstream</span><span class="o">.</span><span class="n">fuel</span><span class="p">,</span> <span class="n">upstream</span><span class="o">.</span><span class="n">oxidizer</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">FreeFlame</span><span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">set_initial_guess</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f_sol</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">transport_model</span> <span class="o">=</span> <span class="s1">&#39;Multi&#39;</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">loglevel</span><span class="p">)</span>  <span class="c1"># don&#39;t use &#39;auto&#39; on subsequent solves</span>
     <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    </span><span class="si">{0:s}</span><span class="s1">: multi-component flamespeed  = </span><span class="si">{1:7f}</span><span class="s1"> m/s&#39;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
     <span class="n">group</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_multi&quot;</span>
-    <span class="n">out</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+    <span class="n">out</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span>
 
     <span class="k">return</span> <span class="n">out</span>
 
