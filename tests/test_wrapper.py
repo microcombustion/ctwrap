@@ -17,14 +17,14 @@ import ctwrap as cw
 
 PWD = Path(__file__).parents[0]
 ROOT = PWD.parents[0]
-EXAMPLES = '{}'.format(ROOT / 'yaml')
+EXAMPLES = ROOT / 'yaml'
 
 
 class TestLegacy(unittest.TestCase):
 
     def test_handler(self):
         with self.assertWarnsRegex(PendingDeprecationWarning, "Old implementation"):
-            sh = cw.SimulationHandler.from_yaml('legacy.yaml', path=PWD)
+            sh = cw.SimulationHandler.from_yaml('legacy.yaml', path=EXAMPLES)
         self.assertIsInstance(sh.tasks, dict)
         self.assertIn('initial.phi_0.4', sh.tasks)
 
@@ -80,8 +80,8 @@ class TestWrap(unittest.TestCase):
         else:
             name = self._module.__name__.split('.')[-1]
             if self._path:
-                name = "{}".format(Path(self._path) / '{}.py'.format(name))
-        yaml = "{}".format(Path(EXAMPLES) / self._yaml)
+                name = str(Path(self._path) / '{}.py'.format(name))
+        yaml = str(Path(EXAMPLES) / self._yaml)
         pars = [name, yaml, '--parallel']
 
         self.maxDiff = None
@@ -96,15 +96,30 @@ class TestWrap(unittest.TestCase):
             self.assertTrue(hdf.is_file())
 
 
+class TestLocal(TestWrap):
+    # a module in the current folder
+
+    _module = None
+    _path = str(PWD.relative_to(ROOT))
+
+    @classmethod
+    def setUpClass(cls):
+        src = ROOT / 'docs' / 'examples' / 'custom.py'
+        dest = PWD / 'custom.py'
+        dest.write_text(src.read_text())
+        cls._module = importlib.import_module('custom')
+
+    @classmethod
+    def tearDownClass(self):
+        if self._hdf:
+            [hdf.unlink() for hdf in Path(EXAMPLES).glob('*.h5')]
+            [hdf.unlink() for hdf in Path(ROOT).glob('*.h5')]
+        (PWD / 'custom.py').unlink()
+
+
 class TestCustom(TestWrap):
 
-    _module = importlib.import_module('custom')
-    _path = 'tests'
-
-
-class TestPath(TestWrap):
-
-    _module = '{}'.format(PWD / 'custom.py')
+    _module = str(ROOT / 'docs' / 'examples' / 'custom.py')
 
 
 class TestIgnition(TestWrap):
