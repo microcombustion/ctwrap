@@ -94,16 +94,22 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
     group = name + "_mix"
     out[group] = f
 
+    f_sol = f.to_solution_array()
+
     # Solve with multi-component transport properties
-    f.transport_model = 'Multi'
-    f.solve(loglevel)  # don't use 'auto' on subsequent solves
+    gas.TP = T, P
+    gas.set_equivalence_ratio(phi, upstream.fuel, upstream.oxidizer)
+    g = ct.FreeFlame(gas, width=width)
+    g.set_initial_guess(data=f_sol)
+    g.transport_model = 'Multi'
+    g.solve(loglevel)  # don't use 'auto' on subsequent solves
     if loglevel > 0:
-        f.show_solution()
+        g.show_solution()
     msg = '    {0:s}: multi-component flamespeed  = {1:7f} m/s'
-    print(msg.format(name, f.velocity[0]))
+    print(msg.format(name, g.velocity[0]))
 
     group = name + "_multi"
-    out[group] = f
+    out[group] = g
 
     return out
 
