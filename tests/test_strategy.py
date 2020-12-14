@@ -100,11 +100,18 @@ class TestStrategy(unittest.TestCase):
         with self.assertRaisesRegex(NotImplementedError, "Unknown strategy"):
             cw.Strategy.load(foobar=specs)
 
-    def test_legacy(self):
+    def test_minimal(self):
 
         mm = cw.Parser.from_yaml('minimal.yaml', path=EXAMPLES)
+        strategy = mm.strategy.raw
+        seq = cw.Strategy.load(**strategy)
+        self.assertEqual(seq.sweep['sleep'], strategy['sequence']['sleep'])
+
+    def test_legacy(self):
+
+        mm = cw.Parser.from_yaml('legacy.yaml', path=PWD)
         seq = cw.Sequence.from_legacy(mm.variation.raw)
-        self.assertEqual(seq.sweep['sleep'], mm.variation.raw['values'])
+        self.assertEqual(seq.sweep['initial.phi'], mm.variation.raw['values'])
 
     def test_matrix(self):
 
