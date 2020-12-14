@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ctwrap Strategy &#8212; ctwrap 0.2.0b documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ctwrap Simulation" href="simulation.html" />
+    <link rel="prev" title="ctwrap Parser" href="parser.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-ctwrap.strategy">
+<span id="ctwrap-strategy"></span><h1>ctwrap Strategy<a class="headerlink" href="#module-ctwrap.strategy" title="Permalink to this headline">¶</a></h1>
+<p>“Module defining batch simulation strategies</p>
+<dl class="py class">
+<dt id="ctwrap.strategy.Matrix">
+<em class="property">class </em><code class="sig-prename descclassname">ctwrap.strategy.</code><code class="sig-name descname">Matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Variation of multiple parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>matrix</strong> – Dictionary specifying multiple parameter sequences</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ctwrap.strategy.Sequence">
+<em class="property">class </em><code class="sig-prename descclassname">ctwrap.strategy.</code><code class="sig-name descname">Sequence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sweep</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Variation of a single parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sweep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Dictionary specifying single parameter sequence</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ctwrap.strategy.Sequence.from_legacy">
+<em class="property">classmethod </em><code class="sig-name descname">from_legacy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">items</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Sequence.from_legacy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Sequence.from_legacy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Sequence from ctwrap 0.1.0 sytax</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ctwrap.strategy.Sobol">
+<em class="property">class </em><code class="sig-prename descclassname">ctwrap.strategy.</code><code class="sig-name descname">Sobol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ranges</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Sobol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Sobol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pseudo-randomly sampled parameter space via Sobol sequence</p>
+<p>Not implemented; there is prior work in Ayoobi and Schoegl, PROCI 2015</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ctwrap.strategy.Strategy">
+<em class="property">class </em><code class="sig-prename descclassname">ctwrap.strategy.</code><code class="sig-name descname">Strategy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Strategy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Strategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for batch simulation strategies</p>
+<dl class="py method">
+<dt id="ctwrap.strategy.Strategy.create_tasks">
+<code class="sig-name descname">create_tasks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">defaults</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Strategy.create_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Strategy.create_tasks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create list of parameter sets for a parameter variation</p>
+<p><strong>Example:</strong> The following code applies a parameter variation to the
+<cite>Sequence</cite> object <em>strategy</em> based on a parameter set <em>defaults</em>:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># define parameter variation</span>
+<span class="n">foo</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;foobar&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}</span>
+<span class="n">strategy</span> <span class="o">=</span> <span class="n">ctwrap</span><span class="o">.</span><span class="n">Sequence</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+
+<span class="c1"># generate list of tasks based on default parameters</span>
+<span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;foobar&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;spam&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;eggs&#39;</span><span class="p">:</span> <span class="mf">3.14</span><span class="p">}</span>
+<span class="n">tasks</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">create_tasks</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>defaults</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Dictionary containing default parameters</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of dictionaries with parameter variation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ctwrap.strategy.Strategy.load">
+<em class="property">classmethod </em><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">strategy</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Strategy.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Strategy.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory loader for strategy objects</p>
+<p><strong>Example:</strong> The following code creates a <cite>Sequence</cite> object <em>strategy</em> that varies
+the variable <em>foobar</em>. The dictionary key at the top level specifies what strategy
+object is being loaded:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">strategy</span> <span class="o">=</span> <span class="n">ctwrap</span><span class="o">.</span><span class="n">Strategy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">sequence</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;foobar&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]})</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**strategy</strong> – Keywords with single key/value pair, where the lower-case key
+specifies the batch simulation strategy and the value holds parameters.
+Except for the case, the key needs to match the name of a <cite>Strategy</cite> object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instantiated <cite>Strategy</cite> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">ctwrap</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">   Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">   Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">   Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batch.html">   Batch Jobs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jupyter.html">   Jupyter Notebooks</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">   API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="api.html">ctwrap API Reference</a><ul>
+      <li>Previous: <a href="parser.html" title="previous chapter">ctwrap Parser</a></li>
+      <li>Next: <a href="simulation.html" title="next chapter">ctwrap Simulation</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018-20, I. Schoegl and D. Akinpelu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/pages/strategy.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

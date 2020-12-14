@@ -50,6 +50,7 @@
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -60,6 +61,7 @@
 
 <span class="c1"># ctwrap specific import</span>
 <span class="kn">from</span> <span class="nn">.parser</span> <span class="kn">import</span> <span class="n">_parse</span><span class="p">,</span> <span class="n">_write</span><span class="p">,</span> <span class="n">Parser</span>
+<span class="kn">from</span> <span class="nn">.strategy</span> <span class="kn">import</span> <span class="n">Strategy</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Matrix</span>
 
 
 <span class="n">supported</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;.hdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.hdf5&#39;</span><span class="p">)</span>
@@ -280,9 +282,9 @@
 
 <span class="sd">    .. code-block:: YAML</span>
 
-<span class="sd">        variation: # variation data</span>
-<span class="sd">          entry: sleep</span>
-<span class="sd">          values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]</span>
+<span class="sd">        strategy: # variation data</span>
+<span class="sd">          sequence:</span>
+<span class="sd">            sleep: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]</span>
 <span class="sd">        defaults: # default parameters to run the modules</span>
 <span class="sd">          sleep: 0.2</span>
 
@@ -291,16 +293,17 @@
 
 <span class="sd">    Arguments:</span>
 <span class="sd">       defaults: Dictionary containing simulation defaults</span>
-<span class="sd">       variation: Dictionary containing &#39;entry&#39; and &#39;values&#39;</span>
+<span class="sd">       strategy: Dictionary specifying batch simulation strategy</span>
 <span class="sd">       output: Dictionary specifying file output</span>
 <span class="sd">       verbosity: Verbosity level</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">defaults</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-                 <span class="n">variation</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-                 <span class="n">output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-                 <span class="n">verbosity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+                 <span class="n">strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">verbosity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">variation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Constructor for `SimulationHandler` object.&quot;&quot;&quot;</span>
 
         <span class="c1"># parse arguments</span>
@@ -309,16 +312,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_output</span> <span class="o">=</span> <span class="n">output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">=</span> <span class="n">verbosity</span>
 
-        <span class="c1"># obtain parameter variation</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">variation</span><span class="p">,</span>
-                          <span class="nb">dict</span><span class="p">),</span> <span class="s1">&#39;variation needs to be a dictionary&#39;</span>
+        <span class="k">if</span> <span class="n">variation</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">variation</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span> <span class="o">=</span> <span class="n">Sequence</span><span class="o">.</span><span class="n">from_legacy</span><span class="p">(</span><span class="n">variation</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Old implementation&quot;</span><span class="p">,</span> <span class="ne">PendingDeprecationWarning</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">strategy</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">strategy</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span> <span class="o">=</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="o">**</span><span class="n">strategy</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Missing or invalid argument: need &#39;strategy&#39; or &#39;variation&#39; dictionary&quot;</span><span class="p">)</span>
 
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;missing entry `</span><span class="si">{}</span><span class="s1">` in `variation`&#39;</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;entry&#39;</span><span class="p">,</span> <span class="s1">&#39;values&#39;</span><span class="p">]:</span>
-            <span class="k">assert</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">variation</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_entry</span> <span class="o">=</span> <span class="n">variation</span><span class="p">[</span><span class="s1">&#39;entry&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">variation</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Todo&quot;</span><span class="p">)</span>
+        <span class="c1"># todo: replace hard coded strategy with tasks handled by Strategy objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">sweep</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="c1"># vals = self._variation_tuple[1]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -326,7 +331,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_entry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">var</span> <span class="o">=</span> <span class="n">variation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">variation</span><span class="p">:</span>
+                <span class="n">var</span> <span class="o">=</span> <span class="n">variation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">var</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">var</span><span class="p">[</span><span class="s1">&#39;tasks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">]</span>
             <span class="n">var</span><span class="p">[</span><span class="s1">&#39;tasks&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 
@@ -394,12 +402,13 @@
         <span class="k">assert</span> <span class="s1">&#39;ctwrap&#39;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">,</span> <span class="s1">&#39;obsolete yaml file format&#39;</span>
         <span class="k">assert</span> <span class="s1">&#39;defaults&#39;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">,</span> <span class="s1">&#39;obsolete yaml file format&#39;</span>
         <span class="n">defaults</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="s1">&#39;defaults&#39;</span><span class="p">]</span>
+        <span class="n">strategy</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;strategy&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">variation</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;variation&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="n">output</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_output</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">fpath</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">defaults</span><span class="p">,</span> <span class="n">variation</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">defaults</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">variation</span><span class="o">=</span><span class="n">variation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_parse_output</span><span class="p">(</span><span class="n">dct</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>

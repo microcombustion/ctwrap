@@ -9,6 +9,7 @@ This reference manual details functions, modules, and objects included in
    :maxdepth: 1
 
         Parser Module <parser.rst>
+        Strategy Module <strategy.rst>
         Simulation Module <simulation.rst>
 
 **See also:**

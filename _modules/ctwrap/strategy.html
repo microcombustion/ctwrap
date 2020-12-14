@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ctwrap.strategy &#8212; ctwrap 0.2.0b documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ctwrap.strategy</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;&quot;Module defining batch simulation strategies&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">.parser</span> <span class="kn">import</span> <span class="n">_parse</span><span class="p">,</span> <span class="n">_write</span><span class="p">,</span> <span class="n">Parser</span>
+
+
+<span class="k">def</span> <span class="nf">_replace_entry</span><span class="p">(</span><span class="n">nested</span><span class="p">,</span> <span class="n">key_list</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Locate and replace entry in nested dictionary (recursive)</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">       nested: Multi-level (nested) dictionary</span>
+<span class="sd">       key_list: Sequence of keys leading to entry of interest</span>
+<span class="sd">       value: Entry to replace</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">key_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nested</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nested</span>
+
+    <span class="n">sub</span> <span class="o">=</span> <span class="n">nested</span><span class="p">[</span><span class="n">key_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">sub</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">_parse</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
+            <span class="n">sub</span> <span class="o">=</span> <span class="n">_write</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sub</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sub</span> <span class="o">=</span> <span class="n">_replace_entry</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">key_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">value</span><span class="p">)</span>
+    <span class="n">nested</span><span class="p">[</span><span class="n">key_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">sub</span>
+    <span class="k">return</span> <span class="n">nested</span>
+
+
+<span class="k">def</span> <span class="nf">_sweep_matrix</span><span class="p">(</span><span class="n">defaults</span><span class="p">,</span> <span class="n">tasks</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Replace entries along multiple axes (recursive)</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">       defaults: Default parameters</span>
+<span class="sd">       tasks: Dictionary of variations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tasks</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="n">entry</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">_replace_entry</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">defaults</span><span class="p">),</span> <span class="n">entry</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tasks</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_sweep_matrix</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">tasks</span><span class="o">.</span><span class="n">copy</span><span class="p">()))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<div class="viewcode-block" id="Strategy"><a class="viewcode-back" href="../../pages/strategy.html#ctwrap.strategy.Strategy">[docs]</a><span class="k">class</span> <span class="nc">Strategy</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Base class for batch simulation strategies&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_input</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Base clase does not implement batch simulation strategy&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_input</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">min_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">exact</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check validity of input&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Strategy needs to be defined by a dictionary&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exact</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="n">min_length</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid length: dictionary requires exactly &quot;</span>
+                             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> entry/entries.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_length</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_length</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid length: dictionary requires at least &quot;</span>
+                             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> entry/entries.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_length</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="Strategy.load"><a class="viewcode-back" href="../../pages/strategy.html#ctwrap.strategy.Strategy.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">strategy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Factory loader for strategy objects</span>
+
+<span class="sd">        **Example:** The following code creates a `Sequence` object *strategy* that varies</span>
+<span class="sd">        the variable *foobar*. The dictionary key at the top level specifies what strategy</span>
+<span class="sd">        object is being loaded:</span>
+
+<span class="sd">        .. code-block:: Python</span>
+
+<span class="sd">           strategy = ctwrap.Strategy.load(sequence={&#39;foobar&#39;: [0, 1, 2, 3]})</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">           **strategy: Keywords with single key/value pair, where the lower-case key</span>
+<span class="sd">              specifies the batch simulation strategy and the value holds parameters.</span>
+<span class="sd">              Except for the case, the key needs to match the name of a `Strategy` object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">           Instantiated `Strategy` object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">hooks</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;strategy&#39;</span><span class="p">:</span> <span class="bp">cls</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
+            <span class="n">hooks</span><span class="p">[</span><span class="n">sub</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">sub</span>
+
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hooks</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Unknown strategy &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+
+        <span class="n">cls_hook</span> <span class="o">=</span> <span class="n">hooks</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">cls_hook</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="p">(</span><span class="n">cls_hook</span><span class="p">,</span> <span class="p">),</span> <span class="p">{})(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Strategy.create_tasks"><a class="viewcode-back" href="../../pages/strategy.html#ctwrap.strategy.Strategy.create_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">create_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Create list of parameter sets for a parameter variation</span>
+
+<span class="sd">        **Example:** The following code applies a parameter variation to the</span>
+<span class="sd">        `Sequence` object *strategy* based on a parameter set *defaults*:</span>
+
+<span class="sd">        .. code-block:: Python</span>
+
+<span class="sd">           # define parameter variation</span>
+<span class="sd">           foo = {&#39;foobar&#39;: [0, 1, 2, 3]}</span>
+<span class="sd">           strategy = ctwrap.Sequence(foo)</span>
+
+<span class="sd">           # generate list of tasks based on default parameters</span>
+<span class="sd">           defaults = {&#39;foobar&#39;: 1, &#39;spam&#39;: 2.0, &#39;eggs&#39;: 3.14}</span>
+<span class="sd">           tasks = strategy.create_tasks(defaults)</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">           defaults: Dictionary containing default parameters</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">           List of dictionaries with parameter variation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Needs to be implemented by derived classes&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Sequence"><a class="viewcode-back" href="../../pages/strategy.html#ctwrap.strategy.Sequence">[docs]</a><span class="k">class</span> <span class="nc">Sequence</span><span class="p">(</span><span class="n">Strategy</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Variation of a single parameter</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">       sweep: Dictionary specifying single parameter sequence</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sweep</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_input</span><span class="p">(</span><span class="n">sweep</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sweep</span> <span class="o">=</span> <span class="n">sweep</span>
+
+<div class="viewcode-block" id="Sequence.from_legacy"><a class="viewcode-back" href="../../pages/strategy.html#ctwrap.strategy.Sequence.from_legacy">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_legacy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create Sequence from ctwrap 0.1.0 sytax&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">({</span><span class="n">items</span><span class="p">[</span><span class="s1">&#39;entry&#39;</span><span class="p">]:</span> <span class="n">items</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]})</span></div>
+
+    <span class="k">def</span> <span class="nf">create_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="p">):</span>
+        <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_sweep_matrix</span><span class="p">(</span><span class="n">defaults</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sweep</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Matrix"><a class="viewcode-back" href="../../pages/strategy.html#ctwrap.strategy.Matrix">[docs]</a><span class="k">class</span> <span class="nc">Matrix</span><span class="p">(</span><span class="n">Strategy</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Variation of multiple parameters</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">       matrix: Dictionary specifying multiple parameter sequences</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_input</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix</span>
+
+    <span class="k">def</span> <span class="nf">create_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="p">):</span>
+        <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_sweep_matrix</span><span class="p">(</span><span class="n">defaults</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Sobol"><a class="viewcode-back" href="../../pages/strategy.html#ctwrap.strategy.Sobol">[docs]</a><span class="k">class</span> <span class="nc">Sobol</span><span class="p">(</span><span class="n">Strategy</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Pseudo-randomly sampled parameter space via Sobol sequence</span>
+
+<span class="sd">    Not implemented; there is prior work in Ayoobi and Schoegl, PROCI 2015</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Note: old work is Python 2 / Cantera 2.1</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ranges</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_input</span><span class="p">(</span><span class="n">ranges</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ranges</span> <span class="o">=</span> <span class="n">ranges</span></div>
+
+    <span class="c1"># def create_tasks(self):</span>
+    <span class="c1">#     raise NotImplementedError(&quot;tbd&quot;)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">ctwrap</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">   Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">   Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">   Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/batch.html">   Batch Jobs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/jupyter.html">   Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/api.html">   API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018-20, I. Schoegl and D. Akinpelu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

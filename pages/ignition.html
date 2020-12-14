@@ -42,9 +42,9 @@
 <h2>YAML Configuration<a class="headerlink" href="#yaml-configuration" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `ignition` module</span>
 <span class="c1"># file specifes a parameter variation of the equivalence ratio</span>
-<span class="nt">variation</span><span class="p">:</span>
-  <span class="nt">entry</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">initial.phi</span>
-  <span class="nt">values</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">]</span>
+<span class="nt">strategy</span><span class="p">:</span>
+  <span class="nt">sequence</span><span class="p">:</span>
+    <span class="nt">initial.phi</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">]</span>
 <span class="nt">output</span><span class="p">:</span>
   <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
 <span class="nt">defaults</span><span class="p">:</span>
