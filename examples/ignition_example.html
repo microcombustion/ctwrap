@@ -344,7 +344,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.simulation.Ignition at 0x2d3ce9f7848&gt;
+&lt;ctwrap.simulation.Ignition at 0x7fe9af0d8f10&gt;
 </pre></div></div>
 </div>
 </div>
@@ -377,7 +377,7 @@ Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.simulation.SimulationHandler at 0x2d3ce8a7888&gt;
+&lt;ctwrap.simulation.SimulationHandler at 0x7fe9b1ef2cd0&gt;
 </pre></div></div>
 </div>
 </div>
@@ -398,8 +398,17 @@ Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
- * running simulation using 4 cores
-Wall time: 2.03 s
+ * running simulation using 6 cores
+ * processing `initial.phi_0.4` (Process-1)
+ * processing `initial.phi_0.6` (Process-2)
+ * processing `initial.phi_0.8` (Process-3)
+ * processing `initial.phi_1.0` (Process-4)
+ * processing `initial.phi_1.2` (Process-5)
+ * processing `initial.phi_1.4` (Process-6)
+ * processing `initial.phi_1.6` (Process-1)
+ * processing `initial.phi_1.8` (Process-3)
+CPU times: user 13.5 ms, sys: 26.5 ms, total: 40 ms
+Wall time: 138 ms
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -441,7 +450,7 @@ True
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;KeysViewHDF5 [&#39;initial.phi_0.4&#39;, &#39;initial.phi_0.6&#39;, &#39;initial.phi_0.8&#39;, &#39;initial.phi_1.0&#39;, &#39;initial.phi_1.2&#39;, &#39;initial.phi_1.4&#39;, &#39;initial.phi_1.6&#39;, &#39;initial.phi_1.8&#39;]&gt;
+&lt;KeysViewHDF5 [&#39;output_00&#39;, &#39;output_01&#39;, &#39;output_02&#39;, &#39;output_03&#39;, &#39;output_04&#39;, &#39;output_05&#39;, &#39;output_06&#39;, &#39;output_07&#39;]&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -478,8 +487,7 @@ True
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;entry&#39;: &#39;initial.phi&#39;,
- &#39;values&#39;: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8],
+{&#39;sequence&#39;: {&#39;initial.phi&#39;: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]},
  &#39;tasks&#39;: [&#39;initial.phi_0.4&#39;,
   &#39;initial.phi_0.6&#39;,
   &#39;initial.phi_0.8&#39;,
@@ -506,8 +514,8 @@ True
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;initial&#39;: {&#39;T&#39;: &#39;1000. kelvin&#39;,
-  &#39;P&#39;: &#39;1. atmosphere&#39;,
+{&#39;initial&#39;: {&#39;T&#39;: 1000.0,
+  &#39;P&#39;: 101325.0,
   &#39;phi&#39;: 1.0,
   &#39;fuel&#39;: &#39;H2&#39;,
   &#39;oxidizer&#39;: &#39;O2:1,AR:3.76&#39;},
@@ -518,12 +526,31 @@ True
   &#39;rtol&#39;: 1e-09}}
 </pre></div></div>
 </div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">phi</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="s1">&#39;sequence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;initial.phi&#39;</span><span class="p">)</span>
+<span class="n">phi</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
+</pre></div></div>
+</div>
 </div>
 <div class="section" id="3.2-Plot">
 <h3>3.2 Plot<a class="headerlink" href="#3.2-Plot" title="Permalink to this headline">¶</a></h3>
 <p>Display time histories for gas temperature.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -534,7 +561,7 @@ True
 <span class="c1"># plot results</span>
 <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">][:],</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">][:],</span><span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">[</span><span class="n">f</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">][:],</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">][:],</span><span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">[</span><span class="n">f</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="n">phi</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
 
 <span class="c1"># add title/axis labels</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;IdealGasConstPressure Reactor&#39;</span><span class="p">)</span>
@@ -555,7 +582,7 @@ True
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_ignition_example_19_0.png" src="../_images/examples_ignition_example_19_0.png" />
+<img alt="../_images/examples_ignition_example_20_0.png" src="../_images/examples_ignition_example_20_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
