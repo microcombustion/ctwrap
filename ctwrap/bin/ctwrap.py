@@ -3,8 +3,9 @@
 """ctwrap executable"""
 
 import argparse
-import os
 import ctwrap
+from pathlib import Path
+import importlib
 
 import warnings
 warnings.filterwarnings(action='once')
@@ -44,9 +45,13 @@ def main():
         output_file = args.output
 
     # import module
-    if '.' not in module_name:
+    if (Path.cwd() / module_name).is_file():
+        module = module_name
+    elif '.' not in module_name:
         module_name = 'ctwrap.modules.' + module_name
-    module = __import__(module_name, fromlist=[''])
+        module = importlib.import_module(module_name)
+    else:
+        module = importlib.import_module(module_name)
 
     # verbose output
     if verbosity:
