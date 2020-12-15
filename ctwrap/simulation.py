@@ -160,17 +160,19 @@ class Simulation(object):
         if self._output is None:
             return
 
-        filename = self._output['file_name']
+        output = self._output.copy()
+
+        filename = output.pop('file_name')
 
         if filename is None:
             return
 
-        filepath = self._output['path']
-        formatt = "." + self._output['format']
-        force = self._output['force_overwrite']
+        filepath = output.pop('path')
+        formatt = "." + output.pop('format')
+        force = output.pop('force_overwrite')
 
         if filepath is not None:
-            filename = Path(filepath)/ filename
+            filename = Path(filepath) / filename
 
         # file check
         fexists = Path.is_file(filename)
@@ -182,14 +184,16 @@ class Simulation(object):
                         msg = 'Cannot overwrite existing ' \
                               'group `{}` (use force to override)'
                         raise RuntimeError(msg.format(group))
-                groups = hdf.keys()
-        else:
-            groups = []
+                    elif group in self.data and mode == 'a' and force:
+                        mode = 'w'
+
+        output.pop('name')
+        output.update(mode=mode)
 
         if formatt in supported:
             self._module = importlib.import_module(self._module)
             try:
-                self._module.save(filename, self.data, task, groups, **self._output)
+                self._module.save(filename, self.data, task, **output)
             except AttributeError:
                 print("{} simulation module has no method 'save' but output format "
                       "was defined in configuration file".format(self._module.__name__))
