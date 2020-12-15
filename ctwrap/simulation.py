@@ -59,6 +59,7 @@ class Simulation(object):
         self._module = module
         self._output = output
         self.data = None
+        self._errored = False
 
         # ensure that module is well formed
         mod = self._load_module()
@@ -140,7 +141,15 @@ class Simulation(object):
             config = module.defaults()
         config = Parser(config)
 
-        self.data = module.run(name, **config, **kwargs)
+        try:
+            self.data = module.run(name, **config, **kwargs)
+            self._errored = False
+        except Exception as err:
+            # Convert exception to warning
+            msg = "Simulation of '{}' for '{}' failed with error message:\n{}".format(module.__name__, name, err)
+            warnings.warn(msg, RuntimeWarning)
+            self.data = {name: (type(err).__name__, str(err))}
+            self._errored = True
 
     def defaults(self) -> Dict[str, Any]:
         """Pass-through returning simulation module defaults as a dictionary"""
@@ -175,7 +184,7 @@ class Simulation(object):
             filename = Path(filepath) / filename
 
         # file check
-        fexists = Path.is_file(filename)
+        fexists = Path(filename).is_file()
 
         if fexists:
             with h5py.File(filename, 'r') as hdf:
@@ -193,7 +202,13 @@ class Simulation(object):
         if formatt in supported:
             module = self._load_module()
             if hasattr(module, 'save'):
-                module.save(filename, self.data, task, **output)
+                if self._errored:
+                    with h5py.File(filename, mode) as hdf:
+                        for group, err in self.data.items():
+                            grp = hdf.create_group(group)
+                            grp.attrs[err[0]] = err[1]
+                else:
+                    module.save(filename, self.data, task, **output)
             else:
                 raise AttributeError("{} simulation module has no method 'save' "
                                      "but output format was defined in configuration "
