@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import pint.quantity as pq
 import importlib
+import h5py
 
 import warnings
 # add exception as pywintypes imports a deprecated module
@@ -40,37 +41,35 @@ class TestWrap(unittest.TestCase):
     _path = None
     _strategy = 'sequence'
 
+    def setUp(self):
+        self.sim = cw.Simulation.from_module(self._module)
+        self.sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, path=EXAMPLES)
+
     def tearDown(self):
         if self._hdf:
             [hdf.unlink() for hdf in Path(EXAMPLES).glob('*.h5')]
             [hdf.unlink() for hdf in Path(ROOT).glob('*.h5')]
 
     def test_simulation(self):
-        sim = cw.Simulation.from_module(self._module)
-        self.assertIsNone(sim.data)
-        sim.run()
-        self.assertIsInstance(sim.data, dict)
-        for key in sim.data.keys():
+        self.assertIsNone(self.sim.data)
+        self.sim.run()
+        self.assertIsInstance(self.sim.data, dict)
+        for key in self.sim.data.keys():
             self.assertIn('defaults', key)
 
     def test_handler(self):
-        sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, path=EXAMPLES)
-        self.assertIsInstance(sh.tasks, dict)
-        self.assertIn(self._task, sh.tasks)
+        self.assertIsInstance(self.sh.tasks, dict)
+        self.assertIn(self._task, self.sh.tasks)
 
     def test_serial(self):
-        sim = cw.Simulation.from_module(self._module)
-        sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, path=EXAMPLES)
-        self.assertTrue(sh.run_serial(sim))
+        self.assertTrue(self.sh.run_serial(self.sim))
 
         if self._hdf:
             hdf = Path(EXAMPLES) / self._hdf
             self.assertTrue(hdf.is_file())
 
     def test_parallel(self):
-        sim = cw.Simulation.from_module(self._module)
-        sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, path=EXAMPLES)
-        self.assertTrue(sh.run_parallel(sim))
+        self.assertTrue(self.sh.run_parallel(self.sim))
 
         if self._hdf:
             hdf = Path(EXAMPLES) / self._hdf
@@ -146,6 +145,44 @@ class TestAdiabaticFlame(TestWrap):
     _yaml = 'adiabatic_flame.yaml'
     _hdf = 'adiabatic_flame.h5'
     _strategy = None
+
+
+class TestInvalid(TestWrap):
+
+    _module = str(ROOT / 'tests' / 'invalid.py')
+    _task = 'foo_1'
+    _dict = {
+        'strategy': {'sequence': {'foo': [0, 1, 2]}},
+        'defaults': {'foo': None},
+        'output': {'name': 'invalid', 'format': 'h5'},
+        'ctwrap': '0.2.0'
+    }
+
+    def setUp(self):
+        self.sim = cw.Simulation.from_module(self._module)
+        self.sh = cw.SimulationHandler.from_dict(self._dict)
+
+    def tearDown(self):
+        h5 = Path('invalid.h5')
+        if h5.is_file():
+            with h5py.File(h5, 'r') as hdf:
+                for data in hdf.values():
+                    for attr in data.attrs:
+                        self.assertEqual(attr, 'RuntimeError')
+                        self.assertEqual(data.attrs[attr], "Hello world!")
+            h5.unlink()
+
+    def test_simulation(self):
+        with self.assertWarnsRegex(RuntimeWarning, "Hello world!"):
+            super().test_simulation()
+
+    def test_serial(self):
+        with self.assertWarnsRegex(RuntimeWarning, "Hello world!"):
+            super().test_serial()
+
+    def test_commandline(self):
+        # skip test (does not use setUp and is more involved)
+        pass
 
 
 if __name__ == "__main__":
