@@ -120,7 +120,7 @@
 <div class="viewcode-block" id="Strategy"><a class="viewcode-back" href="../../pages/strategy.html#ctwrap.strategy.Strategy">[docs]</a><span class="k">class</span> <span class="nc">Strategy</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Base class for batch simulation strategies&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{},</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_input</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Base clase does not implement batch simulation strategy&quot;</span><span class="p">)</span>
 
@@ -142,36 +142,54 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="Strategy.load"><a class="viewcode-back" href="../../pages/strategy.html#ctwrap.strategy.Strategy.load">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">strategy</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">strategy</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Factory loader for strategy objects</span>
 
 <span class="sd">        **Example:** The following code creates a `Sequence` object *strategy* that varies</span>
-<span class="sd">        the variable *foobar*. The dictionary key at the top level specifies what strategy</span>
-<span class="sd">        object is being loaded:</span>
+<span class="sd">        the variable *foobar*. The dictionary key at the top level has to contain a</span>
+<span class="sd">        lower-case string corresponding to a strategy class:</span>
 
 <span class="sd">        .. code-block:: Python</span>
 
-<span class="sd">           strategy = ctwrap.Strategy.load(sequence={&#39;foobar&#39;: [0, 1, 2, 3]})</span>
+<span class="sd">           strategy = ctwrap.Strategy.load({sequence_test: {&#39;foobar&#39;: [0, 1, 2, 3]}})</span>
 
 <span class="sd">        Arguments:</span>
-<span class="sd">           **strategy: Keywords with single key/value pair, where the lower-case key</span>
-<span class="sd">              specifies the batch simulation strategy and the value holds parameters.</span>
+<span class="sd">           strategy: Dictionary of batch job strategies, where lower-case keys</span>
+<span class="sd">              specify the batch simulation strategy and the value holds parameters.</span>
 <span class="sd">              Except for the case, the key needs to match the name of a `Strategy` object.</span>
+<span class="sd">           name: Name of strategy (can be :py:`None` if there is only one strategy)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">           Instantiated `Strategy` object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">strategy</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">strategy</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Parameter &#39;name&#39; is required if multiple strategies are defined&quot;</span><span class="p">)</span>
 
         <span class="n">hooks</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;strategy&#39;</span><span class="p">:</span> <span class="bp">cls</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
             <span class="n">hooks</span><span class="p">[</span><span class="n">sub</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">sub</span>
 
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hooks</span><span class="p">:</span>
+        <span class="n">cls_hook</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">sub</span><span class="p">,</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                <span class="n">cls_hook</span> <span class="o">=</span> <span class="n">hook</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">cls_hook</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Unknown strategy &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
 
-        <span class="n">cls_hook</span> <span class="o">=</span> <span class="n">hooks</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">cls_hook</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="p">(</span><span class="n">cls_hook</span><span class="p">,</span> <span class="p">),</span> <span class="p">{})(</span><span class="n">value</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">cls_hook</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="p">(</span><span class="n">cls_hook</span><span class="p">,</span> <span class="p">),</span> <span class="p">{})(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">definition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Definition of batch simulation strategy&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Needs to be implemented by derived classes&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -212,11 +230,15 @@
 
 <span class="sd">    Arguments:</span>
 <span class="sd">       sweep: Dictionary specifying single parameter sequence</span>
+<span class="sd">       name: Name of batch job strategy</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sweep</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sweep</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_input</span><span class="p">(</span><span class="n">sweep</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sweep</span> <span class="o">=</span> <span class="n">sweep</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -227,6 +249,11 @@
     <span class="k">def</span> <span class="nf">from_legacy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create Sequence from ctwrap 0.1.0 sytax&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">({</span><span class="n">items</span><span class="p">[</span><span class="s1">&#39;entry&#39;</span><span class="p">]:</span> <span class="n">items</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]})</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">definition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sweep</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -243,16 +270,25 @@
 
 <span class="sd">    Arguments:</span>
 <span class="sd">       matrix: Dictionary specifying multiple parameter sequences</span>
+<span class="sd">       name: Name of batch job strategy</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_input</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">entries</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
         <span class="k">return</span> <span class="s1">&#39;Simulations for entries </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">definition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

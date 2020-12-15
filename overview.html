@@ -55,22 +55,22 @@ The save method saves the output object based on the specified
 format in the YAML input file. See the <code class="docutils literal notranslate"><span class="pre">minimal</span></code> module below.</p>
 <div class="section" id="simulation-module">
 <h2>Simulation Module<a class="headerlink" href="#simulation-module" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Simulation module illustrating minimal ctwrap example</span>
-<span class="sd">Note: ``save`` method is not used here.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Simulation module illustrating a minimal ctwrap example</span>
+<span class="sd">Note: the ``save`` method is skipped</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 
 <span class="k">def</span> <span class="nf">defaults</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Returns dictionary containing default arguments&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;sleep&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">sleep</span><span class="o">=.</span><span class="mi">2</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">foo</span><span class="o">=.</span><span class="mi">2</span><span class="p">,</span> <span class="n">bar</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This method &#39;sleeps&#39; for the specified duration&quot;&quot;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    - `minimal`: sleeping for </span><span class="si">{}</span><span class="s1"> seconds ...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sleep</span><span class="p">))</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;sleep&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">sleep</span><span class="p">]}}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    - `minimal`: sleeping for </span><span class="si">{}</span><span class="s1"> * </span><span class="si">{}</span><span class="s1"> = </span><span class="si">{}</span><span class="s1"> seconds ...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="n">foo</span> <span class="o">*</span> <span class="n">bar</span><span class="p">))</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">foo</span> <span class="o">*</span> <span class="n">bar</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;sleep&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">foo</span> <span class="o">*</span> <span class="n">bar</span><span class="p">]}}</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -88,13 +88,17 @@ the module. See the <code class="docutils literal notranslate"><span class="pre"
 </div>
 <div class="section" id="yaml-configuration">
 <h2>YAML Configuration<a class="headerlink" href="#yaml-configuration" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `template` module</span>
-<span class="c1"># file specifes a parameter variation of the sleep duration</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `minimal` simulation module (minimal.py)</span>
+<span class="c1"># file specifes a parameter variation of sleep duration</span>
 <span class="nt">strategy</span><span class="p">:</span>
-  <span class="nt">sequence</span><span class="p">:</span>
-    <span class="nt">sleep</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.1</span><span class="p p-Indicator">,</span> <span class="nv">0.2</span><span class="p p-Indicator">,</span> <span class="nv">0.3</span><span class="p p-Indicator">,</span> <span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.5</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.7</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">]</span>
+  <span class="nt">sequence</span><span class="p">:</span> <span class="c1"># example for a batch sequence</span>
+    <span class="nt">foo</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.1</span><span class="p p-Indicator">,</span> <span class="nv">0.2</span><span class="p p-Indicator">,</span> <span class="nv">0.3</span><span class="p p-Indicator">,</span> <span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.5</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.7</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">]</span>
+  <span class="nt">matrix</span><span class="p">:</span> <span class="c1"># example for a batch matrix</span>
+    <span class="nt">foo</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.1</span><span class="p p-Indicator">,</span> <span class="nv">0.2</span><span class="p p-Indicator">,</span> <span class="nv">0.3</span><span class="p p-Indicator">]</span>
+    <span class="nt">bar</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">2</span><span class="p p-Indicator">]</span>
 <span class="nt">defaults</span><span class="p">:</span>
-  <span class="nt">sleep</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
+  <span class="nt">foo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
+  <span class="nt">bar</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
 <span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2.0</span>
 </pre></div>
 </div>
