@@ -42,12 +42,13 @@
 <div class="section" id="yaml-configuration">
 <h2>YAML Configuration<a class="headerlink" href="#yaml-configuration" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `adiabatic_flame` module</span>
-<span class="c1"># file specifes a parameter variation of the equivalence ratio</span>
+<span class="c1"># file specifies a parameter variation of the equivalence ratio</span>
 <span class="nt">strategy</span><span class="p">:</span>
   <span class="nt">sequence</span><span class="p">:</span>
     <span class="nt">upstream.phi</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">,</span> <span class="nv">2.0</span><span class="p p-Indicator">,</span> <span class="nv">2.2</span><span class="p p-Indicator">,</span> <span class="nv">2.4</span><span class="p p-Indicator">,</span> <span class="nv">2.6</span><span class="p p-Indicator">]</span>
 <span class="nt">output</span><span class="p">:</span>
   <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
+  <span class="nt">force_overwrite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="nt">defaults</span><span class="p">:</span>
   <span class="nt">upstream</span><span class="p">:</span>
     <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300. kelvin</span> <span class="c1"># temperature</span>
@@ -181,7 +182,7 @@
     <span class="k">return</span> <span class="n">out</span>
 
 
-<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function saves the output from the run method</span>
 
@@ -189,11 +190,12 @@
 <span class="sd">        filename (str): naming of file</span>
 <span class="sd">        data (Dict): data to be saved</span>
 <span class="sd">        task (str): name of task if running variations</span>
+<span class="sd">        kwargs (dict): keyword argument</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">flame</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">flame</span><span class="o">.</span><span class="n">write_hdf</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span>
-                        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+                        <span class="n">description</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
