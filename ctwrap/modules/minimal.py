@@ -1,19 +1,19 @@
-"""Simulation module illustrating minimal ctwrap example
-Note: ``save`` method is not used here.
+"""Simulation module illustrating a minimal ctwrap example
+Note: the ``save`` method is skipped
 """
 import time
 
 
 def defaults():
     """Returns dictionary containing default arguments"""
-    return {'sleep': 0.2}
+    return {'foo': 0.2, 'bar': 1}
 
 
-def run(name, sleep=.2):
+def run(name, foo=.2, bar=1):
     """This method 'sleeps' for the specified duration"""
-    print('    - `minimal`: sleeping for {} seconds ...'.format(sleep))
-    time.sleep(sleep)
-    return {name: {'sleep': [sleep]}}
+    print('    - `minimal`: sleeping for {} * {} = {} seconds ...'.format(foo, bar, foo * bar))
+    time.sleep(foo * bar)
+    return {name: {'sleep': [foo * bar]}}
 
 
 if __name__ == "__main__":

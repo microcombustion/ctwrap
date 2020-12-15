@@ -34,7 +34,7 @@ class TestLegacy(unittest.TestCase):
 class TestWrap(unittest.TestCase):
 
     _module = cw.modules.minimal
-    _task = 'sleep_0.4'
+    _task = 'foo_0.4'
     _yaml = 'minimal.yaml'
     _hdf = None
     _path = None
