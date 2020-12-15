@@ -86,6 +86,10 @@ class Strategy:
         self._check_input(value, 0)
         warnings.warn("Base clase does not implement batch simulation strategy")
 
+    @property
+    def info(self):
+        return "Simulation strategy (base class)"
+
     @staticmethod
     def _check_input(value: Dict[str, Any], min_length: int, exact: Optional[bool]=True):
         """Check validity of input"""
@@ -176,6 +180,11 @@ class Sequence(Strategy):
         self._check_input(sweep, 1)
         self.sweep = sweep
 
+    @property
+    def info(self):
+        entry, values = list(self.sweep.items())[0]
+        return 'Simulations for entry `{}` with values: {}'.format(entry, values)
+
     @classmethod
     def from_legacy(cls, items):
         """Create Sequence from ctwrap 0.1.0 sytax"""
@@ -201,6 +210,11 @@ class Matrix(Strategy):
     def __init__(self, matrix):
         self._check_input(matrix, 2, False)
         self.matrix = matrix
+
+    @property
+    def info(self):
+        entries = ['{}'.format(k) for k in self.matrix.keys()]
+        return 'Simulations for entries {}'.format(entries)
 
     @property
     def tasks(self):
