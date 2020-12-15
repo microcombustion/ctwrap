@@ -148,6 +148,11 @@ class Strategy:
         return type(cls_hook.__name__, (cls_hook, ), {})(value)
 
     @property
+    def definition(self):
+        """Definition of batch simulation strategy"""
+        raise NotImplementedError("Needs to be implemented by derived classes")
+
+    @property
     def tasks(self):
         """List of tasks to be performed"""
         raise NotImplementedError("Needs to be implemented by derived classes")
@@ -203,6 +208,11 @@ class Sequence(Strategy):
         return cls({items['entry']: items['values']})
 
     @property
+    def definition(self):
+        ""
+        return self.sweep
+
+    @property
     def tasks(self):
         ""
         return _task_list(self.sweep)
@@ -227,6 +237,11 @@ class Matrix(Strategy):
     def info(self):
         entries = ['{}'.format(k) for k in self.matrix.keys()]
         return 'Simulations for entries {}'.format(entries)
+
+    @property
+    def definition(self):
+        ""
+        return self.matrix
 
     @property
     def tasks(self):
