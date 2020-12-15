@@ -82,7 +82,7 @@ def _sweep_matrix(tasks, defaults):
 class Strategy:
     """Base class for batch simulation strategies"""
 
-    def __init__(self, value={}):
+    def __init__(self, value={}, name=None):
         self._check_input(value, 0)
         warnings.warn("Base clase does not implement batch simulation strategy")
 
@@ -129,6 +129,7 @@ class Strategy:
             value = strategy[name]
         elif len(strategy) == 1:
             key, value = list(strategy.items())[0]
+            name = key
         else:
             raise ValueError("Parameter 'name' is required if multiple strategies are defined")
 
@@ -145,7 +146,7 @@ class Strategy:
         if cls_hook is None:
             raise NotImplementedError("Unknown strategy '{}'".format(key))
 
-        return type(cls_hook.__name__, (cls_hook, ), {})(value)
+        return type(cls_hook.__name__, (cls_hook, ), {})(value, name=name)
 
     @property
     def definition(self):
@@ -191,11 +192,15 @@ class Sequence(Strategy):
 
     Arguments:
        sweep: Dictionary specifying single parameter sequence
+       name: Name of batch job strategy
     """
 
-    def __init__(self, sweep: Dict[str, Any]):
+    def __init__(self, sweep: Dict[str, Any], name: Optional[str]=None):
         self._check_input(sweep, 1)
         self.sweep = sweep
+        if name is None:
+            name = type(self).__name__.lower()
+        self.name = name
 
     @property
     def info(self):
@@ -227,11 +232,15 @@ class Matrix(Strategy):
 
     Arguments:
        matrix: Dictionary specifying multiple parameter sequences
+       name: Name of batch job strategy
     """
 
-    def __init__(self, matrix):
+    def __init__(self, matrix: Dict[str, Any], name: Optional[str]=None):
         self._check_input(matrix, 2, False)
         self.matrix = matrix
+        if name is None:
+            name = type(self).__name__.lower()
+        self.name = name
 
     @property
     def info(self):

@@ -99,20 +99,12 @@ class TestStrategy(unittest.TestCase):
 
     def test_load(self):
 
-        seq = cw.Strategy.load({'sequence': self._specs_one})
-        self.assertIsInstance(seq, cw.Sequence)
+        for name in ['sequence', 'sequence_test', 'my_sequence', 'my_sequence_test']:
 
-        seq = cw.Strategy.load({'sequence_test': self._specs_one})
-        self.assertIsInstance(seq, cw.Sequence)
-
-        seq = cw.Strategy.load({'my_sequence': self._specs_one})
-        self.assertIsInstance(seq, cw.Sequence)
-
-        seq = cw.Strategy.load({'my_sequence_test': self._specs_one})
-        self.assertIsInstance(seq, cw.Sequence)
-
-        seq = cw.Strategy.load({'my_sequence_test': self._specs_one})
-        self.assertIsInstance(seq, cw.Sequence)
+            seq = cw.Strategy.load({name: self._specs_one})
+            self.assertIsInstance(seq, cw.Sequence)
+            self.assertEqual(seq.name, name)
+            self.assertIn('foobar', seq.definition)
 
         seq = cw.Strategy.load({'matrix': self._specs_two})
         self.assertIsInstance(seq, cw.Matrix)

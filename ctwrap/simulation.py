@@ -302,7 +302,7 @@ class SimulationHandler(object):
 
         return {
             'defaults': self._defaults,
-            'strategy': self._strategy.definition,
+            'strategy': {self._strategy.name: self._strategy.definition},
             'tasks': list(self._tasks.keys())
         }
 
