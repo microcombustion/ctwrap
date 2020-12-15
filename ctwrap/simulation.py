@@ -274,63 +274,43 @@ class SimulationHandler(object):
        verbosity (int): verbosity level
 
     Arguments:
+       strategy: Batch simulation strategy
        defaults: Dictionary containing simulation defaults
-       strategy: Dictionary specifying batch simulation strategies
-       name: Name of strategy to be used (if more than one is available)
        output: Dictionary specifying file output
        verbosity: Verbosity level
     """
 
     def __init__(self,
-                 defaults: Dict[str, Any],
-                 strategy: Optional[Dict[str, Any]]=None,
-                 name: Optional[str]=None,
+                 strategy: Optional[Strategy]=None,
+                 defaults: Dict[str, Any]=None,
                  output: Optional[Dict[str, Any]]=None,
-                 verbosity: Optional[int]=0,
-                 variation: Optional[Dict[str, Any]]=None):
+                 verbosity: Optional[int]=0):
         """Constructor for `SimulationHandler` object."""
 
         # parse arguments
+        self._strategy = strategy
         self._defaults = defaults
-        self._variation = variation
         self._output = output
         self.verbosity = verbosity
-
-        if variation and isinstance(variation, dict):
-            self._strategy = Sequence.from_legacy(variation)
-            warnings.warn("Old implementation", PendingDeprecationWarning)
-        elif strategy and isinstance(strategy, dict):
-            self._strategy = Strategy.load(strategy, name=name)
-        else:
-            raise ValueError("Missing or invalid argument: need 'strategy' or 'variation' dictionary")
 
         self._tasks = self._strategy.create_tasks(self._defaults)
         if self.verbosity:
             print(self._strategy.info)
 
-        if self._output is not None:
-            if variation:
-                var = variation.copy()
+    @property
+    def metadata(self):
 
-            else:
-                var = strategy.copy()
-            var['tasks'] = list(self._tasks.keys())
-
-            # assemble information
-            if variation:
-                self._metadata = {
-                    'defaults': self._defaults,
-                    'variation': var,
-                }
-            else:
-                self._metadata = {'defaults': self._defaults,
-                                  'strategy': var,
-                                  }
+        return {
+            'defaults': self._defaults,
+            'strategy': self._strategy.definition,
+            'tasks': list(self._tasks.keys())
+        }
 
     @classmethod
     def from_yaml(cls, yaml_file: str,
-                  name: Optional[str] = None,
-                  path: Optional[str] = None,
+                  strategy: Optional[str]=None,
+                  name: Optional[str]=None,
+                  path: Optional[str]=None,
                   **kwargs: str):
         """
         Alternate constructor using YAML file as input.
@@ -340,14 +320,14 @@ class SimulationHandler(object):
 
         .. code-block:: Python
 
-           # creates a simulationHandler object
-           sh = ctwrap.SimulationHandler.from_yaml('minimal.yaml')
+           sh = ctwrap.SimulationHandler.from_yaml('minimal.yaml', strategy='sequence')
 
         Arguments:
-           yaml_file (string): yaml file
-           name (string): output name (overrides yaml)
-           path (string): file path (both yaml and output)
-           ** kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
+           yaml_file: YAML file
+           strategy: Batch job strategy name (only needed if more than one are defined)
+           name: Output name (overrides yaml)
+           path: File path (both yaml and output)
+           **kwargs: Dependent on implementation (e.g. verbosity, reacting)
         """
 
         # load configuration from yaml
@@ -365,33 +345,42 @@ class SimulationHandler(object):
             name = '{}'.format(Path(yaml_file).parents[0] / fname.stem)
             name = output.get('name', name)
 
-        return cls.from_dict(content, name=name, path=path, **kwargs)
+        return cls.from_dict(content, strategy=strategy, name=name, path=path, **kwargs)
 
     @classmethod
     def from_dict(cls, content: Dict[str, Any],
-                  name: Optional[str] = None,
-                  path: Optional[str] = None,
+                  strategy: Optional[str]=None,
+                  name: Optional[str]=None,
+                  path: Optional[str]=None,
                   **kwargs: str) -> \
             Union['SimulationHandler', Dict[str, Any], str]:
         """
         Alternate constructor using a dictionary as input.
 
         Arguments:
-           content (dict): dictionary from yaml input
-           name (string): output name (overrides yaml)
-           path (string): output path (overrides yaml)
-           ** kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
+           content: Dictionary from YAML input
+           strategy: Batch job strategy name (only needed if more than one are defined)
+           name: Output name (overrides yaml)
+           path: Output path (overrides yaml)
+           **kwargs: Dependent on implementation (e.g. verbosity, reacting)
         """
         assert 'ctwrap' in content, 'obsolete yaml file format'
         assert 'defaults' in content, 'obsolete yaml file format'
-        defaults = content['defaults']
-        strategy = content.get('strategy', None)
-        variation = content.get('variation', None)
-        output = content.get('output', None)
 
+        if 'variation' in content and isinstance(content['variation'], dict):
+            strategy = Sequence.from_legacy(content['variation'])
+            warnings.warn("Old implementation", PendingDeprecationWarning)
+        elif 'strategy' in content and isinstance(content['strategy'], dict):
+            strategy = Strategy.load(content['strategy'], name=strategy)
+        else:
+            raise ValueError("Missing or invalid argument: need 'strategy' or 'variation' entry in dictionary")
+
+        defaults = content['defaults']
+
+        output = content.get('output', None)
         output = cls._parse_output(output, fname=name, fpath=path)
 
-        return cls(defaults, strategy=strategy, output=output, variation=variation, **kwargs)
+        return cls(strategy=strategy, defaults=defaults, output=output, **kwargs)
 
     @staticmethod
     def _parse_output(dct: Dict[str, Any],
@@ -540,7 +529,7 @@ class SimulationHandler(object):
         obj.run(group, config, **kwargs)
         obj._save(task=task)
         if self._output is not None:
-            obj._save_metadata(self._output, self._metadata)
+            obj._save_metadata(self._output, self.metadata)
 
     def run_serial(self,
                    sim: Simulation,
@@ -594,7 +583,7 @@ class SimulationHandler(object):
             obj.run(group, config, **kwargs)
             obj._save(task=t)
         if self._output is not None:
-            obj._save_metadata(self._output, self._metadata)
+            obj._save_metadata(self._output, self.metadata)
         return True
 
     def run_parallel(self,
@@ -680,7 +669,7 @@ class SimulationHandler(object):
         if self._output is not None:
             if verbosity > 1:
                 print(indent1 + "Appending metadata")
-            sim._save_metadata(self._output, self._metadata)
+            sim._save_metadata(self._output, self.metadata)
 
         return True
 

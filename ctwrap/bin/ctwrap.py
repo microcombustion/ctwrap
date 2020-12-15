@@ -31,6 +31,11 @@ def main():
         action='store_true',
         default=False,
         help='run parallel calculations')
+    parser.add_argument(
+        '--strategy',
+        choices=['sequence', 'matrix'],
+        default=None,
+        help='batch job strategy')
 
     # parse arguments
     args = parser.parse_args()
@@ -38,6 +43,7 @@ def main():
     yml_file = args.yaml_config
     verbosity = args.verbosity
     parallel = args.parallel
+    strategy = args.strategy
     if args.output is None:
         output_file = None
     else:
@@ -63,7 +69,7 @@ def main():
     # set up variation
     sim = ctwrap.Simulation.from_module(module)
     sh = ctwrap.SimulationHandler.from_yaml(
-        yml_file, verbosity=verbosity, name=output_file)
+        yml_file, strategy=strategy, verbosity=verbosity, name=output_file)
 
     # run parameter variation
     if parallel:
