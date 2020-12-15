@@ -38,6 +38,7 @@ class TestWrap(unittest.TestCase):
     _yaml = 'minimal.yaml'
     _hdf = None
     _path = None
+    _strategy = 'sequence'
 
     def tearDown(self):
         if self._hdf:
@@ -53,13 +54,13 @@ class TestWrap(unittest.TestCase):
             self.assertIn('defaults', key)
 
     def test_handler(self):
-        sh = cw.SimulationHandler.from_yaml(self._yaml, path=EXAMPLES)
+        sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, path=EXAMPLES)
         self.assertIsInstance(sh.tasks, dict)
         self.assertIn(self._task, sh.tasks)
 
     def test_serial(self):
         sim = cw.Simulation.from_module(self._module)
-        sh = cw.SimulationHandler.from_yaml(self._yaml, path=EXAMPLES)
+        sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, path=EXAMPLES)
         self.assertTrue(sh.run_serial(sim))
 
         if self._hdf:
@@ -68,7 +69,7 @@ class TestWrap(unittest.TestCase):
 
     def test_parallel(self):
         sim = cw.Simulation.from_module(self._module)
-        sh = cw.SimulationHandler.from_yaml(self._yaml, path=EXAMPLES)
+        sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, path=EXAMPLES)
         self.assertTrue(sh.run_parallel(sim))
 
         if self._hdf:
@@ -85,6 +86,8 @@ class TestWrap(unittest.TestCase):
                 name = str(Path(self._path) / '{}.py'.format(name))
         yaml = str(Path(EXAMPLES) / self._yaml)
         pars = [name, yaml, '--parallel']
+        if self._strategy:
+            pars += ['--strategy', self._strategy]
 
         self.maxDiff = None
         process = subprocess.Popen([cmd] + pars,
@@ -96,6 +99,12 @@ class TestWrap(unittest.TestCase):
         if self._hdf:
             hdf = Path(EXAMPLES) / self._hdf
             self.assertTrue(hdf.is_file())
+
+
+class TestMatrix(TestWrap):
+
+    _strategy = 'matrix'
+    _task ='foo_0.1_bar_0'
 
 
 class TestLocal(TestWrap):
@@ -127,6 +136,7 @@ class TestIgnition(TestWrap):
     _task = 'initial.phi_0.4'
     _yaml = 'ignition.yaml'
     _hdf = 'ignition.h5'
+    _strategy = None
 
 
 class TestAdiabaticFlame(TestWrap):
@@ -135,6 +145,7 @@ class TestAdiabaticFlame(TestWrap):
     _task = 'upstream.phi_0.4'
     _yaml = 'adiabatic_flame.yaml'
     _hdf = 'adiabatic_flame.h5'
+    _strategy = None
 
 
 if __name__ == "__main__":

@@ -4,14 +4,14 @@ import time
 
 def defaults():
     """Returns dictionary containing default arguments"""
-    return {'sleep': 0.2}
+    return {'foo': 0.2}
 
 
-def run(name, sleep=.2):
+def run(name, foo=.2, bar=1):
     """This method 'sleeps' for the specified duration"""
-    print('    - `minimal`: sleeping for {} seconds ...'.format(sleep))
-    time.sleep(sleep)
-    return {name: {'sleep': [sleep]}}
+    print('    - `minimal`: sleeping for {} seconds ...'.format(foo))
+    time.sleep(foo)
+    return {name: {'sleep': [foo]}}
 
 
 def save(filename, data, task=None):
