@@ -33,7 +33,30 @@ def _replace_entry(nested, key_list, value):
     return nested
 
 
-def _sweep_matrix(defaults, tasks):
+def _task_list(tasks, prefix=None):
+    """Create list of tasks (recursive)
+
+    Arguments:
+       tasks: Dictionary of variations
+    """
+    key = list(tasks.keys())[0]
+    next = tasks.copy()
+    values = next.pop(key)
+
+    out = []
+    for value in values:
+        new = '{}_{}'.format(key, value)
+        if prefix:
+            new = '{}_{}'.format(prefix, new)
+        if next:
+            out.extend(_task_list(next, new))
+        else:
+            out.append(new)
+
+    return out
+
+
+def _sweep_matrix(tasks, defaults):
     """Replace entries along multiple axes (recursive)
 
     Arguments:
@@ -41,14 +64,15 @@ def _sweep_matrix(defaults, tasks):
        tasks: Dictionary of variations
     """
     key = list(tasks.keys())[0]
-    values = tasks.pop(key)
+    next = tasks.copy()
+    values = next.pop(key)
     entry = key.split('.')
 
     out = []
     for value in values:
         new = _replace_entry(deepcopy(defaults), entry, value)
-        if tasks:
-            out.extend(_sweep_matrix(new, tasks.copy()))
+        if next:
+            out.extend(_sweep_matrix(next, new))
         else:
             out.append(new)
 
@@ -107,6 +131,15 @@ class Strategy:
         cls_hook = hooks[key]
         return type(cls_hook.__name__, (cls_hook, ), {})(value)
 
+    @property
+    def tasks(self):
+        """List of tasks to be performed"""
+        raise NotImplementedError("Needs to be implemented by derived classes")
+
+    def configurations(self, defaults):
+        """List of configurations to be tested"""
+        raise NotImplementedError("Needs to be implemented by derived classes")
+
     def create_tasks(self, defaults: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Create list of parameter sets for a parameter variation
 
@@ -129,7 +162,7 @@ class Strategy:
         Returns:
            List of dictionaries with parameter variation
         """
-        raise NotImplementedError("Needs to be implemented by derived classes")
+        return dict(zip(self.tasks, self.configurations(defaults)))
 
 
 class Sequence(Strategy):
@@ -148,9 +181,14 @@ class Sequence(Strategy):
         """Create Sequence from ctwrap 0.1.0 sytax"""
         return cls({items['entry']: items['values']})
 
-    def create_tasks(self, defaults):
+    @property
+    def tasks(self):
         ""
-        return _sweep_matrix(defaults, self.sweep)
+        return _task_list(self.sweep)
+
+    def configurations(self, defaults):
+        ""
+        return _sweep_matrix(self.sweep, defaults)
 
 
 class Matrix(Strategy):
@@ -164,9 +202,14 @@ class Matrix(Strategy):
         self._check_input(matrix, 2, False)
         self.matrix = matrix
 
-    def create_tasks(self, defaults):
+    @property
+    def tasks(self):
         ""
-        return _sweep_matrix(defaults, self.matrix)
+        return _task_list(self.matrix)
+
+    def configurations(self, defaults):
+        ""
+        return _sweep_matrix(self.matrix, defaults)
 
 
 class Sobol(Strategy):

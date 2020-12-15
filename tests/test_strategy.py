@@ -14,7 +14,7 @@ warnings.filterwarnings("ignore", ".*the imp module is deprecated*")
 
 # pylint: disable=import-error
 import ctwrap as cw
-from ctwrap.strategy import _replace_entry, _sweep_matrix
+from ctwrap.strategy import _replace_entry, _sweep_matrix, _task_list
 
 
 PWD = Path(__file__).parents[0]
@@ -54,21 +54,68 @@ class TestReplace(unittest.TestCase):
         self.assertEqual(out, self._default)
 
 
-class TestSweep(unittest.TestCase):
+class TestTasks(unittest.TestCase):
+
+    def test_one(self):
+        out = _task_list({'foo': [1, 2, 3, 4]})
+        self.assertEqual(len(out), 4)
+
+    def test_two(self):
+        out = _task_list({'foo': [1, 2, 3, 4], 'bar': [5, 6, 7]})
+        self.assertEqual(len(out), 12)
+
+    def test_three(self):
+        out = _task_list({'foo': [1, 2, 3, 4], 'bar': [5, 6, 7], 'baz': [8, 9]})
+        self.assertEqual(len(out), 24)
+
+
+class TestConfigurations(unittest.TestCase):
 
     _default = {'foo': 3, 'bar': 2, 'baz': 1}
 
     def test_one(self):
-        out = _sweep_matrix(self._default, {'foo': [1, 2, 3, 4]})
+        out = _sweep_matrix({'foo': [1, 2, 3, 4]}, self._default)
         self.assertEqual(len(out), 4)
 
     def test_two(self):
-        out = _sweep_matrix(self._default, {'foo': [1, 2, 3, 4], 'bar': [5, 6, 7]})
+        out = _sweep_matrix({'foo': [1, 2, 3, 4], 'bar': [5, 6, 7]}, self._default)
         self.assertEqual(len(out), 12)
 
     def test_three(self):
-        out = _sweep_matrix(self._default, {'foo': [1, 2, 3, 4], 'bar': [5, 6, 7], 'baz': [8, 9]})
+        out = _sweep_matrix({'foo': [1, 2, 3, 4], 'bar': [5, 6, 7], 'baz': [8, 9]}, self._default)
         self.assertEqual(len(out), 24)
+
+
+class TestSweep(unittest.TestCase):
+
+    _default = {'foo': 3, 'bar': 2, 'baz': 1}
+
+    def check(self, task_list):
+        print(task_list)
+        for task, config in task_list.items():
+            items = task.split('_')
+            while items:
+                key = items.pop(0)
+                val = items.pop(0)
+                self.assertEqual(str(config[key]), val)
+
+    def test_one(self):
+        out = _task_list({'foo': [1, 2, 3, 4]})
+        print(out)
+        configs = _sweep_matrix({'foo': [1, 2, 3, 4]}, self._default)
+        self.check(dict(zip(out, configs)))
+
+    def test_two(self):
+        dd = {'foo': [1, 2, 3, 4], 'bar': [5, 6, 7]}
+        out = _task_list(dd)
+        configs = _sweep_matrix(dd, self._default)
+        self.check(dict(zip(out, configs)))
+
+    def test_three(self):
+        dd = {'foo': [1, 2, 3, 4], 'bar': [5, 6, 7], 'baz': [8, 9]}
+        out = _task_list(dd)
+        configs = _sweep_matrix(dd, self._default)
+        self.check(dict(zip(out, configs)))
 
 
 class TestStrategy(unittest.TestCase):
@@ -82,9 +129,10 @@ class TestStrategy(unittest.TestCase):
 
         defaults = {'foobar': 1, 'spam': 2.0, 'eggs': 3.14}
         tasks = seq.create_tasks(defaults)
+        task_keys = list(tasks.keys())
 
         for i, val in enumerate(values):
-            self.assertEqual(val, tasks[i]['foobar'])
+            self.assertEqual(val, tasks[task_keys[i]]['foobar'])
 
     def test_invald(self):
 
