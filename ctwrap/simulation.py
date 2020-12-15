@@ -303,15 +303,9 @@ class SimulationHandler(object):
         else:
             raise ValueError("Missing or invalid argument: need 'strategy' or 'variation' dictionary")
 
-        if not isinstance(self._strategy, Sequence):
-            raise NotImplementedError("Todo")
-        # todo: replace hard coded strategy with tasks handled by Strategy objects
-        self._entry, self._values = list(self._strategy.sweep.items())[0]
-
-        # vals = self._variation_tuple[1]
-        if self.verbosity and self._values is not None:
-            print('Simulations for entry `{}` with values: {}'.format(
-                self._entry, self._values))
+        self._tasks = self._strategy.create_tasks(self._defaults)
+        if self.verbosity:
+            print(self._strategy.info)
 
         if self._output is not None:
             if variation:
@@ -319,8 +313,7 @@ class SimulationHandler(object):
 
             else:
                 var = strategy.copy()
-            var['tasks'] = [t for t in self.tasks]
-            var['tasks'].sort()
+            var['tasks'] = list(self._tasks.keys())
 
             # assemble information
             if variation:
@@ -469,7 +462,7 @@ class SimulationHandler(object):
     def __iter__(self):
         """Returns itself as iterator"""
 
-        for task in self.tasks:
+        for task in self._tasks:
             yield task
 
     def __getitem__(self, task: str):
@@ -479,40 +472,13 @@ class SimulationHandler(object):
         """
         Return configuration.
 
-        Argument:
-            task(str) : task to do
+        Arguments:
+           task: Task to do
 
-        Return:
-            updated configuration dictionary based on the task
+        Returns:
+           updated configuration dictionary based on the task
         """
-
-        value = self.tasks.get(task, None)
-        assert task is not None, 'invalid value'
-
-        out = deepcopy(self._defaults)
-
-        # locate and replace entry in nested dictionary (recursive)
-        def replace_entry(nested, key_list, value):
-            sub = nested[key_list[0]]
-            if len(key_list) == 1:
-                if isinstance(sub, list):
-                    sub[0] = value
-                elif isinstance(sub, str):
-                    _, unit = _parse(sub)
-                    sub = _write(value, unit)
-                else:
-                    sub = value
-            else:
-                sub = replace_entry(sub, key_list[1:], value)
-            nested[key_list[0]] = sub
-            return nested
-
-        value = self.tasks[task]
-        entry = self._entry.split('.')
-
-        return replace_entry(out, entry, value)
-
-        # return out
+        return self._tasks[task]
 
     @property
     def verbose(self):
@@ -530,8 +496,7 @@ class SimulationHandler(object):
     @property
     def tasks(self):
         """tasks defined in terms of the variation entry and values"""
-        e = self._entry
-        return {'{}_{}'.format(e, v): v for v in self._values}
+        return self._tasks
 
     def run_task(self, sim: Simulation, task: str, **kwargs: str):
         """
@@ -562,7 +527,7 @@ class SimulationHandler(object):
             (e.g. verbosity, reacting)
         """
 
-        assert task in self.tasks, 'unknown task `{}`'.format(task)
+        assert task in self._tasks, 'unknown task `{}`'.format(task)
 
         # create a new simulation object
         obj = Simulation.from_module(sim._module, self._output)
@@ -616,7 +581,7 @@ class SimulationHandler(object):
         # create a new simulation object
         obj = Simulation.from_module(sim._module, self._output)
 
-        tasks = [t for t in self.tasks]
+        tasks = list(self._tasks.keys())
         tasks.sort()
         for i, t in enumerate(tasks):
             print(t)
@@ -683,7 +648,7 @@ class SimulationHandler(object):
         # set up queues
         tasks_to_accomplish = mp.Queue()
         finished_tasks = mp.Queue()
-        tasks = [t for t in self.tasks]
+        tasks = list(self._tasks.keys())
         tasks.sort()
         for i, t in enumerate(tasks):
             config = self.configuration(t)
