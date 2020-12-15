@@ -14,6 +14,11 @@ def run(name, sleep=.2):
     return {name: {'sleep': [sleep]}}
 
 
+def save(filename, data, task=None):
+    """Does nothing for this example"""
+    pass
+
+
 if __name__ == "__main__":
     """ Main function """
     config = defaults()
