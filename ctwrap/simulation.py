@@ -275,7 +275,8 @@ class SimulationHandler(object):
 
     Arguments:
        defaults: Dictionary containing simulation defaults
-       strategy: Dictionary specifying batch simulation strategy
+       strategy: Dictionary specifying batch simulation strategies
+       name: Name of strategy to be used (if more than one is available)
        output: Dictionary specifying file output
        verbosity: Verbosity level
     """
@@ -283,6 +284,7 @@ class SimulationHandler(object):
     def __init__(self,
                  defaults: Dict[str, Any],
                  strategy: Optional[Dict[str, Any]]=None,
+                 name: Optional[str]=None,
                  output: Optional[Dict[str, Any]]=None,
                  verbosity: Optional[int]=0,
                  variation: Optional[Dict[str, Any]]=None):
@@ -298,7 +300,7 @@ class SimulationHandler(object):
             self._strategy = Sequence.from_legacy(variation)
             warnings.warn("Old implementation", PendingDeprecationWarning)
         elif strategy and isinstance(strategy, dict):
-            self._strategy = Strategy.load(**strategy)
+            self._strategy = Strategy.load(strategy, name=name)
         else:
             raise ValueError("Missing or invalid argument: need 'strategy' or 'variation' dictionary")
 

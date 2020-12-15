@@ -104,35 +104,47 @@ class Strategy:
         return True
 
     @classmethod
-    def load(cls, **strategy):
+    def load(cls, strategy, name=None):
         """Factory loader for strategy objects
 
         **Example:** The following code creates a `Sequence` object *strategy* that varies
-        the variable *foobar*. The dictionary key at the top level specifies what strategy
-        object is being loaded:
+        the variable *foobar*. The dictionary key at the top level has to contain a
+        lower-case string corresponding to a strategy class:
 
         .. code-block:: Python
 
-           strategy = ctwrap.Strategy.load(sequence={'foobar': [0, 1, 2, 3]})
+           strategy = ctwrap.Strategy.load({sequence_test: {'foobar': [0, 1, 2, 3]}})
 
         Arguments:
-           **strategy: Keywords with single key/value pair, where the lower-case key
-              specifies the batch simulation strategy and the value holds parameters.
+           strategy: Dictionary of batch job strategies, where lower-case keys
+              specify the batch simulation strategy and the value holds parameters.
               Except for the case, the key needs to match the name of a `Strategy` object.
+           name: Name of strategy (can be :py:`None` if there is only one strategy)
 
         Returns:
            Instantiated `Strategy` object
         """
-        key, value = list(strategy.items())[0]
+        if name:
+            key = name
+            value = strategy[name]
+        elif len(strategy) == 1:
+            key, value = list(strategy.items())[0]
+        else:
+            raise ValueError("Parameter 'name' is required if multiple strategies are defined")
 
         hooks = {'strategy': cls}
         for sub in cls.__subclasses__():
             hooks[sub.__name__.lower()] = sub
 
-        if key not in hooks:
+        cls_hook = None
+        for sub, hook in hooks.items():
+            if sub in key:
+                cls_hook = hook
+                break
+
+        if cls_hook is None:
             raise NotImplementedError("Unknown strategy '{}'".format(key))
 
-        cls_hook = hooks[key]
         return type(cls_hook.__name__, (cls_hook, ), {})(value)
 
     @property
