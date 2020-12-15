@@ -54,38 +54,6 @@ class TestReplace(unittest.TestCase):
         self.assertEqual(out, self._default)
 
 
-class TestTasks(unittest.TestCase):
-
-    def test_one(self):
-        out = _task_list({'foo': [1, 2, 3, 4]})
-        self.assertEqual(len(out), 4)
-
-    def test_two(self):
-        out = _task_list({'foo': [1, 2, 3, 4], 'bar': [5, 6, 7]})
-        self.assertEqual(len(out), 12)
-
-    def test_three(self):
-        out = _task_list({'foo': [1, 2, 3, 4], 'bar': [5, 6, 7], 'baz': [8, 9]})
-        self.assertEqual(len(out), 24)
-
-
-class TestConfigurations(unittest.TestCase):
-
-    _default = {'foo': 3, 'bar': 2, 'baz': 1}
-
-    def test_one(self):
-        out = _sweep_matrix({'foo': [1, 2, 3, 4]}, self._default)
-        self.assertEqual(len(out), 4)
-
-    def test_two(self):
-        out = _sweep_matrix({'foo': [1, 2, 3, 4], 'bar': [5, 6, 7]}, self._default)
-        self.assertEqual(len(out), 12)
-
-    def test_three(self):
-        out = _sweep_matrix({'foo': [1, 2, 3, 4], 'bar': [5, 6, 7], 'baz': [8, 9]}, self._default)
-        self.assertEqual(len(out), 24)
-
-
 class TestSweep(unittest.TestCase):
 
     _default = {'foo': 3, 'bar': 2, 'baz': 1}
@@ -100,21 +68,27 @@ class TestSweep(unittest.TestCase):
                 self.assertEqual(str(config[key]), val)
 
     def test_one(self):
-        out = _task_list({'foo': [1, 2, 3, 4]})
-        print(out)
-        configs = _sweep_matrix({'foo': [1, 2, 3, 4]}, self._default)
+        dd = {'foo': [1, 2, 3, 4]}
+        out = _task_list(dd)
+        self.assertEqual(len(out), 4)
+        configs = _sweep_matrix(dd, self._default)
+        self.assertEqual(len(configs), 4)
         self.check(dict(zip(out, configs)))
 
     def test_two(self):
         dd = {'foo': [1, 2, 3, 4], 'bar': [5, 6, 7]}
         out = _task_list(dd)
+        self.assertEqual(len(out), 12)
         configs = _sweep_matrix(dd, self._default)
+        self.assertEqual(len(configs), 12)
         self.check(dict(zip(out, configs)))
 
     def test_three(self):
         dd = {'foo': [1, 2, 3, 4], 'bar': [5, 6, 7], 'baz': [8, 9]}
         out = _task_list(dd)
+        self.assertEqual(len(out), 24)
         configs = _sweep_matrix(dd, self._default)
+        self.assertEqual(len(configs), 24)
         self.check(dict(zip(out, configs)))
 
 
