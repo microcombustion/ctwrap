@@ -94,57 +94,84 @@ class TestSweep(unittest.TestCase):
 
 class TestStrategy(unittest.TestCase):
 
-    def test_basic(self):
+    _specs_one = {'foobar': range(4)}
+    _specs_two = {'foo': [0, 1, 2], 'bar': [3, 4]}
 
-        values = [0, 1, 2, 3]
-        specs = {'foobar': values}
-        seq = cw.Strategy.load(sequence=specs)
+    def test_load(self):
+
+        seq = cw.Strategy.load({'sequence': self._specs_one})
         self.assertIsInstance(seq, cw.Sequence)
 
+        seq = cw.Strategy.load({'sequence_test': self._specs_one})
+        self.assertIsInstance(seq, cw.Sequence)
+
+        seq = cw.Strategy.load({'my_sequence': self._specs_one})
+        self.assertIsInstance(seq, cw.Sequence)
+
+        seq = cw.Strategy.load({'my_sequence_test': self._specs_one})
+        self.assertIsInstance(seq, cw.Sequence)
+
+        seq = cw.Strategy.load({'my_sequence_test': self._specs_one})
+        self.assertIsInstance(seq, cw.Sequence)
+
+        seq = cw.Strategy.load({'matrix': self._specs_two})
+        self.assertIsInstance(seq, cw.Matrix)
+
+        seq = cw.Strategy.load({'sequence': self._specs_one, 'matrix': self._specs_two},
+                               name='sequence')
+        self.assertIsInstance(seq, cw.Sequence)
+
+        seq = cw.Strategy.load({'sequence': self._specs_one, 'matrix': self._specs_two},
+                               name='matrix')
+        self.assertIsInstance(seq, cw.Matrix)
+
+    def test_raises(self):
+
+        with self.assertRaisesRegex(TypeError, "Strategy needs"):
+            cw.Strategy.load({'sequence': self._specs_two['foo']})
+
+        with self.assertRaisesRegex(ValueError, "Invalid length"):
+            cw.Strategy.load({'sequence': self._specs_two})
+
+        with self.assertRaisesRegex(ValueError, "Invalid length"):
+            cw.Strategy.load({'matrix': self._specs_one})
+
+        with self.assertRaisesRegex(ValueError, "'name' is required"):
+            cw.Strategy.load({'my_sequence_test': self._specs_one, 'matrix': {}})
+
+        with self.assertRaisesRegex(NotImplementedError, "Unknown strategy"):
+            cw.Strategy.load({'foobar': self._specs_one})
+
+    def test_sequence(self):
+
+        seq = cw.Sequence(self._specs_one)
         defaults = {'foobar': 1, 'spam': 2.0, 'eggs': 3.14}
         tasks = seq.create_tasks(defaults)
         task_keys = list(tasks.keys())
 
+        values = self._specs_one['foobar']
         for i, val in enumerate(values):
             self.assertEqual(val, tasks[task_keys[i]]['foobar'])
 
-    def test_invald(self):
+    def test_matrix(self):
 
-        specs = {'foo': [0, 1, 2], 'bar': [3, 4]}
-        with self.assertRaisesRegex(TypeError, "Strategy needs"):
-            cw.Strategy.load(sequence=specs['foo'])
-
-        with self.assertRaisesRegex(ValueError, "Invalid length"):
-            cw.Strategy.load(sequence=specs)
-
-        specs.pop('foo')
-        with self.assertRaisesRegex(ValueError, "Invalid length"):
-            cw.Strategy.load(matrix=specs)
-
-    def test_unknown(self):
-
-        specs = {'foo': [0, 1, 2], 'bar': [3, 4]}
-        with self.assertRaisesRegex(NotImplementedError, "Unknown strategy"):
-            cw.Strategy.load(foobar=specs)
+        mat = cw.Matrix(self._specs_two)
+        defaults = {'foo': None, 'bar': None, 'baz': 3.14}
+        tasks = mat.create_tasks(defaults)
+        self.assertEqual(len(tasks), 6)
 
     def test_minimal(self):
 
         mm = cw.Parser.from_yaml('minimal.yaml', path=EXAMPLES)
         strategy = mm.strategy.raw
-        seq = cw.Strategy.load(**strategy)
-        self.assertEqual(seq.sweep['sleep'], strategy['sequence']['sleep'])
+        seq = cw.Strategy.load(strategy, name='sequence')
+        self.assertEqual(seq.sweep, strategy['sequence'])
+
+        mat = cw.Strategy.load(strategy, name='matrix')
+        self.assertEqual(mat.matrix, strategy['matrix'])
 
     def test_legacy(self):
 
         mm = cw.Parser.from_yaml('legacy.yaml', path=EXAMPLES)
         seq = cw.Sequence.from_legacy(mm.variation.raw)
         self.assertEqual(seq.sweep['initial.phi'], mm.variation.raw['values'])
-
-    def test_matrix(self):
-
-        specs = {'foo': [0, 1, 2], 'bar': [3, 4]}
-        defaults = {'foo': None, 'bar': None}
-        mat = cw.Strategy.load(matrix=specs)
-        self.assertIsInstance(mat, cw.Matrix)
-        tasks = mat.create_tasks(defaults)
-        self.assertEqual(len(tasks), 6)
