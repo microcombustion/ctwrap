@@ -134,18 +134,18 @@ class Simulation(object):
            **kwargs (optional): depends on implementation of __init__
         """
 
-        self._module = self._load_module()
+        module = self._load_module()
 
         if config is None:
-            config = self._module.defaults()
+            config = module.defaults()
         config = Parser(config)
 
-        self.data = self._module.run(name, **config, **kwargs)
-        self._module = self._module.__name__
+        self.data = module.run(name, **config, **kwargs)
 
     def defaults(self) -> Dict[str, Any]:
         """Pass-through returning simulation module defaults as a dictionary"""
-        return self._module.defaults()
+        module = self._load_module()
+        return module.defaults()
 
     def _save(self, mode="a", task=None, **kwargs: str) -> None:
         """
@@ -191,14 +191,13 @@ class Simulation(object):
         output.update(mode=mode)
 
         if formatt in supported:
-            self._module = importlib.import_module(self._module)
-            try:
-                self._module.save(filename, self.data, task, **output)
-            except AttributeError:
-                print("{} simulation module has no method 'save' but output format "
-                      "was defined in configuration file".format(self._module.__name__))
-                raise
-            self._module = self._module.__name__
+            module = self._load_module()
+            if hasattr(module, 'save'):
+                module.save(filename, self.data, task, **output)
+            else:
+                raise AttributeError("{} simulation module has no method 'save' "
+                                     "but output format was defined in configuration "
+                                     "file".format(self._module))
         else:
             raise ValueError("Invalid file format {}".format(formatt))
 
@@ -584,7 +583,6 @@ class SimulationHandler(object):
         tasks = list(self._tasks.keys())
         tasks.sort()
         for i, t in enumerate(tasks):
-            print(t)
             if verbosity > 0:
                 print(indent1 + 'processing `{}`'.format(t))
 
