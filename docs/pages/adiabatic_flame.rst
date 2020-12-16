@@ -12,3 +12,12 @@ Simulation Module
 
 .. literalinclude:: ../../ctwrap/modules/adiabatic_flame.py
    :language: python
+
+*Example:* a parallel batch job for adiabatic flame calculations using the
+configuration and the simulation module above can be run as:
+
+.. code-block::
+
+    $ ctwrap adiabatic_flame adiabatic_flame.yaml --parallel
+
+Results are written to a single file ``adiabatic_flame.h5``.

@@ -80,7 +80,7 @@ class Simulation(object):
 
         .. code-block:: Python
 
-           # creates a simulation object with the simualtion module `minimal`
+           # creates a simulation object with the simulation module `minimal`
            sim = ctwrap.Simulation.from_module(ctwrap.modules.minimal)
 
         Arguments:
@@ -335,7 +335,7 @@ class SimulationHandler(object):
 
         .. code-block:: Python
 
-           sh = ctwrap.SimulationHandler.from_yaml('minimal.yaml', strategy='sequence')
+           sh = ctwrap.SimulationHandler.from_yaml('test_module.yaml', strategy='sequence')
 
         Arguments:
            yaml_file: YAML file
@@ -512,12 +512,12 @@ class SimulationHandler(object):
         :py:func:`~ctwrap.parser._save_metadata` to save metadata.
         A simple usage example is:
 
-        If a simulationHandler object ``sh`` was created from ``minimal.yaml``.
+        If a simulationHandler object ``sh`` was created from ``test_module.yaml``.
         This :meth:`run_task` method takes ``sim``, a simulation object created using
-        simulation module ``minimal``, and a task see :meth:`tasks` method.
+        simulation module ``test_module``, and a task see :meth:`tasks` method.
         This :meth:`run_task` method runs the task calling the ``run`` method in
-        simulation module ``minimal``, save the resulting output using
-        the ``save``  method in simulation module ``minimal`` and finally
+        simulation module ``test_module``, save the resulting output using
+        the ``save``  method in simulation module ``test_module`` and finally
         save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.
 
         .. code-block:: Python
@@ -556,12 +556,12 @@ class SimulationHandler(object):
         The :meth:`run_serial` method runs all the variations in the input
         file serially. A simple usage example is:
 
-        If a simulationHandler object ``sh`` was created from ``minimal.yaml``.
+        If a simulationHandler object ``sh`` was created from ``test_module.yaml``.
         This :meth:`run_serial` method takes ``sim``, a simulation object created using
-        simulation module ``minimal``. This :meth:`run_serial` method
-        runs all the variations in minimal configuration file calling the ``run``
-        method in simulation module ``minimal``,  save the resulting output using the
-        ``save``  method in simulation module ``minimal`` serially and finally
+        simulation module ``test_module``. This :meth:`run_serial` method
+        runs all the variations in test_module configuration file calling the ``run``
+        method in simulation module ``test_module``,  save the resulting output using the
+        ``save``  method in simulation module ``test_module`` serially and finally
         save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.
 
         .. code-block:: Python
@@ -614,12 +614,12 @@ class SimulationHandler(object):
         `python multiprocessing <https://docs.python.org/3/library/multiprocessing.html>`_.
         A minimal example is:
 
-        If a simulationHandler object ``sh`` was created from ``minimal.yaml``.
+        If a simulationHandler object ``sh`` was created from ``test_module.yaml``.
         The :meth:`run_parallel` method takes ``sim``, a simulation object created using
-        simulation module ``minimal``. The :meth:`run_parallel` method
-        runs all the variations in minimal configuration file calling the ``run``
-        method in simulation module ``minimal``,  save the resulting output using the
-        ``save``  method in simulation module ``minimal`` in parallel and finally
+        simulation module ``test_module``. The :meth:`run_parallel` method
+        runs all the variations in test_module configuration file calling the ``run``
+        method in simulation module ``test_module``,  save the resulting output using the
+        ``save``  method in simulation module ``test_module`` in parallel and finally
         save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.
 
          .. code-block:: Python

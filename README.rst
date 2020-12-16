@@ -12,7 +12,7 @@ Documentation
 
 * `Sphinx documentation <https://microcombustion.github.io/ctwrap/>`_
 * `jupyter notebooks <pages/jupyter.html>`_. An overview is given
-  by a `minimal example <pages/minimal_example.ipynb>`_.
+  by a `minimal example <pages/minimal_example.html>`_.
 
 ++++++++++
 Philosophy
@@ -28,13 +28,15 @@ The code was developed with the following objectives in mind. It should:
 * enable parallel execution of (single-threaded) simulations (via `multiprocessing`)
 * enable simple re-import of simulation results into native Cantera objects
 
-*Example:* a parallel batch job for adiabatic flame calculations uses the simulation module
-`adiabatic_flame <pages/adiabatic_flame.py>`_
+*Example:* a parallel batch job for adiabatic flame calculations with parameter variations
+(for this example, a variation of equivalence ratio with 12 cases).
+See `adiabatic_flame <pages/adiabatic_flame.html>`_
 (modified from Cantera's
 `adiabatic_flame example <https://github.com/Cantera/cantera/blob/master/interfaces/cython/cantera/
-examples/onedim/adiabatic_flame.py>`_) with parameters defined in `adiabatic_flame.yaml <pages/adiabatic_flame.yaml>`_
-(for this example, a variation of equivalence ratio with 12 cases).
-This can be run as::
+examples/onedim/adiabatic_flame.py>`_) ).
+This can be run as:
+
+.. code-block::
 
     $ ctwrap adiabatic_flame adiabatic_flame.yaml --parallel
 
