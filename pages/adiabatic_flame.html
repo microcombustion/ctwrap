@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Adiabatic Flame Batch &#8212; ctwrap 0.2.0b documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -16,35 +16,25 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Jupyter Notebooks" href="jupyter.html" />
-    <link rel="prev" title="Ignition Batch Simulation" href="ignition.html" /> 
+    <link rel="next" title="Jupyter Notebooks" href="../examples/jupyter.html" />
+    <link rel="prev" title="Ignition Batch Simulation" href="ignition.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="jupyter.html" title="Jupyter Notebooks"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="ignition.html" title="Ignition Batch Simulation"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="batch.html" accesskey="U">Batch Jobs</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Adiabatic Flame Batch</a></li> 
-      </ul>
-    </div>  
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="adiabatic-flame-batch">
@@ -52,36 +42,41 @@
 <div class="section" id="yaml-configuration">
 <h2>YAML Configuration<a class="headerlink" href="#yaml-configuration" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `adiabatic_flame` module</span>
-<span class="c1"># file specifes a parameter variation of the equivalence ratio </span>
-<span class="nt">variation</span><span class="p">:</span>
-  <span class="nt">entry</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">upstream.phi</span> 
-  <span class="nt">values</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">,</span> <span class="nv">2.0</span><span class="p p-Indicator">,</span> <span class="nv">2.2</span><span class="p p-Indicator">,</span> <span class="nv">2.4</span><span class="p p-Indicator">,</span> <span class="nv">2.6</span> <span class="p p-Indicator">]</span>
+<span class="c1"># file specifies a parameter variation of the equivalence ratio</span>
+<span class="nt">strategy</span><span class="p">:</span>
+  <span class="nt">sequence</span><span class="p">:</span>
+    <span class="nt">upstream.phi</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">,</span> <span class="nv">2.0</span><span class="p p-Indicator">,</span> <span class="nv">2.2</span><span class="p p-Indicator">,</span> <span class="nv">2.4</span><span class="p p-Indicator">,</span> <span class="nv">2.6</span><span class="p p-Indicator">]</span>
 <span class="nt">output</span><span class="p">:</span>
   <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
+  <span class="nt">force_overwrite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="nt">defaults</span><span class="p">:</span>
   <span class="nt">upstream</span><span class="p">:</span>
-    <span class="nt">T</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">300.</span><span class="p p-Indicator">,</span> <span class="nv">kelvin</span><span class="p p-Indicator">,</span> <span class="s">&#39;temperature&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">P</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.</span><span class="p p-Indicator">,</span> <span class="nv">atmosphere</span><span class="p p-Indicator">,</span> <span class="s">&#39;pressure&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">phi</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">.55</span><span class="p p-Indicator">,</span> <span class="nv">dimensionless</span><span class="p p-Indicator">,</span> <span class="s">&#39;equivalence</span><span class="nv"> </span><span class="s">ratio&#39;</span><span class="p p-Indicator">]</span>
-    <span class="nt">fuel</span><span class="p">:</span> <span class="s">&#39;H2&#39;</span>
-    <span class="nt">oxidizer</span><span class="p">:</span> <span class="s">&#39;O2:1,AR:5&#39;</span>
+    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300. kelvin</span> <span class="c1"># temperature</span>
+    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1. atmosphere</span> <span class="c1"># pressure</span>
+    <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.55</span> <span class="c1"># equivalence ratio</span>
+    <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">H2</span>
+    <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1,AR:5</span>
   <span class="nt">chemistry</span><span class="p">:</span>
-    <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.xml</span>
+    <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
   <span class="nt">domain</span><span class="p">:</span>
-    <span class="nt">width</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">30</span><span class="p p-Indicator">,</span> <span class="nv">millimeter</span><span class="p p-Indicator">,</span> <span class="s">&#39;domain</span><span class="nv"> </span><span class="s">width&#39;</span><span class="p p-Indicator">]</span>
-<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>
+    <span class="nt">width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30 millimeter</span> <span class="c1"># domain width</span>
+<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2.0</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="simulation-module">
 <h2>Simulation Module<a class="headerlink" href="#simulation-module" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Module to run adiabatic flame simulation&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Simulation module running adiabatic flame test</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="sd">Code is based on stock Cantera example:</span>
+<span class="sd">https://cantera.org/examples/python/onedim/adiabatic_flame.py.html</span>
+
+<span class="sd">Differences between stock cantera example and ctwrap version are:</span>
+
+<span class="sd">* Parameter values are passed using a `Parser` object (equivalent to dictionary)</span>
+<span class="sd">* Content is broken down into methods to load values, run the simulation, and save output</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
 
 <span class="kn">from</span> <span class="nn">ctwrap</span> <span class="kn">import</span> <span class="n">Parser</span>
 
@@ -93,41 +88,39 @@
         <span class="s2">&quot;This module will not work without an installation of Cantera&quot;</span><span class="p">,</span>
         <span class="ne">UserWarning</span><span class="p">)</span>
 
-<span class="n">__DEFAULTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s2"># default parameters for the `freeflame` module</span>
+
+<span class="c1"># define default values for simulation parameters (string notation)</span>
+<span class="n">DEFAULTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2"># default parameters for the `adiabatic_flame` module</span>
 <span class="s2">upstream:</span>
-<span class="s2">  T: [300., kelvin, &#39;temperature&#39;]</span>
-<span class="s2">  P: [1., atmosphere, &#39;pressure&#39;]</span>
-<span class="s2">  phi: [.55, dimensionless, &#39;equivalence ratio&#39;]</span>
-<span class="s2">  fuel: &#39;H2&#39;</span>
-<span class="s2">  oxidizer: &#39;O2:1.,AR:5&#39;</span>
+<span class="s2">  T: 300. kelvin # temperature</span>
+<span class="s2">  P: 1. atmosphere # pressure</span>
+<span class="s2">  phi: .55 # equivalence ratio</span>
+<span class="s2">  fuel: H2</span>
+<span class="s2">  oxidizer: O2:1.,AR:5</span>
 <span class="s2">chemistry:</span>
-<span class="s2">  mechanism: h2o2.xml</span>
+<span class="s2">  mechanism: h2o2.yaml</span>
 <span class="s2">domain:</span>
-<span class="s2">  width: [30, millimeter, &#39;domain width&#39;]</span>
+<span class="s2">  width: 30 millimeter # domain width</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 
 <span class="k">def</span> <span class="nf">defaults</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Returns dictionary containing default arguments&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">__DEFAULTS</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Parser</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">chemistry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">upstream</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">domain</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">loglevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">upstream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function handling adiabatic flame simulation.</span>
 <span class="sd">    The function uses the class &#39;ctwrap.Parser&#39; in conjunction with &#39;pint.Quantity&#39;</span>
 <span class="sd">    for handling and conversion of units.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        name (str): name of the task</span>
-<span class="sd">        chemistry (dict): reflects yaml &#39;configuration:chemistry&#39;</span>
-<span class="sd">        upstream  (dict): reflects yaml &#39;configuration:upstream&#39;</span>
-<span class="sd">        domain    (dict): reflects yaml &#39;configuration:simulation&#39;</span>
+<span class="sd">        name (str): output group name</span>
+<span class="sd">        chemistry (Parser): reflects yaml &#39;configuration:chemistry&#39;</span>
+<span class="sd">        upstream  (Parser): reflects yaml &#39;configuration:upstream&#39;</span>
+<span class="sd">        domain    (Parser): reflects yaml &#39;configuration:simulation&#39;</span>
 <span class="sd">        loglevel   (int): amount of diagnostic output (0 to 8)</span>
 
 <span class="sd">    Returns:</span>
@@ -138,19 +131,17 @@
 
     <span class="c1"># IdealGasMix object used to compute mixture properties, set to the state of the</span>
     <span class="c1"># upstream fuel-air mixture</span>
-    <span class="n">mech</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">chemistry</span><span class="p">)</span><span class="o">.</span><span class="n">mechanism</span>
-    <span class="n">gas</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">Solution</span><span class="p">(</span><span class="n">mech</span><span class="p">)</span>
+    <span class="n">gas</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">Solution</span><span class="p">(</span><span class="n">chemistry</span><span class="o">.</span><span class="n">mechanism</span><span class="p">)</span>
 
     <span class="c1"># temperature, pressure, and composition</span>
-    <span class="n">upstream</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">upstream</span><span class="p">)</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">upstream</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;kelvin&#39;</span><span class="p">)</span>
     <span class="n">P</span> <span class="o">=</span> <span class="n">upstream</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;pascal&#39;</span><span class="p">)</span>
     <span class="n">gas</span><span class="o">.</span><span class="n">TP</span> <span class="o">=</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span>
-    <span class="n">phi</span> <span class="o">=</span> <span class="n">upstream</span><span class="o">.</span><span class="n">phi</span><span class="o">.</span><span class="n">m</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">upstream</span><span class="o">.</span><span class="n">phi</span>
     <span class="n">gas</span><span class="o">.</span><span class="n">set_equivalence_ratio</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">upstream</span><span class="o">.</span><span class="n">fuel</span><span class="p">,</span> <span class="n">upstream</span><span class="o">.</span><span class="n">oxidizer</span><span class="p">)</span>
 
     <span class="c1"># set up flame object</span>
-    <span class="n">width</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">)</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">)</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">FreeFlame</span><span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">set_refine_criteria</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mf">0.06</span><span class="p">,</span> <span class="n">curve</span><span class="o">=</span><span class="mf">0.12</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -168,112 +159,92 @@
     <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    </span><span class="si">{0:s}</span><span class="s1">: mixture-averaged flamespeed = </span><span class="si">{1:7f}</span><span class="s1"> m/s&#39;</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
-    <span class="n">group</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&lt;mix&gt;&quot;</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_mix&quot;</span>
     <span class="n">out</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+
+    <span class="n">f_sol</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">to_solution_array</span><span class="p">()</span>
 
     <span class="c1"># Solve with multi-component transport properties</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">transport_model</span> <span class="o">=</span> <span class="s1">&#39;Multi&#39;</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">loglevel</span><span class="p">)</span>  <span class="c1"># don&#39;t use &#39;auto&#39; on subsequent solves</span>
+    <span class="n">gas</span><span class="o">.</span><span class="n">TP</span> <span class="o">=</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span>
+    <span class="n">gas</span><span class="o">.</span><span class="n">set_equivalence_ratio</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">upstream</span><span class="o">.</span><span class="n">fuel</span><span class="p">,</span> <span class="n">upstream</span><span class="o">.</span><span class="n">oxidizer</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">FreeFlame</span><span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">set_initial_guess</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f_sol</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">transport_model</span> <span class="o">=</span> <span class="s1">&#39;Multi&#39;</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">loglevel</span><span class="p">)</span>  <span class="c1"># don&#39;t use &#39;auto&#39; on subsequent solves</span>
     <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    </span><span class="si">{0:s}</span><span class="s1">: multi-component flamespeed  = </span><span class="si">{1:7f}</span><span class="s1"> m/s&#39;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
-    <span class="n">group</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&lt;multi&gt;&quot;</span>
-    <span class="n">out</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_multi&quot;</span>
+    <span class="n">out</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span>
 
     <span class="k">return</span> <span class="n">out</span>
 
 
-<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-         <span class="n">mode</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function saves the output from the run method</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        data: data to be saved</span>
-<span class="sd">        output: naming information</span>
-<span class="sd">        mode: append or write. default to append</span>
+<span class="sd">        filename (str): naming of file</span>
+<span class="sd">        data (Dict): data to be saved</span>
+<span class="sd">        task (str): name of task if running variations</span>
+<span class="sd">        kwargs (dict): keyword argument</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span>
-
-    <span class="n">oname</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
-    <span class="n">opath</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span>
-    <span class="n">formatt</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span>
-    <span class="n">force</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;force_overwrite&#39;</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="n">oname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span>
-    <span class="k">if</span> <span class="n">opath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">oname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">opath</span><span class="p">,</span> <span class="n">oname</span><span class="p">)</span>
-
-    <span class="c1"># file check</span>
-    <span class="n">fexists</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">oname</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">fexists</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span>
-        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span>
-    <span class="k">if</span> <span class="n">fexists</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;w&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Cannot overwrite existing file `</span><span class="si">{}</span><span class="s1">` (use force to override)&#39;</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oname</span><span class="p">))</span>
-
-    <span class="k">if</span> <span class="n">fexists</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">oname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf</span><span class="p">:</span>
-            <span class="n">groups</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="s1">&#39;Group&#39;</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">hdf</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">groups</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">formatt</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;h5&#39;</span><span class="p">,</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">,</span> <span class="s1">&#39;hdf&#39;</span><span class="p">}:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">groups</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;a&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Cannot overwrite existing group `</span><span class="si">{}</span><span class="s1">` (use force to override)&#39;</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">write_hdf</span><span class="p">(</span><span class="n">oname</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid file format </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">formatt</span><span class="p">))</span>
-
-        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+    <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">flame</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">flame</span><span class="o">.</span><span class="n">write_hdf</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span>
+                        <span class="n">description</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Main function &quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">()</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">save</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">save</span><span class="p">(</span><span class="s1">&#39;adiabatic_flame.h5&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Adiabatic Flame Batch</a><ul>
-<li><a class="reference internal" href="#yaml-configuration">YAML Configuration</a></li>
-<li><a class="reference internal" href="#simulation-module">Simulation Module</a></li>
-</ul>
-</li>
+<h1 class="logo"><a href="../index.html">ctwrap</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">   Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">   Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">   Contributing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="batch.html">   Batch Jobs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/jupyter.html">   Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">   API Reference</a></li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="ignition.html"
-                        title="previous chapter">Ignition Batch Simulation</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="jupyter.html"
-                        title="next chapter">Jupyter Notebooks</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/pages/adiabatic_flame.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="batch.html">Batch Jobs</a><ul>
+      <li>Previous: <a href="ignition.html" title="previous chapter">Ignition Batch Simulation</a></li>
+      <li>Next: <a href="../examples/jupyter.html" title="next chapter">Jupyter Notebooks</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -284,33 +255,32 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="jupyter.html" title="Jupyter Notebooks"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="ignition.html" title="Ignition Batch Simulation"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="batch.html" >Batch Jobs</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Adiabatic Flame Batch</a></li> 
-      </ul>
+    <div class="footer">
+      &copy;2018-20, I. Schoegl and D. Akinpelu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/pages/adiabatic_flame.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2018-20, I. Schoegl and D. Akinpelu.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
-    </div>
+
+    
+
+    
   </body>
 </html>
