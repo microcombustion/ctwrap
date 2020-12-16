@@ -81,6 +81,52 @@ def _sweep_matrix(tasks, defaults):
     return out
 
 
+def _parse_mode(strat_dict):
+    """
+    parse the strategy/variation values based on the mode specified
+
+    Argument:
+        strat_dict(dict): variation values specification
+
+    Output:
+        out (dict): parsed variation values
+
+    """
+    k, strat_val = list(strat_dict.items())[0]
+    strat_limits = strat_val['limits']
+    strat_max = strat_limits[1]
+    strat_min = strat_limits[0]
+    strat_rev = strat_val.get('reverse', False)
+    if strat_min and strat_max and strat_min > strat_max:
+        msg = ("Minimum strategy value is larger than maximum: use "
+               "keyword 'reverse' instead")
+        warnings.warn(msg, PendingDeprecationWarning)
+        strat_min, strat_max = strat_max, strat_min
+        strat_rev = True
+    if "mode" not in strat_val:
+        msg = "The required field 'mode' (strategy specification mode) is missing"
+        raise KeyError(msg)
+    if strat_val['mode'] == "linspace":
+        strat_npoints = strat_val.get('npoints')
+        if strat_npoints is None:
+            msg = "The field 'npoints' (number of points) is missing"
+            raise KeyError(msg)
+        value = np.linspace(strat_min, strat_max, strat_npoints)
+    elif strat_val['mode'] == "arange":
+        if 'step' not in strat_val:
+            msg = "The required field 'step' (step size) is missing"
+            raise KeyError(msg)
+        strat_step = float(strat_val['step'])
+        value = np.arange(strat_min, strat_max, strat_step)
+    else:
+        msg = "Unknown strategy mode '{}'".format(strat_val['mode'])
+        raise KeyError(msg)
+
+    out = {k: value.tolist()}
+
+    return out
+
+
 class Strategy:
     """Base class for batch simulation strategies"""
 
@@ -136,7 +182,7 @@ class Strategy:
             raise ValueError("Parameter 'name' is required if multiple strategies are defined")
 
         if isinstance(value, dict) and any(isinstance(i, dict) for i in value.values()):
-            value = cls._parse_mode(value)
+            value = _parse_mode(value)
 
         hooks = {'strategy': cls}
         for sub in cls.__subclasses__():
@@ -152,52 +198,6 @@ class Strategy:
             raise NotImplementedError("Unknown strategy '{}'".format(key))
 
         return type(cls_hook.__name__, (cls_hook, ), {})(value, name=name)
-
-    @staticmethod
-    def _parse_mode(strat_dict):
-        """
-        parse the strategy/variation values based on the mode specified
-
-        Argument:
-            strat_dict(dict): variation values specification
-
-        Output:
-            out (dict): parsed variation values
-
-        """
-        k, strat_val = list(strat_dict.items())[0]
-        strat_limits = strat_val['limits']
-        strat_max = strat_limits[1]
-        strat_min = strat_limits[0]
-        strat_rev = strat_val.get('reverse', False)
-        if strat_min and strat_max and strat_min > strat_max:
-            msg = ("Minimum strategy value is larger than maximum: use "
-                   "keyword 'reverse' instead")
-            warnings.warn(msg, PendingDeprecationWarning)
-            strat_min, strat_max = strat_max, strat_min
-            strat_rev = True
-        if "mode" not in strat_val:
-            msg = "The required field 'mode' (strategy specification mode) is missing"
-            raise KeyError(msg)
-        if strat_val['mode'] == "linspace":
-            strat_npoints = strat_val.get('npoints')
-            if strat_npoints is None:
-                msg = "The field 'npoints' (number of points) is missing"
-                raise KeyError(msg)
-            value = np.linspace(strat_min, strat_max, strat_npoints)
-        elif strat_val['mode'] == "arange":
-            if 'npower' not in strat_val:
-                msg = "The required field 'npower' (base value) is missing"
-                raise KeyError(msg)
-            strat_npower = float(strat_val['npower'])
-            value = strat_npower ** np.arange(strat_min, strat_max)
-        else:
-            msg = "Unknown strategy mode '{}'".format(strat_val['mode'])
-            raise KeyError(msg)
-
-        out = {k: value.tolist()}
-
-        return out
 
     @property
     def definition(self):

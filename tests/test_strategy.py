@@ -14,7 +14,7 @@ warnings.filterwarnings("ignore", ".*the imp module is deprecated*")
 
 # pylint: disable=import-error
 import ctwrap as cw
-from ctwrap.strategy import _replace_entry, _sweep_matrix, _task_list
+from ctwrap.strategy import _replace_entry, _sweep_matrix, _task_list, _parse_mode
 
 
 PWD = Path(__file__).parents[0]
@@ -52,6 +52,39 @@ class TestReplace(unittest.TestCase):
         value = 6.
         out = _replace_entry(self._default, ['foo', 'ham'], value)
         self.assertEqual(out, self._default)
+
+
+class TestParse(unittest.TestCase):
+
+    def test_one(self):
+
+        _default = {'test_1': {'limits': [0, 1], 'npoints': 6, 'mode': 'linspace'}}
+
+        value = {'test_1': [0, 0.2, 0.4, 0.6, 0.8, 1.0]}
+
+        out = _parse_mode(_default)
+
+        value_keys, value_list = list(value.items())[0]
+        out_keys, out_list = list(out.items())[0]
+
+        self.assertEqual(value_keys, out_keys)
+        for i in range(len(value_list)):
+            self.assertAlmostEqual(value_list[i], out_list[i])
+
+    def test_two(self):
+
+        _default = {'test_2': {'limits': [0, 1.2], 'step': 0.2, 'mode': 'arange'}}
+
+        value = {'test_2': [0, 0.2, 0.4, 0.6, 0.8, 1.0]}
+
+        out = _parse_mode(_default)
+
+        value_keys, value_list = list(value.items())[0]
+        out_keys, out_list = list(out.items())[0]
+
+        self.assertEqual(value_keys, out_keys)
+        for i in range(len(value_list)):
+            self.assertAlmostEqual(value_list[i], out_list[i])
 
 
 class TestSweep(unittest.TestCase):
