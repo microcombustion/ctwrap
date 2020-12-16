@@ -14,34 +14,48 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-      #- uses: technote-space/auto-cancel-redundant-workflow@v1
-      - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          python-version: 3.7
-          mamba-version: "*"
-          channels: conda-forge,cantera/label/dev,defaults
-          channel-priority: true
-          activate-environment: ctwrap
-          environment-file: environment.yml
-          #auto-activate-base: false
-      - name: Check conda status
-        run: |
-          conda info
-          conda list
-      - name: Install ctwrap
-        run: |
-          pip install -e .
-      - name: Run pytest
-        run: pytest
+    #- uses: technote-space/auto-cancel-redundant-workflow@v1
+    - uses: actions/checkout@v2
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        python-version: 3.7
+        mamba-version: "*"
+        channels: conda-forge,cantera/label/dev,defaults
+        channel-priority: true
+        activate-environment: ctwrap
+        environment-file: environment.yml
+        #auto-activate-base: false
+    - name: Check conda status
+      run: |
+        conda info
+        conda list
+    - name: Install ctwrap
+      run: |
+        pip install -e .
+    - name: Run pytest
+      run: pytest
 
   sphinx-docs:
   # https://github.com/marketplace/actions/sphinx-build
     name: Check sphinx docs on Linux
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
     steps:
     #- uses: technote-space/auto-cancel-redundant-workflow@v1
     - uses: actions/checkout@v2
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        python-version: 3.7
+        mamba-version: "*"
+        channels: conda-forge,cantera/label/dev,defaults
+        channel-priority: true
+        activate-environment: ctwrap
+        environment-file: environment.yml
+        #auto-activate-base: false
+    - name: Run pytest
+      run: pytest
     - uses: ammaraskar/sphinx-action@master
       with:
         #build-command: "sphinx-build -b html . _build"
