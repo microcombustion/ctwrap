@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ctwrap - Python Wrapper for Batch Simulations &#8212; ctwrap 0.2.0b documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -16,117 +16,73 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="next" title="Batch Jobs" href="pages/batch.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pages/batch.html" title="Batch Jobs"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">ctwrap 0.2.0b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ctwrap - Python Wrapper for Batch Simulations</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   <div class="section" id="ctwrap-python-wrapper-for-batch-simulations">
 <h1>ctwrap - Python Wrapper for Batch Simulations<a class="headerlink" href="#ctwrap-python-wrapper-for-batch-simulations" title="Permalink to this headline">¶</a></h1>
-<p>Light-weight Python wrapper for batch simulation jobs (e.g. Cantera). The source
-code is available at the <a class="reference external" href="https://github.com/microcombustion/ctwrap/">ctwrap Github repositiory</a>.</p>
-<div class="section" id="table-of-contents">
-<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">   Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">   Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">   Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pages/batch.html">   Batch Jobs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/jupyter.html">   Jupyter Notebooks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pages/api.html">   API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/batch.html">Batch Jobs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/minimal.html">Minimal Batch Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/ignition.html">Ignition Batch Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/adiabatic_flame.html">Adiabatic Flame Batch Simulation</a></li>
 </ul>
-</div>
-<p><a class="reference external" href="https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg"><img alt="GitHub action" src="https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg" /></a> <a class="reference external" href="https://github.com/microcombustion/ctwrap/tags"><img alt="GitHub tag (latest by date)" src="https://img.shields.io/github/v/tag/microcombustion/ctwrap" /></a></p>
-<div class="section" id="ctwrap">
-<h3>ctwrap<a class="headerlink" href="#ctwrap" title="Permalink to this headline">¶</a></h3>
-<p>Light-weight Python wrapper for batch simulation jobs (e.g. Cantera).</p>
-</div>
-</div>
-<div class="section" id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="https://microcombustion.github.io/ctwrap/">Sphinx documentation</a></p></li>
-<li><p><a class="reference external" href="pages/jupyter.html">jupyter notebooks</a>. An overview is given
-by a <a class="reference external" href="pages/minimal_example.ipynb">minimal example</a>.</p></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/jupyter.html">Jupyter Notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/parser_example.html">Parser Example</a></li>
 </ul>
-</div>
-<div class="section" id="philosophy">
-<h2>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h2>
-<p>The code was developed with the following objectives in mind. It should:</p>
-<ul class="simple">
-<li><p>create a flexible framework for generic simulations</p></li>
-<li><p>provide a command line interface</p></li>
-<li><p>be easily scriptable (using YAML configuration files via <cite>ruamel.yaml</cite>)</p></li>
-<li><p>enforce units (via <a class="reference external" href="https://pint.readthedocs.io/en/stable/">pint</a>)</p></li>
-<li><p>avoid clutter (data are saved in HDF containers)</p></li>
-<li><p>enable parallel execution of (single-threaded) simulations (via <cite>multiprocessing</cite>)</p></li>
-<li><p>enable simple re-import of simulation results into native Cantera objects</p></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/parser.html">     Parser Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/simulation.html">     Simulation Module</a></li>
 </ul>
-<p><em>Example:</em> a parallel batch job for adiabatic flame calculations uses the simulation module
-<a class="reference external" href="pages/adiabatic_flame.py">adiabatic_flame</a>
-(modified from Cantera’s
-<a class="reference external" href="https://github.com/Cantera/cantera/blob/master/interfaces/cython/cantera/examples/onedim/adiabatic_flame.py">adiabatic_flame example</a>) with parameters defined in <a class="reference external" href="pages/adiabatic_flame.yaml">adiabatic_flame.yaml</a>
-(for this example, a variation of equivalence ratio with 12 cases).
-This can be run as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap adiabatic_flame adiabatic_flame.yaml --parallel
-</pre></div>
-</div>
-<p>Results are written to a single file <code class="docutils literal notranslate"><span class="pre">adiabatic_flame.h5</span></code>.</p>
-<p><em>Note:</em> the wrapper itself does not depend on a Cantera installation; only the
-simulation modules do.</p>
+</li>
+</ul>
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">ctwrap</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">   Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">   Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">   Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pages/batch.html">   Batch Jobs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/jupyter.html">   Jupyter Notebooks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pages/api.html">   API Reference</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
-  </ul></li>
-</ul>
-</div>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pages/batch.html"
+                        title="next chapter">Batch Jobs</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -137,32 +93,29 @@ simulation modules do.</p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018-20, I. Schoegl and D. Akinpelu.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/index.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pages/batch.html" title="Batch Jobs"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">ctwrap 0.2.0b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ctwrap - Python Wrapper for Batch Simulations</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-20, I. Schoegl and D. Akinpelu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
   </body>
 </html>

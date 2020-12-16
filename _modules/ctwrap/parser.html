@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ctwrap.parser &#8212; ctwrap 0.2.0b documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -16,249 +16,109 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ctwrap.parser</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   <h1>Source code for ctwrap.parser</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Parser module.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">KeysView</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">pint</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
-<span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">re</span>
+<span></span><span class="sd">&quot;&quot;&quot;Parser object.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span>
 
+<span class="kn">from</span> <span class="nn">pint</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
+
+<span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Parser&#39;</span><span class="p">]</span>
 
 
-<span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
-
-
-<span class="k">def</span> <span class="nf">_parse</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse string expression containg value and unit</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">       val: String expression</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">       `Tuple` containing value and unit</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Method requires string input&quot;</span><span class="p">)</span>
-
-    <span class="n">value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^([-+]?\d*\.\d*(?=\s)|\d+(?=\s))&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">value</span> <span class="ow">and</span> <span class="n">val</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">==</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="k">return</span> <span class="n">val</span><span class="p">,</span> <span class="kc">None</span>
-
-    <span class="c1"># string starts with value</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">):]</span>
-
-    <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
-        <span class="n">unit</span> <span class="o">=</span> <span class="n">val</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;dimensionless&#39;</span>
-
-    <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">unit</span>
-
-
-<span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Format value / unit combination into parseable string</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">       value: Value</span>
-<span class="sd">       unit: String describing unit</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">       Formatted string</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">unit</span> <span class="o">!=</span> <span class="s1">&#39;dimensionless&#39;</span><span class="p">:</span>
-        <span class="n">out</span> <span class="o">+=</span> <span class="s1">&#39; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">out</span>
-
-
 <div class="viewcode-block" id="Parser"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser">[docs]</a><span class="k">class</span> <span class="nc">Parser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A lightweight class that handles units.</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A lightweight class that handles units.</span>
 
 <span class="sd">    The handling mimics that of a python dictionary, while adding direct access to</span>
 <span class="sd">    keyed values via attributes.</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">        raw: Dictionary to be parsed</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Constructor&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">Parser</span><span class="p">):</span>
-            <span class="n">raw</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot construct &#39;Parser&#39; object from </span><span class="si">{}</span><span class="s2"> &quot;</span>
-                            <span class="s2">&quot;with type &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">raw</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dct</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span>
+<span class="sd">        Argument:</span>
+<span class="sd">            dct (dict) : dictionary to be parsed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">dct</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Make dictionary entries accessible as attributes&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get attribute</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">             attr (str): attribute</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Atrribute</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;unknown attribute &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Make class subscriptable&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get item</span>
+
+<span class="sd">        Argument:</span>
+<span class="sd">            key (str): key</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Corresponding values from the key</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">value</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">_parse</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">unit</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="k">return</span> <span class="n">val</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ureg</span><span class="p">[</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">Parser</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Definition of values by lists/tuples is superseded by value/unit strings&quot;</span><span class="p">,</span>
-                          <span class="ne">PendingDeprecationWarning</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-
-        <span class="k">return</span> <span class="n">val</span>
-
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Length corresponds to number of keys&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Parser&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Check equality&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Parser</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">raw</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns itself as an iterator.&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">yield</span> <span class="n">k</span>
-
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Check whether object contains channel.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span>
-
-<div class="viewcode-block" id="Parser.keys"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KeysView</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns list of keys&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="Parser.values"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return parser values&quot;&quot;&quot;</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">Parser</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="Parser.items"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return parser items&quot;&quot;&quot;</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">Parser</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="Parser.from_yaml"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.from_yaml">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span>
-            <span class="bp">cls</span><span class="p">,</span>
-            <span class="n">yml</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Parser&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Load parser from YAML</span>
-
-<span class="sd">        Arguments:</span>
-<span class="sd">           yml: File name or YAML string</span>
-<span class="sd">           path: Relative/absolute path</span>
-<span class="sd">           keys: List of keys</span>
+<div class="viewcode-block" id="Parser.keys"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns list of keys</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">yml</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">/</span> <span class="n">fname</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">_</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="c1"># will raise error</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
-                <span class="n">out</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yml</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">out</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">})</span></div>
-
-<div class="viewcode-block" id="Parser.to_yaml"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.to_yaml">[docs]</a>    <span class="k">def</span> <span class="nf">to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert Parser content to YAML string&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span> <span class="n">Dumper</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeDumper</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Parser.get"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get key&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">default</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">default</span>
-        <span class="k">return</span> <span class="kc">None</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">ctwrap</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">   Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../overview.html">   Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">   Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pages/batch.html">   Batch Jobs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../examples/jupyter.html">   Jupyter Notebooks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pages/api.html">   API Reference</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -269,29 +129,27 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018-20, I. Schoegl and D. Akinpelu.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ctwrap.parser</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-20, I. Schoegl and D. Akinpelu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
   </body>
 </html>

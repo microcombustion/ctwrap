@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ctwrap Simulation &#8212; ctwrap 0.2.0b documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -16,70 +16,56 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="ctwrap Strategy" href="strategy.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="prev" title="ctwrap Parser" href="parser.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="parser.html" title="ctwrap Parser"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="api.html" accesskey="U">ctwrap API Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ctwrap Simulation</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
-  <div class="section" id="module-ctwrap.simulation">
-<span id="ctwrap-simulation"></span><h1>ctwrap Simulation<a class="headerlink" href="#module-ctwrap.simulation" title="Permalink to this headline">¶</a></h1>
-<p>This module handles batch cantera simulations variations.
-Cantera based modules are pass to this module where they are run in batches.
-see <a class="reference external" href="adiabatic_flame_example.ipynb">adiabatic flame example</a> or
-<a class="reference external" href="ignition_example.ipynb">ignition_example</a>.</p>
-<blockquote>
-<div><p><em>Note:</em> Other cantera simulations module can be used with this module provided they followed the
-format in <a class="reference external" href="minimal.py">minimal</a>.</p>
-</div></blockquote>
+  <div class="section" id="ctwrap-simulation">
+<h1>ctwrap Simulation<a class="headerlink" href="#ctwrap-simulation" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="classes-and-functions">
+<p class="topic-title">Classes and functions</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#simulation-class" id="id18">Simulation class</a></p></li>
+<li><p><a class="reference internal" href="#simulationhandler-class" id="id19">SimulationHandler class</a></p></li>
+</ul>
+</div>
+<span class="target" id="module-ctwrap.simulation"></span><p>Object handling variations.</p>
 <dl class="py class">
 <dt id="ctwrap.simulation.Simulation">
 <em class="property">class </em><code class="sig-prename descclassname">ctwrap.simulation.</code><code class="sig-name descname">Simulation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#Simulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.Simulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Simulation class wraps modules into an object.
-Required module functions <code class="docutils literal notranslate"><span class="pre">run</span></code>, <code class="docutils literal notranslate"><span class="pre">save</span></code> and
-<code class="docutils literal notranslate"><span class="pre">defaults</span></code> are passed through</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><a class="reference internal" href="#ctwrap.simulation.Simulation" title="ctwrap.simulation.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a> objects should be instantiated using
-<a class="reference internal" href="#ctwrap.simulation.Simulation.from_module" title="ctwrap.simulation.Simulation.from_module"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_module()</span></code></a> method.</p>
-</div>
-<dl class="py attribute">
-<dt id="ctwrap.simulation.Simulation.data">
-<code class="sig-name descname">data</code><a class="headerlink" href="#ctwrap.simulation.Simulation.data" title="Permalink to this definition">¶</a></dt>
-<dd><p>dictionary</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>module</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – handle name or handle to module running the simulation</p></li>
-<li><p><strong>output</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – generated by <cite>SimulationHandler</cite></p></li>
-</ul>
+Required module functions ‘run’ and ‘defaults’ are passed through</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>data (dict): dictionary</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt id="ctwrap.simulation.Simulation.defaults">
 <code class="sig-name descname">defaults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#Simulation.defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.Simulation.defaults" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pass-through returning simulation module defaults as a dictionary</p>
+<dd><p>Pass-through returning module defaults as a dictionary</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
@@ -90,22 +76,17 @@ Required module functions <code class="docutils literal notranslate"><span class
 <dl class="py method">
 <dt id="ctwrap.simulation.Simulation.from_module">
 <em class="property">classmethod </em><code class="sig-name descname">from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#Simulation.from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.Simulation.from_module" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternative constructor for <cite>Simulation</cite> object.</p>
-<p>The <a class="reference internal" href="#ctwrap.simulation.Simulation.from_module" title="ctwrap.simulation.Simulation.from_module"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_module()</span></code></a> method is intended as the main route for the creation of
-<cite>Simulation</cite> objects. For example:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># creates a simulation object with the simualtion module `minimal`</span>
-<span class="n">sim</span> <span class="o">=</span> <span class="n">ctwrap</span><span class="o">.</span><span class="n">Simulation</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">ctwrap</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">minimal</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>module</strong> (<em>module</em>) – handle name or handle to module running the simulation</p></li>
-<li><p><strong>output</strong> (<em>dict</em>) – output hdf file information generated by <cite>SimulationHandler</cite></p></li>
-</ul>
+<dd><p>Alternative constructor for <cite>Simulation</cite> object.
+The <cite>from_module</cite> instantiation call renames the class
+based on the module name.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>module (module): handle name or handle to module running the simulation
+output (dict): generated by <cite>SimulationHandler</cite></p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="#ctwrap.simulation.Simulation" title="ctwrap.simulation.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[~Tsimulation, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -113,25 +94,16 @@ Required module functions <code class="docutils literal notranslate"><span class
 <dl class="py method">
 <dt id="ctwrap.simulation.Simulation.run">
 <code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'defaults'</span></em>, <em class="sig-param"><span class="n">config</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#Simulation.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.Simulation.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs the simulation module’s run method.</p>
-<p>This <a class="reference internal" href="#ctwrap.simulation.Simulation.run" title="ctwrap.simulation.Simulation.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> method is used to call the simulation module’s run method.
-If a simulation object <code class="docutils literal notranslate"><span class="pre">sim</span></code> was created with simulation module
-<code class="docutils literal notranslate"><span class="pre">minimal</span></code>, then calls this <a class="reference internal" href="#ctwrap.simulation.Simulation.run" title="ctwrap.simulation.Simulation.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> method calls <code class="docutils literal notranslate"><span class="pre">run</span></code> method in
-simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>. A simple usage example is</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># calls the run method in simulation module &#39;minimal`</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>string</em>) – name of simulation run</p></li>
-<li><p><strong>config</strong> (<em>dict</em><em>, </em><em>optional</em>) – configuration</p></li>
-<li><p><strong>**kwargs</strong> (<em>optional</em>) – depends on implementation of __init__</p></li>
-</ul>
+<dd><p>Run function holding configuration in dictionary.</p>
+<dl class="simple">
+<dt>Argument:</dt><dd><p>name (string): name of simulation run
+config (dict, optional): configuration
+<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs (optional): depends on implementation of __init__</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -140,95 +112,50 @@ simulation module <code class="docutils literal notranslate"><span class="pre">m
 
 <dl class="py class">
 <dt id="ctwrap.simulation.SimulationHandler">
-<em class="property">class </em><code class="sig-prename descclassname">ctwrap.simulation.</code><code class="sig-name descname">SimulationHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">strategy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">defaults</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbosity</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">ctwrap.simulation.</code><code class="sig-name descname">SimulationHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">defaults</span></em>, <em class="sig-param"><span class="n">variation</span></em>, <em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">verbosity</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class handling parameter variations.
 Class adds methods to switch between multiple configurations.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><a class="reference internal" href="#ctwrap.simulation.SimulationHandler" title="ctwrap.simulation.SimulationHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationHandler</span></code></a> objects should be
-instantiated using the <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.from_yaml" title="ctwrap.simulation.SimulationHandler.from_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_yaml()</span></code></a> method.</p>
-</div>
-<p>An example of a minimal yaml configuration is:</p>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">strategy</span><span class="p">:</span> <span class="c1"># variation data</span>
-  <span class="nt">sequence</span><span class="p">:</span>
-    <span class="nt">sleep</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">]</span>
-<span class="nt">defaults</span><span class="p">:</span> <span class="c1"># default parameters to run the modules</span>
-  <span class="nt">sleep</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
-</pre></div>
-</div>
-<dl class="py attribute">
-<dt id="ctwrap.simulation.SimulationHandler.verbosity">
-<code class="sig-name descname">verbosity</code><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.verbosity" title="Permalink to this definition">¶</a></dt>
-<dd><p>verbosity level</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>strategy</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="strategy.html#ctwrap.strategy.Strategy" title="ctwrap.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strategy</span></code></a>]) – Batch simulation strategy</p></li>
-<li><p><strong>defaults</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Dictionary containing simulation defaults</p></li>
-<li><p><strong>output</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Dictionary specifying file output</p></li>
-<li><p><strong>verbosity</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Verbosity level</p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py method">
 <dt id="ctwrap.simulation.SimulationHandler.configuration">
 <code class="sig-name descname">configuration</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.configuration" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return configuration.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>task</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Task to do</p>
+<dl class="simple">
+<dt>Argument:</dt><dd><p>task(str) : task to do</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>updated configuration dictionary based on the task</p>
+<dt>Return:</dt><dd><p>updated configuration dictionary based on the task</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="ctwrap.simulation.SimulationHandler.from_dict">
-<em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">content</span></em>, <em class="sig-param"><span class="n">strategy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.from_dict" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">content</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.from_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alternate constructor using a dictionary as input.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>content</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Dictionary from YAML input</p></li>
-<li><p><strong>strategy</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Batch job strategy name (only needed if more than one are defined)</p></li>
-<li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Output name (overrides yaml)</p></li>
-<li><p><strong>path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Output path (overrides yaml)</p></li>
-<li><p><strong>**kwargs</strong> – Dependent on implementation (e.g. verbosity, reacting)</p></li>
-</ul>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>content (dict): dictionary from yaml input
+name (string): output name (overrides yaml)
+path (string): output path (overrides yaml)
+** kwargs (optional): dependent on implementation
+(e.g. verbosity, reacting)</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="#ctwrap.simulation.SimulationHandler" title="ctwrap.simulation.SimulationHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationHandler</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[~TsimulationHandler, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="ctwrap.simulation.SimulationHandler.from_yaml">
-<em class="property">classmethod </em><code class="sig-name descname">from_yaml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">yaml_file</span></em>, <em class="sig-param"><span class="n">strategy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.from_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.from_yaml" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_yaml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">yaml_file</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.from_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.from_yaml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alternate constructor using YAML file as input.</p>
-<p>The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.from_yaml" title="ctwrap.simulation.SimulationHandler.from_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_yaml()</span></code></a> method is intended as the main route for the creation of
-<cite>SimulationHandler</cite> objects.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">sh</span> <span class="o">=</span> <span class="n">ctwrap</span><span class="o">.</span><span class="n">SimulationHandler</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s1">&#39;minimal.yaml&#39;</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;sequence&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>yaml_file</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – YAML file</p></li>
-<li><p><strong>strategy</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Batch job strategy name (only needed if more than one are defined)</p></li>
-<li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Output name (overrides yaml)</p></li>
-<li><p><strong>path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – File path (both yaml and output)</p></li>
-<li><p><strong>**kwargs</strong> – Dependent on implementation (e.g. verbosity, reacting)</p></li>
-</ul>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>yaml_file (string): yaml file
+name (string): output name (overrides yaml)
+path (string): file path (both yaml and output)
+** kwargs (optional): dependent on implementation
+(e.g. verbosity, reacting)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -243,37 +170,21 @@ instantiated using the <a class="reference internal" href="#ctwrap.simulation.Si
 <dt id="ctwrap.simulation.SimulationHandler.run_parallel">
 <code class="sig-name descname">run_parallel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">number_of_processes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbosity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.run_parallel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.run_parallel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run variation using multiprocessing.</p>
-<p>The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_parallel" title="ctwrap.simulation.SimulationHandler.run_parallel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_parallel()</span></code></a> method runs all the variations in the input
-file in parallel using
-<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html">python multiprocessing</a>.
-A minimal example is:</p>
-<p>If a simulationHandler object <code class="docutils literal notranslate"><span class="pre">sh</span></code> was created from <code class="docutils literal notranslate"><span class="pre">minimal.yaml</span></code>.
-The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_parallel" title="ctwrap.simulation.SimulationHandler.run_parallel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_parallel()</span></code></a> method takes <code class="docutils literal notranslate"><span class="pre">sim</span></code>, a simulation object created using
-simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>. The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_parallel" title="ctwrap.simulation.SimulationHandler.run_parallel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_parallel()</span></code></a> method
-runs all the variations in minimal configuration file calling the <code class="docutils literal notranslate"><span class="pre">run</span></code>
-method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>,  save the resulting output using the
-<code class="docutils literal notranslate"><span class="pre">save</span></code>  method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code> in parallel and finally
-save the <cite>metatada</cite> using <code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code> method.</p>
+<dl>
+<dt>Arguments:</dt><dd><p>sim (object): instance of Simulation class
+number_of_processes(int, optional): number of processes
+verbosity(int, optional): verbosity level
+** kwargs (optional): dependent on implementation</p>
 <blockquote>
-<div><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Runs all the variations in parallel</span>
-    <span class="n">sh</span><span class="o">.</span><span class="n">run_parallel</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
-</pre></div>
-</div>
+<div><p>(e.g. verbosity, reacting)</p>
 </div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>return True when task is completed</p>
+</dd>
+</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sim</strong> (<em>object</em>) – instance of Simulation class</p></li>
-<li><p><strong>number_of_processes</strong> (<em>int</em><em>, </em><em>optional</em>) – number of processes</p></li>
-<li><p><strong>verbosity</strong> (<em>int</em><em>, </em><em>optional</em>) – verbosity level</p></li>
-<li><p><strong>kwargs</strong> (<em>**</em>) – dependent on implementation (e.g. verbosity, reacting)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>return True when task is completed</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -282,32 +193,20 @@ save the <cite>metatada</cite> using <code class="xref py py-func docutils liter
 <dt id="ctwrap.simulation.SimulationHandler.run_serial">
 <code class="sig-name descname">run_serial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">verbosity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.run_serial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.run_serial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run variation in series.</p>
-<p>The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_serial" title="ctwrap.simulation.SimulationHandler.run_serial"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_serial()</span></code></a> method runs all the variations in the input
-file serially. A simple usage example is:</p>
-<p>If a simulationHandler object <code class="docutils literal notranslate"><span class="pre">sh</span></code> was created from <code class="docutils literal notranslate"><span class="pre">minimal.yaml</span></code>.
-This <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_serial" title="ctwrap.simulation.SimulationHandler.run_serial"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_serial()</span></code></a> method takes <code class="docutils literal notranslate"><span class="pre">sim</span></code>, a simulation object created using
-simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>. This <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_serial" title="ctwrap.simulation.SimulationHandler.run_serial"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_serial()</span></code></a> method
-runs all the variations in minimal configuration file calling the <code class="docutils literal notranslate"><span class="pre">run</span></code>
-method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>,  save the resulting output using the
-<code class="docutils literal notranslate"><span class="pre">save</span></code>  method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code> serially and finally
-save the <cite>metatada</cite> using <code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code> method.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Runs all the variations serially</span>
-<span class="n">sh</span><span class="o">.</span><span class="n">run_serial</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
-</pre></div>
-</div>
+<dl>
+<dt>Arguments:</dt><dd><p>sim (object): instance of Simulation class
+verbosity (int, optional): verbosity
+** kwargs (optional): dependent on implementation</p>
+<blockquote>
+<div><p>(e.g. verbosity, reacting)</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>return True when task is completed</p>
+</dd>
+</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sim</strong> (<em>object</em>) – instance of Simulation class</p></li>
-<li><p><strong>verbosity</strong> (<em>int</em><em>, </em><em>optional</em>) – verbosity</p></li>
-<li><p><strong>kwargs</strong> (<em>**</em>) – dependent on implementation (e.g. verbosity, reacting)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>return True when task is completed</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -316,30 +215,11 @@ save the <cite>metatada</cite> using <code class="xref py py-func docutils liter
 <dt id="ctwrap.simulation.SimulationHandler.run_task">
 <code class="sig-name descname">run_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.run_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.run_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to run a specific task.</p>
-<p>The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_task" title="ctwrap.simulation.SimulationHandler.run_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_task()</span></code></a> method calls the module’s run and save method to run and
-save the resulting output object and also afterwards calls
-<code class="xref py py-func docutils literal notranslate"><span class="pre">_save_metadata()</span></code> to save metadata.
-A simple usage example is:</p>
-<p>If a simulationHandler object <code class="docutils literal notranslate"><span class="pre">sh</span></code> was created from <code class="docutils literal notranslate"><span class="pre">minimal.yaml</span></code>.
-This <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_task" title="ctwrap.simulation.SimulationHandler.run_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_task()</span></code></a> method takes <code class="docutils literal notranslate"><span class="pre">sim</span></code>, a simulation object created using
-simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>, and a task see <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.tasks" title="ctwrap.simulation.SimulationHandler.tasks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">tasks()</span></code></a> method.
-This <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_task" title="ctwrap.simulation.SimulationHandler.run_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_task()</span></code></a> method runs the task calling the <code class="docutils literal notranslate"><span class="pre">run</span></code> method in
-simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>, save the resulting output using
-the <code class="docutils literal notranslate"><span class="pre">save</span></code>  method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code> and finally
-save the <cite>metatada</cite> using <code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code> method.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Runs the task `sleep_0.4` using `sim` object</span>
-<span class="n">sh</span><span class="o">.</span><span class="n">run_task</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="s1">&#39;sleep_0.4&#39;</span> <span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sim</strong> (<em>object</em>) – instance of Simulation class</p></li>
-<li><p><strong>task</strong> (<em>str</em>) – task to do</p></li>
-<li><p><strong>kwargs</strong> (<em>**</em>) – dependent on implementation</p></li>
-<li><p><strong>verbosity</strong> (<em>(</em><em>e.g.</em>) – </p></li>
-<li><p><strong>reacting</strong><strong>)</strong> – </p></li>
-</ul>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>sim (object): instance of Simulation class
+task (str): task to do
+** kwargs (optional): dependent on implementation
+(e.g. verbosity, reacting)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -347,7 +227,7 @@ save the <cite>metatada</cite> using <code class="xref py py-func docutils liter
 <dl class="py method">
 <dt id="ctwrap.simulation.SimulationHandler.tasks">
 <em class="property">property </em><code class="sig-name descname">tasks</code><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.tasks" title="Permalink to this definition">¶</a></dt>
-<dd><p>tasks defined in terms of the variation entry and values</p>
+<dd><p>values of variation</p>
 </dd></dl>
 
 <dl class="py method">
@@ -358,44 +238,225 @@ save the <cite>metatada</cite> using <code class="xref py py-func docutils liter
 
 </dd></dl>
 
+<div class="section" id="simulation-class">
+<h2><a class="toc-backref" href="#id18">Simulation class</a><a class="headerlink" href="#simulation-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="id0">
+<em class="property">class </em><code class="sig-prename descclassname">ctwrap.simulation.</code><code class="sig-name descname">Simulation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#Simulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Simulation class wraps modules into an object.
+Required module functions ‘run’ and ‘defaults’ are passed through</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>data (dict): dictionary</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="id3">
+<code class="sig-name descname">defaults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#Simulation.defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pass-through returning module defaults as a dictionary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id4">
+<em class="property">classmethod </em><code class="sig-name descname">from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#Simulation.from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative constructor for <cite>Simulation</cite> object.
+The <cite>from_module</cite> instantiation call renames the class
+based on the module name.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>module (module): handle name or handle to module running the simulation
+output (dict): generated by <cite>SimulationHandler</cite></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[~Tsimulation, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id5">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'defaults'</span></em>, <em class="sig-param"><span class="n">config</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#Simulation.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run function holding configuration in dictionary.</p>
+<dl class="simple">
+<dt>Argument:</dt><dd><p>name (string): name of simulation run
+config (dict, optional): configuration
+<a href="#id6"><span class="problematic" id="id7">**</span></a>kwargs (optional): depends on implementation of __init__</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="simulationhandler-class">
+<h2><a class="toc-backref" href="#id19">SimulationHandler class</a><a class="headerlink" href="#simulationhandler-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="id8">
+<em class="property">class </em><code class="sig-prename descclassname">ctwrap.simulation.</code><code class="sig-name descname">SimulationHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">defaults</span></em>, <em class="sig-param"><span class="n">variation</span></em>, <em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">verbosity</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class handling parameter variations.
+Class adds methods to switch between multiple configurations.</p>
+<dl class="py method">
+<dt id="id9">
+<code class="sig-name descname">configuration</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return configuration.</p>
+<dl class="simple">
+<dt>Argument:</dt><dd><p>task(str) : task to do</p>
+</dd>
+<dt>Return:</dt><dd><p>updated configuration dictionary based on the task</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id10">
+<em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">content</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id10" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternate constructor using a dictionary as input.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>content (dict): dictionary from yaml input
+name (string): output name (overrides yaml)
+path (string): output path (overrides yaml)
+** kwargs (optional): dependent on implementation
+(e.g. verbosity, reacting)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[~TsimulationHandler, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id11">
+<em class="property">classmethod </em><code class="sig-name descname">from_yaml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">yaml_file</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.from_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id11" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternate constructor using YAML file as input.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>yaml_file (string): yaml file
+name (string): output name (overrides yaml)
+path (string): file path (both yaml and output)
+** kwargs (optional): dependent on implementation
+(e.g. verbosity, reacting)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id12">
+<em class="property">property </em><code class="sig-name descname">output_name</code><a class="headerlink" href="#id12" title="Permalink to this definition">¶</a></dt>
+<dd><p>return output name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id13">
+<code class="sig-name descname">run_parallel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">number_of_processes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbosity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.run_parallel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id13" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run variation using multiprocessing.</p>
+<dl>
+<dt>Arguments:</dt><dd><p>sim (object): instance of Simulation class
+number_of_processes(int, optional): number of processes
+verbosity(int, optional): verbosity level
+** kwargs (optional): dependent on implementation</p>
+<blockquote>
+<div><p>(e.g. verbosity, reacting)</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>return True when task is completed</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id14">
+<code class="sig-name descname">run_serial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">verbosity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.run_serial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run variation in series.</p>
+<dl>
+<dt>Arguments:</dt><dd><p>sim (object): instance of Simulation class
+verbosity (int, optional): verbosity
+** kwargs (optional): dependent on implementation</p>
+<blockquote>
+<div><p>(e.g. verbosity, reacting)</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>return True when task is completed</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id15">
+<code class="sig-name descname">run_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.run_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id15" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to run a specific task.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>sim (object): instance of Simulation class
+task (str): task to do
+** kwargs (optional): dependent on implementation
+(e.g. verbosity, reacting)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id16">
+<em class="property">property </em><code class="sig-name descname">tasks</code><a class="headerlink" href="#id16" title="Permalink to this definition">¶</a></dt>
+<dd><p>values of variation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id17">
+<em class="property">property </em><code class="sig-name descname">verbose</code><a class="headerlink" href="#id17" title="Permalink to this definition">¶</a></dt>
+<dd><p>verbosity</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">ctwrap</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">   Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../overview.html">   Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing.html">   Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="batch.html">   Batch Jobs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples/jupyter.html">   Jupyter Notebooks</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="api.html">   API Reference</a></li>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ctwrap Simulation</a><ul>
+<li><a class="reference internal" href="#simulation-class">Simulation class</a></li>
+<li><a class="reference internal" href="#simulationhandler-class">SimulationHandler class</a></li>
+</ul>
+</li>
 </ul>
 
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="api.html">ctwrap API Reference</a><ul>
-      <li>Previous: <a href="strategy.html" title="previous chapter">ctwrap Strategy</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="parser.html"
+                        title="previous chapter">ctwrap Parser</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/pages/simulation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -406,32 +467,30 @@ save the <cite>metatada</cite> using <code class="xref py py-func docutils liter
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018-20, I. Schoegl and D. Akinpelu.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../_sources/pages/simulation.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="parser.html" title="ctwrap Parser"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="api.html" >ctwrap API Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ctwrap Simulation</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-20, I. Schoegl and D. Akinpelu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
   </body>
 </html>

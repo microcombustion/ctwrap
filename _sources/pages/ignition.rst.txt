@@ -4,7 +4,7 @@ Ignition Batch Simulation
 YAML Configuration
 ******************
 
-.. literalinclude:: ../../yaml/ignition.yaml
+.. literalinclude:: ../../examples/ignition.yaml
    :language: yaml
 
 Simulation Module

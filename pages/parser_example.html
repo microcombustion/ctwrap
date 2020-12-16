@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Parser Example &#8212; ctwrap 0.2.0b documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -18,22 +18,33 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Adiabatic Flame Example" href="adiabatic_flame_example.html" />
-    <link rel="prev" title="Jupyter Notebooks" href="jupyter.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="next" title="ctwrap API Reference" href="api.html" />
+    <link rel="prev" title="Jupyter Notebooks" href="jupyter.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="ctwrap API Reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="jupyter.html" title="Jupyter Notebooks"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="jupyter.html" accesskey="U">Jupyter Notebooks</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Parser Example</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   
@@ -305,7 +316,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># load configuration from a yaml file</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../../yaml/ignition.yaml&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">yml</span><span class="p">:</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../../examples/ignition.yaml&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">yml</span><span class="p">:</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yml</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
 
 <span class="n">config</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;defaults&#39;</span><span class="p">]</span>
@@ -538,42 +549,37 @@ dict_keys([&#39;T&#39;, &#39;P&#39;, &#39;phi&#39;, &#39;fuel&#39;, &#39;oxidize
 </div>
 
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">ctwrap</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">   Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../overview.html">   Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing.html">   Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="batch.html">   Batch Jobs</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="jupyter.html">   Jupyter Notebooks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">   API Reference</a></li>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Parser Example</a><ul>
+<li><a class="reference internal" href="#1.-Load-a-YAML-File">1. Load a YAML File</a></li>
+<li><a class="reference internal" href="#2.-Create-Parser-Object">2. Create Parser Object</a></li>
+<li><a class="reference internal" href="#3.-Access-Values-with-Units">3. Access Values with Units</a></li>
+<li><a class="reference internal" href="#4.-Access-Values-without-Units">4. Access Values without Units</a></li>
+<li><a class="reference internal" href="#5.-Access-Raw-Values">5. Access Raw Values</a></li>
+</ul>
+</li>
 </ul>
 
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="jupyter.html">Jupyter Notebooks</a><ul>
-      <li>Previous: <a href="jupyter.html" title="previous chapter">Jupyter Notebooks</a></li>
-      <li>Next: <a href="adiabatic_flame_example.html" title="next chapter">Adiabatic Flame Example</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="jupyter.html"
+                        title="previous chapter">Jupyter Notebooks</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="next chapter">ctwrap API Reference</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/pages/parser_example.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -584,32 +590,33 @@ dict_keys([&#39;T&#39;, &#39;P&#39;, &#39;phi&#39;, &#39;fuel&#39;, &#39;oxidize
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018-20, I. Schoegl and D. Akinpelu.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../_sources/pages/parser_example.ipynb.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="ctwrap API Reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="jupyter.html" title="Jupyter Notebooks"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ctwrap 0.2.0b documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="jupyter.html" >Jupyter Notebooks</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Parser Example</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-20, I. Schoegl and D. Akinpelu.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
   </body>
 </html>

@@ -4,7 +4,7 @@ Adiabatic Flame Batch
 YAML Configuration
 ******************
 
-.. literalinclude:: ../../yaml/adiabatic_flame.yaml
+.. literalinclude:: ../../examples/adiabatic_flame.yaml
    :language: yaml
 
 Simulation Module
