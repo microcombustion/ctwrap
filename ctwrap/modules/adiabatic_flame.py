@@ -128,6 +128,7 @@ def save(filename, data, task=None, **kwargs):
     for group, flame in data.items():
         flame.write_hdf(filename=filename, group=group,
                         description=task, **kwargs)
+        print(group)
 
 
 if __name__ == "__main__":
