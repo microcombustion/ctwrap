@@ -1,5 +1,4 @@
-.. image:: https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg
-       :target: https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg
+|ci| |tag|
 
 ======
 ctwrap
@@ -43,3 +42,11 @@ Results are written to a single file ``adiabatic_flame.h5``.
 
 *Note:* the wrapper itself does not depend on a Cantera installation; only the
 simulation modules do.
+
+.. |ci| image:: https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg
+   :target: https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg
+   :alt: GitHub action
+
+.. |tag| image:: https://img.shields.io/github/v/tag/microcombustion/ctwrap
+   :target: https://github.com/microcombustion/ctwrap/tags
+   :alt: GitHub tag (latest by date)
