@@ -37,5 +37,19 @@ YAML Configuration
 .. literalinclude:: ../yaml/minimal.yaml
    :language: yaml
 
+*Example:* a parallel batch job for adiabatic flame calculations with parameter variations
+(for this example, a variation of equivalence ratio with 12 cases).
+See `adiabatic_flame <pages/adiabatic_flame.html>`_
+(modified from Cantera's
+`adiabatic_flame example <https://github.com/Cantera/cantera/blob/master/interfaces/cython/cantera/
+examples/onedim/adiabatic_flame.py>`_) ).
+This can be run as:
+
+.. code-block::
+
+    $ ctwrap adiabatic_flame adiabatic_flame.yaml --parallel
+
+Results are written to a single file ``adiabatic_flame.h5``.
+
 
 *Note*: ``ctwrap`` only saves in `h5` format.
