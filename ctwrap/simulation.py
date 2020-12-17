@@ -285,6 +285,15 @@ class SimulationHandler(object):
         defaults: # default parameters to run the modules
           sleep: 0.2
 
+    If a simulationHandler object was created from ``test_module.yaml``.
+    To run a single task using :meth:`run_task` method or batch simulations
+    in series :meth:`run_serial` method or parallel :meth:`run_parallel` method
+    using a simulation object created using simulation module ``test_module``,
+    each run method calls the ``run`` method in
+    simulation module ``test_module``, saves the resulting output using
+    the ``save``  method in simulation module ``test_module`` and also
+    saves the `metatada`.
+
     Attributes:
        verbosity (int): verbosity level
 
@@ -332,6 +341,9 @@ class SimulationHandler(object):
 
         The :meth:`from_yaml` method is intended as the main route for the creation of
         `SimulationHandler` objects.
+
+        For example, a :class:`SimulationHandler` object can be created from a configuration file
+        `test_module.yaml` to run a strategy `sequence` as shown below.
 
         .. code-block:: Python
 
@@ -512,14 +524,6 @@ class SimulationHandler(object):
         :py:func:`~ctwrap.parser._save_metadata` to save metadata.
         A simple usage example is:
 
-        If a simulationHandler object ``sh`` was created from ``test_module.yaml``.
-        This :meth:`run_task` method takes ``sim``, a simulation object created using
-        simulation module ``test_module``, and a task see :meth:`tasks` method.
-        This :meth:`run_task` method runs the task calling the ``run`` method in
-        simulation module ``test_module``, save the resulting output using
-        the ``save``  method in simulation module ``test_module`` and finally
-        save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.
-
         .. code-block:: Python
 
             # Runs the task `sleep_0.4` using `sim` object
@@ -555,14 +559,6 @@ class SimulationHandler(object):
 
         The :meth:`run_serial` method runs all the variations in the input
         file serially. A simple usage example is:
-
-        If a simulationHandler object ``sh`` was created from ``test_module.yaml``.
-        This :meth:`run_serial` method takes ``sim``, a simulation object created using
-        simulation module ``test_module``. This :meth:`run_serial` method
-        runs all the variations in test_module configuration file calling the ``run``
-        method in simulation module ``test_module``,  save the resulting output using the
-        ``save``  method in simulation module ``test_module`` serially and finally
-        save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.
 
         .. code-block:: Python
 
@@ -612,15 +608,7 @@ class SimulationHandler(object):
         The :meth:`run_parallel` method runs all the variations in the input
         file in parallel using
         `python multiprocessing <https://docs.python.org/3/library/multiprocessing.html>`_.
-        A minimal example is:
-
-        If a simulationHandler object ``sh`` was created from ``test_module.yaml``.
-        The :meth:`run_parallel` method takes ``sim``, a simulation object created using
-        simulation module ``test_module``. The :meth:`run_parallel` method
-        runs all the variations in test_module configuration file calling the ``run``
-        method in simulation module ``test_module``,  save the resulting output using the
-        ``save``  method in simulation module ``test_module`` in parallel and finally
-        save the `metatada` using :py:func:`~ctwrap.parser.save_metadata` method.
+        A simple usage is:
 
          .. code-block:: Python
 

@@ -83,46 +83,61 @@ def _sweep_matrix(tasks, defaults):
 
 def _parse_mode(strat_dict):
     """
-    parse the strategy/variation values based on the mode specified
+    parse the strategy values based on the mode specified (recursive)
 
     Argument:
         strat_dict(dict): variation values specification
 
     Output:
         out (dict): parsed variation values
-
     """
-    k, strat_val = list(strat_dict.items())[0]
-    strat_limits = strat_val['limits']
-    strat_max = strat_limits[1]
-    strat_min = strat_limits[0]
-    strat_rev = strat_val.get('reverse', False)
-    if strat_min and strat_max and strat_min > strat_max:
-        msg = ("Minimum strategy value is larger than maximum: use "
-               "keyword 'reverse' instead")
-        warnings.warn(msg, PendingDeprecationWarning)
-        strat_min, strat_max = strat_max, strat_min
-        strat_rev = True
-    if "mode" not in strat_val:
-        msg = "The required field 'mode' (strategy specification mode) is missing"
-        raise KeyError(msg)
-    if strat_val['mode'] == "linspace":
-        strat_npoints = strat_val.get('npoints')
-        if strat_npoints is None:
-            msg = "The field 'npoints' (number of points) is missing"
-            raise KeyError(msg)
-        value = np.linspace(strat_min, strat_max, strat_npoints)
-    elif strat_val['mode'] == "arange":
-        if 'step' not in strat_val:
-            msg = "The required field 'step' (step size) is missing"
-            raise KeyError(msg)
-        strat_step = float(strat_val['step'])
-        value = np.arange(strat_min, strat_max, strat_step)
-    else:
-        msg = "Unknown strategy mode '{}'".format(strat_val['mode'])
-        raise KeyError(msg)
 
-    out = {k: value.tolist()}
+    keys = list(strat_dict.keys())
+    next = strat_dict.copy()
+
+    out = {}
+
+    for key in keys:
+        strat_val = next.pop(key)
+        strat_limits = strat_val['limits']
+        strat_max = strat_limits[1]
+        strat_min = strat_limits[0]
+        strat_rev = strat_val.get('reverse', False)
+
+        if strat_min > strat_max and strat_rev is True:
+            strat_min, strat_max = strat_max, strat_min
+
+        if strat_min > strat_max and strat_rev is False:
+            msg = ("{} entry minimum is larger than maximum: use "
+                   "keyword 'reverse' instead").format(key)
+            warnings.warn(msg, UserWarning)
+            strat_min, strat_max = strat_max, strat_min
+            strat_rev = True
+
+        if "mode" not in strat_val:
+            msg = "The required field 'mode' (strategy specification mode) is missing"
+            raise KeyError(msg)
+
+        if strat_val['mode'] == "linspace":
+            strat_npoints = strat_val.get('npoints')
+            if strat_npoints is None:
+                msg = "The field 'npoints' (number of points) is missing"
+                raise KeyError(msg)
+            value = np.linspace(strat_min, strat_max, strat_npoints)
+        elif strat_val['mode'] == "arange":
+            if 'step' not in strat_val:
+                msg = "The required field 'step' (step size) is missing"
+                raise KeyError(msg)
+            strat_step = strat_val['step']
+            value = np.arange(strat_min, strat_max, strat_step)
+        else:
+            msg = "Unknown strategy mode '{}'".format(strat_val['mode'])
+            raise KeyError(msg)
+
+        out[key] = value.tolist()
+
+        if next:
+            out.update(_parse_mode(next))
 
     return out
 

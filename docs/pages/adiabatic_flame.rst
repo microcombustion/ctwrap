@@ -2,18 +2,21 @@ Adiabatic Flame Batch
 =====================
 
 YAML Configuration
-******************
+------------------
 
 .. literalinclude:: ../../yaml/adiabatic_flame.yaml
    :language: yaml
 
 Simulation Module
-******************
+-----------------
 
 .. literalinclude:: ../../ctwrap/modules/adiabatic_flame.py
    :language: python
 
-*Example:* a parallel batch job for adiabatic flame calculations using the
+Run Batch Job
+-------------
+
+A parallel batch job for adiabatic flame calculations using the
 configuration and the simulation module above can be run as:
 
 .. code-block::

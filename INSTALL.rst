@@ -18,7 +18,7 @@ To install, provide the ``environment.yml`` configuration to ``conda``, i.e.
 .. code-block::
 
    $ conda env create -f environment.yml
-   $ conda activate camsym
+   $ conda activate ctwrap
 
 ++++++++++++++++++++++++
 clone/Install Repository
