@@ -56,6 +56,8 @@ configuration file ``batch_configuration.yaml`` can be run by:
 
    $ ctwrap some_simulation.py batch_configuration.yaml --parallel
 
+Results are written to a single file ``some_simulation.h5``.
+
 *Note:* the wrapper itself does not depend on a Cantera installation; only the
 simulation modules do.
 

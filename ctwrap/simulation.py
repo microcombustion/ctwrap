@@ -285,7 +285,7 @@ class SimulationHandler(object):
         defaults: # default parameters to run the modules
           sleep: 0.2
 
-    If a simulationHandler object was created from ``test_module.yaml``.
+    If a :class:`simulationHandler` object was created from ``test_module.yaml``.
     To run a single task using :meth:`run_task` method or batch simulations
     in series :meth:`run_serial` method or parallel :meth:`run_parallel` method
     using a simulation object created using simulation module ``test_module``,
@@ -557,8 +557,8 @@ class SimulationHandler(object):
         """
         Run variation in series.
 
-        The :meth:`run_serial` method runs all the variations in the input
-        file serially. A simple usage example is:
+        The :meth:`run_serial` method runs all the strategy entries in the input
+        file in serial and also saves metadata. A simple usage example is:
 
         .. code-block:: Python
 
@@ -605,9 +605,10 @@ class SimulationHandler(object):
         """
         Run variation using multiprocessing.
 
-        The :meth:`run_parallel` method runs all the variations in the input
+        The :meth:`run_parallel` method runs all the strategy entries in the input
         file in parallel using
         `python multiprocessing <https://docs.python.org/3/library/multiprocessing.html>`_.
+        and also saves metadata.
         A simple usage is:
 
          .. code-block:: Python
