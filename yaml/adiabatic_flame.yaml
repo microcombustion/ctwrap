@@ -2,10 +2,7 @@
 # file specifies a parameter variation of the equivalence ratio
 strategy:
   sequence:
-    upstream.phi: 
-      limits: [0.4, 2.6]
-      npoints: 12 
-      mode: linspace
+    upstream.phi: { mode: linspace, limits: [0.4, 2.6], npoints: 12 }
 output:
   format: h5
   force_overwrite: True

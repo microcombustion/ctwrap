@@ -4,15 +4,8 @@ strategy:
   sequence: # example for a batch sequence
     foo: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
   matrix: # example for a batch matrix
-    foo:
-      limits: [0.1, 0.3]
-      npoints: 3
-      mode: linspace
-    bar:
-      limits: [3, 0]
-      step: 1
-      mode: arange
-      reverse: True
+    foo: { mode: linspace , limits: [0.1, 0.3], npoints: 3 }
+    bar: { mode: arange, limits: [3, 0], step: 1, reverse: True }
 defaults:
   foo: 0.2
   bar: 1

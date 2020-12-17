@@ -20,9 +20,9 @@ To install, provide the ``environment.yml`` configuration to ``conda``, i.e.
    $ conda env create -f environment.yml
    $ conda activate ctwrap
 
-++++++++++++++++++++++++
-clone/Install Repository
-++++++++++++++++++++++++
+++++++++++++++++++++++++++++
+Clone Repository and Install
+++++++++++++++++++++++++++++
 
 The following uses ``pip`` to install ``ctwrap`` within your
 python environment (e.g. Anaconda).
