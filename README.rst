@@ -10,9 +10,11 @@ Light-weight Python wrapper for batch simulation jobs (e.g. Cantera).
 Documentation
 -------------
 
-* `Sphinx documentation <https://microcombustion.github.io/ctwrap/>`_
-* `jupyter notebooks <pages/jupyter.html>`_. An overview is given
-  by a `minimal example <pages/minimal_example.html>`_.
+`Sphinx documentation <https://microcombustion.github.io/ctwrap/>`_ includes:
+
+* A brief summary (`Overview <overview.html>`_),
+* Typical batch simulation descriptions (`Batch Jobs <pages/batch.html>`_), and
+* `Jupyter Notebooks <examples/jupyter.html>`_ with illustrated examples.
 
 ----------
 Philosophy
@@ -58,8 +60,8 @@ configuration file ``batch_configuration.yaml`` can be run by:
 
 Results are written to a single file ``some_simulation.h5``.
 
-*Note:* the wrapper itself does not depend on a Cantera installation; only the
-simulation modules do.
+.. note:: the wrapper itself does not depend on a Cantera installation; only the
+   simulation modules do.
 
 .. |ci| image:: https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg
    :target: https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg

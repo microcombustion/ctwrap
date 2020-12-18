@@ -13,8 +13,8 @@ Simulation Module
 .. literalinclude:: ../../ctwrap/modules/ignition.py
    :language: python
 
-Run Batch Job
--------------
+Running the Batch Simulation
+----------------------------
 
 A parallel batch job for ignition calculations using the configuration and the simulation
 module above can be run as:
