@@ -12,8 +12,8 @@ Documentation
 
 `Sphinx documentation <https://microcombustion.github.io/ctwrap/>`_ includes:
 
-* A brief summary (`Overview <https://microcombustion.github.io/ctwrap/overview.html>`_),
-* Typical batch simulation descriptions (`Batch Jobs <https://microcombustion.github.io/ctwrap/pages/batch.html>`_), and
+* A brief summary (see `Overview <https://microcombustion.github.io/ctwrap/overview.html>`_),
+* Typical batch simulation descriptions (see `Batch Jobs <https://microcombustion.github.io/ctwrap/pages/batch.html>`_), and
 * `Jupyter Notebooks <https://microcombustion.github.io/ctwrap/examples/jupyter.html>`_ with illustrated examples.
 
 ----------
