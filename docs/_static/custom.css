@@ -1,0 +1,37 @@
+/* reduce font-size (back to default) */
+div.body h1 { font-size: 180%; }
+div.body h2 { font-size: 160%; }
+div.body h3 { font-size: 140%; }
+div.body h4 { font-size: 120%; }
+div.body h5 { font-size: revert; }
+p, body { font-size: revert; }
+/* reduce font-size of code blocks from 0.9em */
+pre, tt, code { font-size: 0.8em; }
+
+/* spacing above elements */
+dt { margin-top: 15px; }
+dd { margin-top: 3px; }
+dl dd dl dt { margin-top: 10px; }
+dl dd dl li { margin-top: 10px; }
+dl dd dl dd dl dt { margin-top: 3px; }
+dl dd dl dd dl li { margin-top: 3px; }
+div.body p { margin-top: 3px; }
+
+/* some padding/color adjustments */
+div.admonition {
+    padding: 10px 15px;
+}
+div.admonition p.admonition-title {
+    font-weight: bold;
+    font-size: revert;
+}
+div.note {
+    background-color: #E1F5FE;
+    border: 1px solid #E1F5FE;
+}
+pre {
+    padding: 7px 15px;
+}
+dl pre, blockquote pre, li pre {
+    padding-left: 15px;
+}
