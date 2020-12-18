@@ -192,7 +192,7 @@ class TestStrategy(unittest.TestCase):
         seq = cw.Strategy.load(strategy, name='sequence')
         self.assertEqual(seq.sweep, strategy['sequence'])
 
-        mat_output = {'foo': [0.1, 0.2, 0.3], 'bar': [2,1, 0]}
+        mat_output = {'foo': [0.1, 0.2, 0.3], 'bar': [2, 1, 0]}
         mat = cw.Strategy.load(strategy, name='matrix')
         #self.assertEqual(mat.matrix, strategy['matrix'])
         self.assertEqual(mat.matrix, mat_output)

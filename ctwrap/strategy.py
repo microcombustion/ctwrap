@@ -1,4 +1,4 @@
-""""Module defining batch simulation strategies"""
+"""Module defining batch simulation strategies"""
 
 import warnings
 from copy import deepcopy

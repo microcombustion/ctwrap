@@ -11,7 +11,8 @@ def defaults():
 
 def run(name, foo=.2, bar=1):
     """This method 'sleeps' for the specified duration"""
-    print('    - `minimal`: sleeping for {} * {} = {} seconds ...'.format(foo, bar, foo * bar))
+    msg = '    - `minimal`: sleeping for {} * {} = {} seconds ...'
+    print(msg.format(foo, bar, foo * bar))
     time.sleep(foo * bar)
     return {name: {'sleep': [foo * bar]}}
 
