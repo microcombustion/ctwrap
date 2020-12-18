@@ -12,9 +12,9 @@ Documentation
 
 `Sphinx documentation <https://microcombustion.github.io/ctwrap/>`_ includes:
 
-* A brief summary (`Overview <overview.html>`_),
-* Typical batch simulation descriptions (`Batch Jobs <pages/batch.html>`_), and
-* `Jupyter Notebooks <examples/jupyter.html>`_ with illustrated examples.
+* A brief summary (`Overview <https://microcombustion.github.io/ctwrap/overview.html>`_),
+* Typical batch simulation descriptions (`Batch Jobs <https://microcombustion.github.io/ctwrap/pages/batch.html>`_), and
+* `Jupyter Notebooks <https://microcombustion.github.io/ctwrap/examples/jupyter.html>`_ with illustrated examples.
 
 ----------
 Philosophy
@@ -36,7 +36,7 @@ Usage
 
 A parallel batch job for adiabatic flame calculations with parameter variations
 (for this example, a variation of equivalence ratio with 12 cases).
-See `adiabatic_flame <pages/adiabatic_flame.html>`_
+See `adiabatic_flame <https://microcombustion.github.io/ctwrap/pages/adiabatic_flame.html>`_
 (modified from Cantera's
 `adiabatic_flame example <https://github.com/Cantera/cantera/blob/master/interfaces/cython/cantera/
 examples/onedim/adiabatic_flame.py>`_). The configuration file consists three parts,
