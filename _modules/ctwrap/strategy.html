@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ctwrap.strategy &#8212; ctwrap 0.2.0b documentation</title>
+    <title>ctwrap.strategy &#8212; ctwrap 0.2.0 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -36,11 +36,13 @@
           <div class="body" role="main">
             
   <h1>Source code for ctwrap.strategy</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;&quot;Module defining batch simulation strategies&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Module defining batch simulation strategies&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">.parser</span> <span class="kn">import</span> <span class="n">_parse</span><span class="p">,</span> <span class="n">_write</span><span class="p">,</span> <span class="n">Parser</span>
 
@@ -117,6 +119,56 @@
     <span class="k">return</span> <span class="n">out</span>
 
 
+<span class="k">def</span> <span class="nf">_parse_mode</span><span class="p">(</span><span class="n">strat_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    parse the strategy values based on the mode specified (recursive)</span>
+
+<span class="sd">    Argument:</span>
+<span class="sd">        strat_dict(dict): variation values specification</span>
+
+<span class="sd">    Output:</span>
+<span class="sd">        out (dict): parsed variation values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">strat_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="nb">next</span> <span class="o">=</span> <span class="n">strat_dict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="n">strat_val</span> <span class="o">=</span> <span class="nb">next</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">strat_limits</span> <span class="o">=</span> <span class="n">strat_val</span><span class="p">[</span><span class="s1">&#39;limits&#39;</span><span class="p">]</span>
+        <span class="n">strat_max</span> <span class="o">=</span> <span class="n">strat_limits</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">strat_min</span> <span class="o">=</span> <span class="n">strat_limits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;mode&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">strat_val</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The required field &#39;mode&#39; (strategy specification mode) is missing&quot;</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">strat_val</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;linspace&quot;</span><span class="p">:</span>
+            <span class="n">strat_npoints</span> <span class="o">=</span> <span class="n">strat_val</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;npoints&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">strat_npoints</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The field &#39;npoints&#39; (number of points) is missing&quot;</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">strat_min</span><span class="p">,</span> <span class="n">strat_max</span><span class="p">,</span> <span class="n">strat_npoints</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">strat_val</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;arange&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;step&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">strat_val</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The required field &#39;step&#39; (step size) is missing&quot;</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">strat_step</span> <span class="o">=</span> <span class="n">strat_val</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">strat_min</span><span class="p">,</span> <span class="n">strat_max</span><span class="p">,</span> <span class="n">strat_step</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Unknown strategy mode &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">strat_val</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">])</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">next</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_parse_mode</span><span class="p">(</span><span class="nb">next</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+
+
 <div class="viewcode-block" id="Strategy"><a class="viewcode-back" href="../../pages/strategy.html#ctwrap.strategy.Strategy">[docs]</a><span class="k">class</span> <span class="nc">Strategy</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Base class for batch simulation strategies&quot;&quot;&quot;</span>
 
@@ -170,6 +222,9 @@
             <span class="n">name</span> <span class="o">=</span> <span class="n">key</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Parameter &#39;name&#39; is required if multiple strategies are defined&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_parse_mode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
         <span class="n">hooks</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;strategy&#39;</span><span class="p">:</span> <span class="bp">cls</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
@@ -247,7 +302,7 @@
 
 <div class="viewcode-block" id="Sequence.from_legacy"><a class="viewcode-back" href="../../pages/strategy.html#ctwrap.strategy.Sequence.from_legacy">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_legacy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create Sequence from ctwrap 0.1.0 sytax&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Create Sequence from ctwrap 0.1.0 syntax&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">({</span><span class="n">items</span><span class="p">[</span><span class="s1">&#39;entry&#39;</span><span class="p">]:</span> <span class="n">items</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]})</span></div>
 
     <span class="nd">@property</span>

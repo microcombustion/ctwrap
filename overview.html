@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Overview &#8212; ctwrap 0.2.0b documentation</title>
+    <title>Overview &#8212; ctwrap 0.2.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -40,21 +40,24 @@
   <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
 <p>Ctwrap is a light-weight batch simulation wrapper written in Python. The wrapper consists of three classes:
-the <a class="reference internal" href="pages/parser.html#module-ctwrap.parser" title="ctwrap.parser"><code class="xref any py py-mod docutils literal notranslate"><span class="pre">parser</span></code></a> class is used to parsed the input file and also
+the <a class="reference internal" href="pages/parser.html#ctwrap.parser.Parser" title="ctwrap.parser.Parser"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a> class is used to parsed the input file and also
 handles units using <a class="reference external" href="https://pint.readthedocs.io/en/stable/">pint</a>,
 the <a class="reference internal" href="pages/simulation.html#ctwrap.simulation.Simulation" title="ctwrap.simulation.Simulation"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a> that wraps a simulation module to be run.
 More details about the module is discussed below and the
 <a class="reference internal" href="pages/simulation.html#ctwrap.simulation.SimulationHandler" title="ctwrap.simulation.SimulationHandler"><code class="xref any py py-class docutils literal notranslate"><span class="pre">SimulationHandler</span></code></a> that handles parameter variations and switches between
 multiple configurations.</p>
-<p>The wrapper requires a simulation module, a single run python module, that should consists of three
-methods: <code class="docutils literal notranslate"><span class="pre">defaults</span></code>, <code class="docutils literal notranslate"><span class="pre">run</span></code> and <code class="docutils literal notranslate"><span class="pre">save</span></code>. This isn’t much different from a convention script, all that is
-done is that  the code is <cite>organized</cite>.
-The <code class="docutils literal notranslate"><span class="pre">defaults</span></code> method should return the default input parameters.
-The <code class="docutils literal notranslate"><span class="pre">run</span></code> method runs a single simulation and returns a dictionary containing the output object.
-The save method saves the output object based on the specified
-format in the YAML input file. See the <code class="docutils literal notranslate"><span class="pre">minimal</span></code> module below.</p>
 <div class="section" id="simulation-module">
 <h2>Simulation Module<a class="headerlink" href="#simulation-module" title="Permalink to this headline">¶</a></h2>
+<p>The wrapper requires a simulation module, - written as a single run python module, - that defines three
+methods: <code class="docutils literal notranslate"><span class="pre">defaults</span></code>, <code class="docutils literal notranslate"><span class="pre">run</span></code> and <code class="docutils literal notranslate"><span class="pre">save</span></code>. This isn’t much different from a convention script, all that is
+done is that  the code is <cite>organized</cite>. Specifically:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">defaults()</span></code> method should return the default input parameters.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">run()</span></code> method runs a single simulation and returns a dictionary containing the output object.</p></li>
+<li><p>The optional <code class="docutils literal notranslate"><span class="pre">save()</span></code> method saves the output object based on format specified
+by a YAML configuration file.</p></li>
+</ul>
+<p>The structure of a simulation module is illustrated by the following <em>minimal example</em>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Simulation module illustrating a minimal ctwrap example</span>
 <span class="sd">Note: the ``save`` method is skipped</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -68,7 +71,8 @@ format in the YAML input file. See the <code class="docutils literal notranslate
 
 <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">foo</span><span class="o">=.</span><span class="mi">2</span><span class="p">,</span> <span class="n">bar</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This method &#39;sleeps&#39; for the specified duration&quot;&quot;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    - `minimal`: sleeping for </span><span class="si">{}</span><span class="s1"> * </span><span class="si">{}</span><span class="s1"> = </span><span class="si">{}</span><span class="s1"> seconds ...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="n">foo</span> <span class="o">*</span> <span class="n">bar</span><span class="p">))</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    - `minimal`: sleeping for </span><span class="si">{}</span><span class="s1"> * </span><span class="si">{}</span><span class="s1"> = </span><span class="si">{}</span><span class="s1"> seconds ...&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="n">foo</span> <span class="o">*</span> <span class="n">bar</span><span class="p">))</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">foo</span> <span class="o">*</span> <span class="n">bar</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;sleep&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">foo</span> <span class="o">*</span> <span class="n">bar</span><span class="p">]}}</span>
 
@@ -79,30 +83,46 @@ format in the YAML input file. See the <code class="docutils literal notranslate
     <span class="n">out</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The inputs are passed through a YAML file. The yaml is structured into three parts: <code class="docutils literal notranslate"><span class="pre">output</span></code>,
-<code class="docutils literal notranslate"><span class="pre">variation</span></code> and <code class="docutils literal notranslate"><span class="pre">defaults</span></code>. The <code class="docutils literal notranslate"><span class="pre">output</span></code> contains information about the resulting file to be
-saved  such as the <code class="docutils literal notranslate"><span class="pre">file_name</span></code>, <code class="docutils literal notranslate"><span class="pre">path</span></code> etc. The <code class="docutils literal notranslate"><span class="pre">file_name</span></code> is optional, and in that case,
-the file is saved with the name of the module to be run. The <code class="docutils literal notranslate"><span class="pre">variation</span></code> contains <code class="docutils literal notranslate"><span class="pre">entry</span></code>
-and <code class="docutils literal notranslate"><span class="pre">values</span></code> to be varied, while the <code class="docutils literal notranslate"><span class="pre">defaults</span></code> contains the defaults input required to run
-the module. See the <code class="docutils literal notranslate"><span class="pre">minimal</span></code> yaml below.</p>
 </div>
 <div class="section" id="yaml-configuration">
 <h2>YAML Configuration<a class="headerlink" href="#yaml-configuration" title="Permalink to this headline">¶</a></h2>
+<p>The inputs are passed through a YAML configuration file. The YAML input has three main fields: <code class="docutils literal notranslate"><span class="pre">strategy</span></code>,
+<code class="docutils literal notranslate"><span class="pre">output</span></code>, and <code class="docutils literal notranslate"><span class="pre">defaults</span></code>.</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">strategy</span></code> contains information about the variation. At the moment
+<code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> supports <a class="reference internal" href="pages/strategy.html#ctwrap.strategy.Sequence" title="ctwrap.strategy.Sequence"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a> and <a class="reference internal" href="pages/strategy.html#ctwrap.strategy.Matrix" title="ctwrap.strategy.Matrix"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Matrix</span></code></a> specifications. The values
+can be specified as a list or alternatively using modes such as numpy
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html">arange</a> or
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace">linspace</a>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">output</span></code> contains information about the resulting file to be
+saved  such as the <code class="docutils literal notranslate"><span class="pre">file_name</span></code>, <code class="docutils literal notranslate"><span class="pre">path</span></code> etc. The <code class="docutils literal notranslate"><span class="pre">output</span></code> is optional, and in that case,
+the file is saved with the name of the module to be run.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">defaults</span></code> contains the defaults input required to run the simulation module.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> field indicates the minimum <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> revision that supports the YAML format</p></li>
+</ul>
+<p>The structure of a YAML configuration file is illustrated by the following <em>minimal example</em>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `minimal` simulation module (minimal.py)</span>
 <span class="c1"># file specifes a parameter variation of sleep duration</span>
 <span class="nt">strategy</span><span class="p">:</span>
   <span class="nt">sequence</span><span class="p">:</span> <span class="c1"># example for a batch sequence</span>
     <span class="nt">foo</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.1</span><span class="p p-Indicator">,</span> <span class="nv">0.2</span><span class="p p-Indicator">,</span> <span class="nv">0.3</span><span class="p p-Indicator">,</span> <span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.5</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.7</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">]</span>
   <span class="nt">matrix</span><span class="p">:</span> <span class="c1"># example for a batch matrix</span>
-    <span class="nt">foo</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.1</span><span class="p p-Indicator">,</span> <span class="nv">0.2</span><span class="p p-Indicator">,</span> <span class="nv">0.3</span><span class="p p-Indicator">]</span>
-    <span class="nt">bar</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">2</span><span class="p p-Indicator">]</span>
+    <span class="nt">foo</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">linspace</span> <span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.1</span><span class="p p-Indicator">,</span> <span class="nv">0.3</span><span class="p p-Indicator">],</span><span class="nt"> npoints</span><span class="p">:</span> <span class="nv">3</span> <span class="p p-Indicator">}</span>
+    <span class="nt">bar</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">arange</span><span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">-1</span><span class="p p-Indicator">],</span><span class="nt"> step</span><span class="p">:</span> <span class="nv">-1</span> <span class="p p-Indicator">}</span>
 <span class="nt">defaults</span><span class="p">:</span>
   <span class="nt">foo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
   <span class="nt">bar</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
 <span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2.0</span>
 </pre></div>
 </div>
-<p><em>Note</em>: <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> only saves in <cite>h5</cite> format.</p>
+</div>
+<div class="section" id="running-a-batch-job">
+<h2>Running a Batch Job<a class="headerlink" href="#running-a-batch-job" title="Permalink to this headline">¶</a></h2>
+<p>A parallel batch job for the minimal example using the configuration and the simulation
+module above can be run from the command line as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap minimal minimal.yaml --parallel
+</pre></div>
+</div>
 </div>
 </div>
 

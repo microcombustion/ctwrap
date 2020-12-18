@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-ctwrap - Python Wrapper for Batch Simulations
-=============================================
+ctwrap - Wrapper for Batch Simulations
+======================================
 
 Light-weight Python wrapper for batch simulation jobs (e.g. Cantera). The source
 code is available at the `ctwrap Github repositiory <https://github.com/microcombustion/ctwrap/>`_.

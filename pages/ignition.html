@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ignition Batch Simulation &#8212; ctwrap 0.2.0b documentation</title>
+    <title>Ignition Batch Simulation &#8212; ctwrap 0.2.0 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -190,6 +190,15 @@
     <span class="n">save</span><span class="p">(</span><span class="s1">&#39;ignition.h5&#39;</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="running-the-batch-simulation">
+<h2>Running the Batch Simulation<a class="headerlink" href="#running-the-batch-simulation" title="Permalink to this headline">¶</a></h2>
+<p>A parallel batch job for ignition calculations using the configuration and the simulation
+module above can be run as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap ignition ignition.yaml --parallel
+</pre></div>
+</div>
+<p>Results are written to a single file <code class="docutils literal notranslate"><span class="pre">ignition.h5</span></code>.</p>
 </div>
 </div>
 

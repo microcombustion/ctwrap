@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ctwrap Simulation &#8212; ctwrap 0.2.0b documentation</title>
+    <title>ctwrap Simulation &#8212; ctwrap 0.2.0 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -38,41 +38,34 @@
             
   <div class="section" id="module-ctwrap.simulation">
 <span id="ctwrap-simulation"></span><h1>ctwrap Simulation<a class="headerlink" href="#module-ctwrap.simulation" title="Permalink to this headline">¶</a></h1>
-<p>This module handles batch cantera simulations variations.
-Cantera based modules are pass to this module where they are run in batches.
+<p>This module handles batch cantera simulations variations.</p>
+<p>Cantera based modules are pass to this module where they are run in batches.
 see <a class="reference external" href="adiabatic_flame_example.ipynb">adiabatic flame example</a> or
 <a class="reference external" href="ignition_example.ipynb">ignition_example</a>.</p>
-<blockquote>
-<div><p><em>Note:</em> Other cantera simulations module can be used with this module provided they followed the
-format in <a class="reference external" href="minimal.py">minimal</a>.</p>
-</div></blockquote>
 <dl class="py class">
 <dt id="ctwrap.simulation.Simulation">
 <em class="property">class </em><code class="sig-prename descclassname">ctwrap.simulation.</code><code class="sig-name descname">Simulation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#Simulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.Simulation" title="Permalink to this definition">¶</a></dt>
-<dd><p>The Simulation class wraps modules into an object.
-Required module functions <code class="docutils literal notranslate"><span class="pre">run</span></code>, <code class="docutils literal notranslate"><span class="pre">save</span></code> and
-<code class="docutils literal notranslate"><span class="pre">defaults</span></code> are passed through</p>
+<dd><p>The Simulation class wraps simulation modules into a callable object.</p>
+<p>Simulation modules specify tasks to be run in a batch job; a simulation
+module needs to define methods <code class="docutils literal notranslate"><span class="pre">defaults</span></code> (default parameters),
+<code class="docutils literal notranslate"><span class="pre">run</span></code> (running of batch calculations) and <code class="docutils literal notranslate"><span class="pre">save</span></code> (saving output;
+optional).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="#ctwrap.simulation.Simulation" title="ctwrap.simulation.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a> objects should be instantiated using
-<a class="reference internal" href="#ctwrap.simulation.Simulation.from_module" title="ctwrap.simulation.Simulation.from_module"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_module()</span></code></a> method.</p>
+the <a class="reference internal" href="#ctwrap.simulation.Simulation.from_module" title="ctwrap.simulation.Simulation.from_module"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_module()</span></code></a> method.</p>
 </div>
 <dl class="py attribute">
 <dt id="ctwrap.simulation.Simulation.data">
 <code class="sig-name descname">data</code><a class="headerlink" href="#ctwrap.simulation.Simulation.data" title="Permalink to this definition">¶</a></dt>
-<dd><p>dictionary</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
+<dd><p>Dictionary containing simulation results.</p>
 </dd></dl>
 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>module</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – handle name or handle to module running the simulation</p></li>
-<li><p><strong>output</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – generated by <cite>SimulationHandler</cite></p></li>
+<li><p><strong>module</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Handle name or handle to module running the simulation</p></li>
+<li><p><strong>output</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Used by <a class="reference internal" href="#ctwrap.simulation.SimulationHandler" title="ctwrap.simulation.SimulationHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationHandler</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -93,7 +86,7 @@ Required module functions <code class="docutils literal notranslate"><span class
 <dd><p>Alternative constructor for <cite>Simulation</cite> object.</p>
 <p>The <a class="reference internal" href="#ctwrap.simulation.Simulation.from_module" title="ctwrap.simulation.Simulation.from_module"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_module()</span></code></a> method is intended as the main route for the creation of
 <cite>Simulation</cite> objects. For example:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># creates a simulation object with the simualtion module `minimal`</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># creates a simulation object with the simulation module `minimal`</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">ctwrap</span><span class="o">.</span><span class="n">Simulation</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">ctwrap</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">minimal</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -117,17 +110,16 @@ Required module functions <code class="docutils literal notranslate"><span class
 <p>This <a class="reference internal" href="#ctwrap.simulation.Simulation.run" title="ctwrap.simulation.Simulation.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> method is used to call the simulation module’s run method.
 If a simulation object <code class="docutils literal notranslate"><span class="pre">sim</span></code> was created with simulation module
 <code class="docutils literal notranslate"><span class="pre">minimal</span></code>, then calls this <a class="reference internal" href="#ctwrap.simulation.Simulation.run" title="ctwrap.simulation.Simulation.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> method calls <code class="docutils literal notranslate"><span class="pre">run</span></code> method in
-simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>. A simple usage example is</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># calls the run method in simulation module &#39;minimal`</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>. A simple usage example is:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>string</em>) – name of simulation run</p></li>
-<li><p><strong>config</strong> (<em>dict</em><em>, </em><em>optional</em>) – configuration</p></li>
-<li><p><strong>**kwargs</strong> (<em>optional</em>) – depends on implementation of __init__</p></li>
+<li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Name of simulation run</p></li>
+<li><p><strong>config</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Configuration used for simulation</p></li>
+<li><p><strong>**kwargs</strong> – Optional parameters passed to the job</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -156,6 +148,14 @@ instantiated using the <a class="reference internal" href="#ctwrap.simulation.Si
   <span class="nt">sleep</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
 </pre></div>
 </div>
+<p>If a <code class="xref py py-class docutils literal notranslate"><span class="pre">simulationHandler</span></code> object was created from <code class="docutils literal notranslate"><span class="pre">test_module.yaml</span></code>.
+To run a single task using <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_task" title="ctwrap.simulation.SimulationHandler.run_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_task()</span></code></a> method or batch simulations
+in series <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_serial" title="ctwrap.simulation.SimulationHandler.run_serial"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_serial()</span></code></a> method or parallel <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_parallel" title="ctwrap.simulation.SimulationHandler.run_parallel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_parallel()</span></code></a> method
+using a simulation object created using simulation module <code class="docutils literal notranslate"><span class="pre">test_module</span></code>,
+each run method calls the <code class="docutils literal notranslate"><span class="pre">run</span></code> method in
+simulation module <code class="docutils literal notranslate"><span class="pre">test_module</span></code>, saves the resulting output using
+the <code class="docutils literal notranslate"><span class="pre">save</span></code>  method in simulation module <code class="docutils literal notranslate"><span class="pre">test_module</span></code> and also
+saves the <cite>metatada</cite>.</p>
 <dl class="py attribute">
 <dt id="ctwrap.simulation.SimulationHandler.verbosity">
 <code class="sig-name descname">verbosity</code><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.verbosity" title="Permalink to this definition">¶</a></dt>
@@ -217,7 +217,9 @@ instantiated using the <a class="reference internal" href="#ctwrap.simulation.Si
 <dd><p>Alternate constructor using YAML file as input.</p>
 <p>The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.from_yaml" title="ctwrap.simulation.SimulationHandler.from_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_yaml()</span></code></a> method is intended as the main route for the creation of
 <cite>SimulationHandler</cite> objects.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">sh</span> <span class="o">=</span> <span class="n">ctwrap</span><span class="o">.</span><span class="n">SimulationHandler</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s1">&#39;minimal.yaml&#39;</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;sequence&#39;</span><span class="p">)</span>
+<p>For example, a <a class="reference internal" href="#ctwrap.simulation.SimulationHandler" title="ctwrap.simulation.SimulationHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationHandler</span></code></a> object can be created from a configuration file
+<cite>test_module.yaml</cite> to run a strategy <cite>sequence</cite> as shown below.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">sh</span> <span class="o">=</span> <span class="n">ctwrap</span><span class="o">.</span><span class="n">SimulationHandler</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s1">&#39;test_module.yaml&#39;</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;sequence&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -243,23 +245,15 @@ instantiated using the <a class="reference internal" href="#ctwrap.simulation.Si
 <dt id="ctwrap.simulation.SimulationHandler.run_parallel">
 <code class="sig-name descname">run_parallel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">number_of_processes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbosity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.run_parallel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.run_parallel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run variation using multiprocessing.</p>
-<p>The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_parallel" title="ctwrap.simulation.SimulationHandler.run_parallel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_parallel()</span></code></a> method runs all the variations in the input
+<p>The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_parallel" title="ctwrap.simulation.SimulationHandler.run_parallel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_parallel()</span></code></a> method runs all the strategy entries in the input
 file in parallel using
 <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html">python multiprocessing</a>.
-A minimal example is:</p>
-<p>If a simulationHandler object <code class="docutils literal notranslate"><span class="pre">sh</span></code> was created from <code class="docutils literal notranslate"><span class="pre">minimal.yaml</span></code>.
-The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_parallel" title="ctwrap.simulation.SimulationHandler.run_parallel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_parallel()</span></code></a> method takes <code class="docutils literal notranslate"><span class="pre">sim</span></code>, a simulation object created using
-simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>. The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_parallel" title="ctwrap.simulation.SimulationHandler.run_parallel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_parallel()</span></code></a> method
-runs all the variations in minimal configuration file calling the <code class="docutils literal notranslate"><span class="pre">run</span></code>
-method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>,  save the resulting output using the
-<code class="docutils literal notranslate"><span class="pre">save</span></code>  method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code> in parallel and finally
-save the <cite>metatada</cite> using <code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code> method.</p>
-<blockquote>
-<div><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Runs all the variations in parallel</span>
-    <span class="n">sh</span><span class="o">.</span><span class="n">run_parallel</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+and also saves metadata.
+A simple usage is:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Runs all the variations in parallel</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">run_parallel</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
 </pre></div>
 </div>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -282,15 +276,8 @@ save the <cite>metatada</cite> using <code class="xref py py-func docutils liter
 <dt id="ctwrap.simulation.SimulationHandler.run_serial">
 <code class="sig-name descname">run_serial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">verbosity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/simulation.html#SimulationHandler.run_serial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.simulation.SimulationHandler.run_serial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run variation in series.</p>
-<p>The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_serial" title="ctwrap.simulation.SimulationHandler.run_serial"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_serial()</span></code></a> method runs all the variations in the input
-file serially. A simple usage example is:</p>
-<p>If a simulationHandler object <code class="docutils literal notranslate"><span class="pre">sh</span></code> was created from <code class="docutils literal notranslate"><span class="pre">minimal.yaml</span></code>.
-This <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_serial" title="ctwrap.simulation.SimulationHandler.run_serial"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_serial()</span></code></a> method takes <code class="docutils literal notranslate"><span class="pre">sim</span></code>, a simulation object created using
-simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>. This <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_serial" title="ctwrap.simulation.SimulationHandler.run_serial"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_serial()</span></code></a> method
-runs all the variations in minimal configuration file calling the <code class="docutils literal notranslate"><span class="pre">run</span></code>
-method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>,  save the resulting output using the
-<code class="docutils literal notranslate"><span class="pre">save</span></code>  method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code> serially and finally
-save the <cite>metatada</cite> using <code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code> method.</p>
+<p>The <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_serial" title="ctwrap.simulation.SimulationHandler.run_serial"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_serial()</span></code></a> method runs all the strategy entries in the input
+file in serial and also saves metadata. A simple usage example is:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Runs all the variations serially</span>
 <span class="n">sh</span><span class="o">.</span><span class="n">run_serial</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
 </pre></div>
@@ -320,13 +307,6 @@ save the <cite>metatada</cite> using <code class="xref py py-func docutils liter
 save the resulting output object and also afterwards calls
 <code class="xref py py-func docutils literal notranslate"><span class="pre">_save_metadata()</span></code> to save metadata.
 A simple usage example is:</p>
-<p>If a simulationHandler object <code class="docutils literal notranslate"><span class="pre">sh</span></code> was created from <code class="docutils literal notranslate"><span class="pre">minimal.yaml</span></code>.
-This <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_task" title="ctwrap.simulation.SimulationHandler.run_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_task()</span></code></a> method takes <code class="docutils literal notranslate"><span class="pre">sim</span></code>, a simulation object created using
-simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>, and a task see <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.tasks" title="ctwrap.simulation.SimulationHandler.tasks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">tasks()</span></code></a> method.
-This <a class="reference internal" href="#ctwrap.simulation.SimulationHandler.run_task" title="ctwrap.simulation.SimulationHandler.run_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_task()</span></code></a> method runs the task calling the <code class="docutils literal notranslate"><span class="pre">run</span></code> method in
-simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code>, save the resulting output using
-the <code class="docutils literal notranslate"><span class="pre">save</span></code>  method in simulation module <code class="docutils literal notranslate"><span class="pre">minimal</span></code> and finally
-save the <cite>metatada</cite> using <code class="xref py py-func docutils literal notranslate"><span class="pre">save_metadata()</span></code> method.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Runs the task `sleep_0.4` using `sim` object</span>
 <span class="n">sh</span><span class="o">.</span><span class="n">run_task</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="s1">&#39;sleep_0.4&#39;</span> <span class="p">)</span>
 </pre></div>

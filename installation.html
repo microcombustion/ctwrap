@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Installation &#8212; ctwrap 0.2.0b documentation</title>
+    <title>Installation &#8212; ctwrap 0.2.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Overview" href="overview.html" />
-    <link rel="prev" title="ctwrap - Python Wrapper for Batch Simulations" href="index.html" />
+    <link rel="prev" title="ctwrap - Wrapper for Batch Simulations" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -39,10 +39,46 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="clone-install-repository">
-<h2>clone/Install Repository<a class="headerlink" href="#clone-install-repository" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="installing-ctwrap">
+<h2>Installing ctwrap<a class="headerlink" href="#installing-ctwrap" title="Permalink to this headline">¶</a></h2>
+<p>To install ctwrap, we strongly recommend using a <code class="docutils literal notranslate"><span class="pre">conda</span></code> (anaconda or miniconda) environment.
+Dependencies for a fully functional environment are listed in the <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> file in
+the root folder of the repository.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ctwrap conda package dependencies</span>
+<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ctwrap</span>
+<span class="nt">channels</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">conda-forge</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cantera/label/dev</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">defaults</span>
+<span class="nt">dependencies</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">python=3.7</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">numpy</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">h5py</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pint</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ruamel.yaml</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cantera</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">setuptools</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pytest</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pytest-cov</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">coverage</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ipython</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">jupyter</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">matplotlib</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="conda-environment">
+<h2>Conda environment<a class="headerlink" href="#conda-environment" title="Permalink to this headline">¶</a></h2>
+<p>To install, provide the <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> configuration to <code class="docutils literal notranslate"><span class="pre">conda</span></code>, i.e.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda env create -f environment.yml
+$ conda activate ctwrap
+</pre></div>
+</div>
+</div>
+<div class="section" id="clone-repository-and-install">
+<h2>Clone Repository and Install<a class="headerlink" href="#clone-repository-and-install" title="Permalink to this headline">¶</a></h2>
 <p>The following uses <code class="docutils literal notranslate"><span class="pre">pip</span></code> to install <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> within your
-python environment (e.g. Anaconda).:</p>
+python environment (e.g. Anaconda).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/microcombustion/ctwrap.git
 $ cd ctwrap
 $ pip install .
@@ -52,7 +88,7 @@ $ pip install .
 </div>
 <div class="section" id="update">
 <h2>Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
-<p>Within the <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> source folder, run:</p>
+<p>Within the <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> source folder, run</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git pull
 $ python setup.py develop
 </pre></div>
@@ -96,7 +132,7 @@ $ python setup.py develop
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">ctwrap - Python Wrapper for Batch Simulations</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">ctwrap - Wrapper for Batch Simulations</a></li>
       <li>Next: <a href="overview.html" title="next chapter">Overview</a></li>
   </ul></li>
 </ul>

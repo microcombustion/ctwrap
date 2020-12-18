@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Adiabatic Flame Batch &#8212; ctwrap 0.2.0b documentation</title>
+    <title>Adiabatic Flame Batch &#8212; ctwrap 0.2.0 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -45,7 +45,7 @@
 <span class="c1"># file specifies a parameter variation of the equivalence ratio</span>
 <span class="nt">strategy</span><span class="p">:</span>
   <span class="nt">sequence</span><span class="p">:</span>
-    <span class="nt">upstream.phi</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">,</span> <span class="nv">2.0</span><span class="p p-Indicator">,</span> <span class="nv">2.2</span><span class="p p-Indicator">,</span> <span class="nv">2.4</span><span class="p p-Indicator">,</span> <span class="nv">2.6</span><span class="p p-Indicator">]</span>
+    <span class="nt">upstream.phi</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">linspace</span><span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">2.6</span><span class="p p-Indicator">],</span><span class="nt"> npoints</span><span class="p">:</span> <span class="nv">12</span> <span class="p p-Indicator">}</span>
 <span class="nt">output</span><span class="p">:</span>
   <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
   <span class="nt">force_overwrite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
@@ -205,6 +205,15 @@
     <span class="n">save</span><span class="p">(</span><span class="s1">&#39;adiabatic_flame.h5&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="running-the-batch-simulation">
+<h2>Running the Batch Simulation<a class="headerlink" href="#running-the-batch-simulation" title="Permalink to this headline">¶</a></h2>
+<p>A parallel batch job for adiabatic flame calculations using the
+configuration and the simulation module above can be run as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap adiabatic_flame adiabatic_flame.yaml --parallel
+</pre></div>
+</div>
+<p>Results are written to a single file <code class="docutils literal notranslate"><span class="pre">adiabatic_flame.h5</span></code>.</p>
 </div>
 </div>
 

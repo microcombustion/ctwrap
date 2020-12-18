@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ctwrap - Python Wrapper for Batch Simulations &#8212; ctwrap 0.2.0b documentation</title>
+    <title>ctwrap - Wrapper for Batch Simulations &#8212; ctwrap 0.2.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -36,8 +36,8 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="ctwrap-python-wrapper-for-batch-simulations">
-<h1>ctwrap - Python Wrapper for Batch Simulations<a class="headerlink" href="#ctwrap-python-wrapper-for-batch-simulations" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="ctwrap-wrapper-for-batch-simulations">
+<h1>ctwrap - Wrapper for Batch Simulations<a class="headerlink" href="#ctwrap-wrapper-for-batch-simulations" title="Permalink to this headline">¶</a></h1>
 <p>Light-weight Python wrapper for batch simulation jobs (e.g. Cantera). The source
 code is available at the <a class="reference external" href="https://github.com/microcombustion/ctwrap/">ctwrap Github repositiory</a>.</p>
 <div class="section" id="table-of-contents">
@@ -56,18 +56,17 @@ code is available at the <a class="reference external" href="https://github.com/
 <div class="section" id="ctwrap">
 <h3>ctwrap<a class="headerlink" href="#ctwrap" title="Permalink to this headline">¶</a></h3>
 <p>Light-weight Python wrapper for batch simulation jobs (e.g. Cantera).</p>
-</div>
-</div>
 <div class="section" id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<h4>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="https://microcombustion.github.io/ctwrap/">Sphinx documentation</a> includes:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://microcombustion.github.io/ctwrap/">Sphinx documentation</a></p></li>
-<li><p><a class="reference external" href="pages/jupyter.html">jupyter notebooks</a>. An overview is given
-by a <a class="reference external" href="pages/minimal_example.ipynb">minimal example</a>.</p></li>
+<li><p>A brief summary (<a class="reference external" href="overview.html">Overview</a>),</p></li>
+<li><p>Typical batch simulation descriptions (<a class="reference external" href="pages/batch.html">Batch Jobs</a>), and</p></li>
+<li><p><a class="reference external" href="examples/jupyter.html">Jupyter Notebooks</a> with illustrated examples.</p></li>
 </ul>
 </div>
 <div class="section" id="philosophy">
-<h2>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h2>
+<h4>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h4>
 <p>The code was developed with the following objectives in mind. It should:</p>
 <ul class="simple">
 <li><p>create a flexible framework for generic simulations</p></li>
@@ -78,18 +77,35 @@ by a <a class="reference external" href="pages/minimal_example.ipynb">minimal ex
 <li><p>enable parallel execution of (single-threaded) simulations (via <cite>multiprocessing</cite>)</p></li>
 <li><p>enable simple re-import of simulation results into native Cantera objects</p></li>
 </ul>
-<p><em>Example:</em> a parallel batch job for adiabatic flame calculations uses the simulation module
-<a class="reference external" href="pages/adiabatic_flame.py">adiabatic_flame</a>
-(modified from Cantera’s
-<a class="reference external" href="https://github.com/Cantera/cantera/blob/master/interfaces/cython/cantera/examples/onedim/adiabatic_flame.py">adiabatic_flame example</a>) with parameters defined in <a class="reference external" href="pages/adiabatic_flame.yaml">adiabatic_flame.yaml</a>
+</div>
+<div class="section" id="usage">
+<h4>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h4>
+<p>A parallel batch job for adiabatic flame calculations with parameter variations
 (for this example, a variation of equivalence ratio with 12 cases).
+See <a class="reference external" href="pages/adiabatic_flame.html">adiabatic_flame</a>
+(modified from Cantera’s
+<a class="reference external" href="https://github.com/Cantera/cantera/blob/master/interfaces/cython/cantera/examples/onedim/adiabatic_flame.py">adiabatic_flame example</a>). The configuration file consists three parts,
+<code class="docutils literal notranslate"><span class="pre">strategy</span></code> which contains parameter variation information, <code class="docutils literal notranslate"><span class="pre">output</span></code> which contains the
+output file information and <code class="docutils literal notranslate"><span class="pre">defaults</span></code> which contains the default input parameters needed
+to run the simulation module.
 This can be run as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap adiabatic_flame adiabatic_flame.yaml --parallel
 </pre></div>
 </div>
 <p>Results are written to a single file <code class="docutils literal notranslate"><span class="pre">adiabatic_flame.h5</span></code>.</p>
-<p><em>Note:</em> the wrapper itself does not depend on a Cantera installation; only the
+<p>A batch job for a simulation module <code class="docutils literal notranslate"><span class="pre">some_simulation.py</span></code> with
+configuration file <code class="docutils literal notranslate"><span class="pre">batch_configuration.yaml</span></code> can be run by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap some_simulation.py batch_configuration.yaml --parallel
+</pre></div>
+</div>
+<p>Results are written to a single file <code class="docutils literal notranslate"><span class="pre">some_simulation.h5</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the wrapper itself does not depend on a Cantera installation; only the
 simulation modules do.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 
