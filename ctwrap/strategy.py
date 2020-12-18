@@ -102,17 +102,6 @@ def _parse_mode(strat_dict):
         strat_limits = strat_val['limits']
         strat_max = strat_limits[1]
         strat_min = strat_limits[0]
-        strat_rev = strat_val.get('reverse', False)
-
-        if strat_min > strat_max and strat_rev is True:
-            strat_min, strat_max = strat_max, strat_min
-
-        if strat_min > strat_max and strat_rev is False:
-            msg = ("{} entry minimum is larger than maximum: use "
-                   "keyword 'reverse' instead").format(key)
-            warnings.warn(msg, UserWarning)
-            strat_min, strat_max = strat_max, strat_min
-            strat_rev = True
 
         if "mode" not in strat_val:
             msg = "The required field 'mode' (strategy specification mode) is missing"
