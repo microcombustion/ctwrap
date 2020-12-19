@@ -3,14 +3,15 @@ ctwrap API Reference
 ********************
 
 This reference manual details functions, modules, and objects included in
-`ctwrap`.
+``ctwrap``.
 
 .. toctree::
    :maxdepth: 1
 
+        Handler Module <handler.rst>
         Parser Module <parser.rst>
         Strategy Module <strategy.rst>
-        Simulation Module <simulation.rst>
+        Wrapper Module <wrapper.rst>
 
 **See also:**
 

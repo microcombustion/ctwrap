@@ -18,7 +18,6 @@ Table of Contents
 
       Installation <installation.rst>
       Overview <overview.rst>
-      Contributing <contributing.rst>
       Batch Jobs <pages/batch.rst>
       Jupyter Notebooks <examples/jupyter.rst>
       API Reference <pages/api.rst>
