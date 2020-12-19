@@ -36,19 +36,31 @@ jobs:
         run: pytest
 
   sphinx-docs:
-  # https://github.com/marketplace/actions/sphinx-build
     name: Check sphinx docs on Linux
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-latest"
+    defaults:
+      run:
+        shell: bash -l {0}
     steps:
-    #- uses: technote-space/auto-cancel-redundant-workflow@v1
     - uses: actions/checkout@v2
-    - uses: ammaraskar/sphinx-action@master
+    - uses: conda-incubator/setup-miniconda@v2
       with:
-        #build-command: "sphinx-build -b html . _build"
-        pre-build-command: "apt-get update -y && apt-get install -y pandoc"
-        docs-folder: "docs/"
-    # Create an artifact of the html output.
-    - uses: actions/upload-artifact@v2
+        python-version: 3.7
+        mamba-version: "*"
+        channels: conda-forge,cantera/label/dev,defaults
+        channel-priority: true
+        activate-environment: ctwrap
+        environment-file: environment.yml
+    - name: Install ctwrap
+      run: |
+        pip install -e .
+    - name: Install Sphinx dependencies
+      run: |
+        cd docs
+        pip install -r requirements.txt
+        sphinx-build -b html . _build
+    - name: Create artifact of the html output
+      uses: actions/upload-artifact@v2
       with:
         name: DocumentationHTML
-        path: docs/_build/html/
+        path: docs/_build/

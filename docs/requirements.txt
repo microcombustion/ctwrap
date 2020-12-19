@@ -3,4 +3,3 @@ sphinx-autodoc-typehints
 sphinx-argparse
 ipywidgets
 nbsphinx
--e .
