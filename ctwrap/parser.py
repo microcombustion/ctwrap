@@ -1,4 +1,61 @@
-"""Parser module."""
+"""Parser module.
+
+The parser module defines a convenience object :class:`Parser`, which is to support
+dimensions via ``pint`` for easy access to underlying data.
+
+The following illustration assumes configuration data stored using YAML syntax
+in a file ``config.yaml`` with content:
+
+.. code-block:: YAML
+
+   defaults:
+     upstream:
+       T: 300. kelvin # temperature
+       P: 1. atmosphere # pressure
+       phi: .55 # equivalence ratio
+       fuel: H2
+       oxidizer: O2:1,AR:5
+     chemistry:
+       mechanism: h2o2.yaml
+     domain:
+       width: 30 millimeter # domain width
+
+A :class:`Parser` object can be created via the class-method :meth:`from.yaml`,
+which acts much like a dictionary that also includes access via attributes:
+
+.. code-block:: Python
+
+   defaults = Parser.from_yaml('config.yaml')
+   keys = default.keys() # returns 'upstream', 'chemistry', 'domain'
+   upstream = defaults.upstream # Parser containing 'upstream'
+
+If dimensions are defined, entries are accessible as ``pint.quantity`` objects:
+
+.. code-block:: Python
+
+   defaults.upstream.P # returns "1.0 standard_atmosphere" (pint)
+   upstream.P # equivalent
+   upstream['P'] # equivalent
+   upstream.P.to('pascal') # returns "101325.0 pascal" (pint)
+   upstream.P.m_as('pascal') # returns 101325.0 (float)
+
+If no dimensions are defined, entries are accessed as conventional dictionaries entries:
+
+.. code-block:: Python
+
+   upstream.phi # returns 0.55 (float)
+   upstream.oxidizer # returns 'O2:1,AR:5' (str)
+
+Underlying dictionaries and/or data are accessed via the ``raw`` attribute, i.e.
+
+.. code-block:: Python
+
+   defaults.raw # returns dictionary corresponding to original YAML
+   defaults.raw['upstream']['P'] # returns '1. atmosphere' (str)
+   defaults.upstream.raw['P'] # equivalent
+   upstream.raw['P'] # equivalent
+   upstream.raw['oxidizer'] # returns 'O2:1,AR:5' (str)
+"""
 from pathlib import Path
 from typing import Optional, Dict, Any, Tuple, KeysView, Generator, Union
 from copy import deepcopy
