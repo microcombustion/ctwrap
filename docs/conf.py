@@ -81,6 +81,7 @@ html_theme_options = {
     'github_repo': 'ctwrap',
     'github_banner': True,
     'github_button': True,
+    'github_type': 'star',
     'show_powered_by': True,
 }
 
@@ -93,7 +94,3 @@ html_static_path = ['_static']
 nbsphinx_execute_arguments = [
     "--InlineBackend.figure_formats={'svg'}",
 ]
-
-# Notebooks are disabled from executing since Sphinx cannot install
-# cantera necessary to run the examples
-nbsphinx_execute = 'never'
