@@ -1,7 +1,9 @@
-"""Parser module.
+"""The :mod:`parser` module defines a convenience object :class:`Parser`, which
+supports dimensions via ``pint`` for easy access to data defined in YAML
+configuration files within ``ctwrap`` simulation modules.
 
-The parser module defines a convenience object :class:`Parser`, which is to support
-dimensions via ``pint`` for easy access to underlying data.
+Usage
++++++
 
 The following illustration assumes configuration data stored using YAML syntax
 in a file ``config.yaml`` with content:
@@ -55,6 +57,9 @@ Underlying dictionaries and/or data are accessed via the ``raw`` attribute, i.e.
    defaults.upstream.raw['P'] # equivalent
    upstream.raw['P'] # equivalent
    upstream.raw['oxidizer'] # returns 'O2:1,AR:5' (str)
+
+Class Definition
+++++++++++++++++
 """
 from pathlib import Path
 from typing import Optional, Dict, Any, Tuple, KeysView, Generator, Union
