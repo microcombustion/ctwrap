@@ -56,6 +56,7 @@ suppress_warnings = [
 ]
 
 autodoc_default_flags = ['members', 'no-undoc-members'] # 'show-inheritance',
+autodoc_member_order = 'bysource' # 'groupwise', 'alphabetical'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
