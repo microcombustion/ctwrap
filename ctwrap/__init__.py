@@ -1,5 +1,6 @@
 """Package exports."""
-from .simulation import Simulation, SimulationHandler
+from .wrapper import Simulation
+from .handler import SimulationHandler
 from .parser import Parser
 from .strategy import Strategy, Sequence, Matrix, Sobol
 from . import modules
