@@ -14,9 +14,6 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="ctwrap Strategy" href="strategy.html" />
@@ -40,6 +37,51 @@
   <div class="section" id="module-ctwrap.parser">
 <span id="ctwrap-parser"></span><h1>ctwrap Parser<a class="headerlink" href="#module-ctwrap.parser" title="Permalink to this headline">¶</a></h1>
 <p>Parser module.</p>
+<p>The parser module defines a convenience object <a class="reference internal" href="#ctwrap.parser.Parser" title="ctwrap.parser.Parser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a>, which is to support
+dimensions via <code class="docutils literal notranslate"><span class="pre">pint</span></code> for easy access to underlying data.</p>
+<p>The following illustration assumes configuration data stored using YAML syntax
+in a file <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> with content:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">defaults</span><span class="p">:</span>
+  <span class="nt">upstream</span><span class="p">:</span>
+    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300. kelvin</span> <span class="c1"># temperature</span>
+    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1. atmosphere</span> <span class="c1"># pressure</span>
+    <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.55</span> <span class="c1"># equivalence ratio</span>
+    <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">H2</span>
+    <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1,AR:5</span>
+  <span class="nt">chemistry</span><span class="p">:</span>
+    <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
+  <span class="nt">domain</span><span class="p">:</span>
+    <span class="nt">width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30 millimeter</span> <span class="c1"># domain width</span>
+</pre></div>
+</div>
+<p>A <a class="reference internal" href="#ctwrap.parser.Parser" title="ctwrap.parser.Parser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a> object can be created via the class-method <code class="xref py py-meth docutils literal notranslate"><span class="pre">from.yaml()</span></code>,
+which acts much like a dictionary that also includes access via attributes:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="o">=</span> <span class="n">Parser</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s1">&#39;config.yaml&#39;</span><span class="p">)</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="n">default</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="c1"># returns &#39;upstream&#39;, &#39;chemistry&#39;, &#39;domain&#39;</span>
+<span class="n">upstream</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">upstream</span> <span class="c1"># Parser containing &#39;upstream&#39;</span>
+</pre></div>
+</div>
+<p>If dimensions are defined, entries are accessible as <code class="docutils literal notranslate"><span class="pre">pint.quantity</span></code> objects:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span><span class="o">.</span><span class="n">upstream</span><span class="o">.</span><span class="n">P</span> <span class="c1"># returns &quot;1.0 standard_atmosphere&quot; (pint)</span>
+<span class="n">upstream</span><span class="o">.</span><span class="n">P</span> <span class="c1"># equivalent</span>
+<span class="n">upstream</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span> <span class="c1"># equivalent</span>
+<span class="n">upstream</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;pascal&#39;</span><span class="p">)</span> <span class="c1"># returns &quot;101325.0 pascal&quot; (pint)</span>
+<span class="n">upstream</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;pascal&#39;</span><span class="p">)</span> <span class="c1"># returns 101325.0 (float)</span>
+</pre></div>
+</div>
+<p>If no dimensions are defined, entries are accessed as conventional dictionaries entries:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">upstream</span><span class="o">.</span><span class="n">phi</span> <span class="c1"># returns 0.55 (float)</span>
+<span class="n">upstream</span><span class="o">.</span><span class="n">oxidizer</span> <span class="c1"># returns &#39;O2:1,AR:5&#39; (str)</span>
+</pre></div>
+</div>
+<p>Underlying dictionaries and/or data are accessed via the <code class="docutils literal notranslate"><span class="pre">raw</span></code> attribute, i.e.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span><span class="o">.</span><span class="n">raw</span> <span class="c1"># returns dictionary corresponding to original YAML</span>
+<span class="n">defaults</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s1">&#39;upstream&#39;</span><span class="p">][</span><span class="s1">&#39;P&#39;</span><span class="p">]</span> <span class="c1"># returns &#39;1. atmosphere&#39; (str)</span>
+<span class="n">defaults</span><span class="o">.</span><span class="n">upstream</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span> <span class="c1"># equivalent</span>
+<span class="n">upstream</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span> <span class="c1"># equivalent</span>
+<span class="n">upstream</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s1">&#39;oxidizer&#39;</span><span class="p">]</span> <span class="c1"># returns &#39;O2:1,AR:5&#39; (str)</span>
+</pre></div>
+</div>
 <dl class="py class">
 <dt id="ctwrap.parser.Parser">
 <em class="property">class </em><code class="sig-prename descclassname">ctwrap.parser.</code><code class="sig-name descname">Parser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/parser.html#Parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.parser.Parser" title="Permalink to this definition">¶</a></dt>
@@ -123,7 +165,7 @@ keyed values via attributes.</p>
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=watch&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=star&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 

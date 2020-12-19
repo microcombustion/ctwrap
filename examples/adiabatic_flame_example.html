@@ -14,13 +14,10 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Ignition Example" href="ignition_example.html" />
-    <link rel="prev" title="Parser Example" href="parser_example.html" />
+    <link rel="prev" title="Jupyter Notebooks" href="jupyter.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -323,7 +320,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.simulation.AdiabaticFlame at 0x1e751beab88&gt;
+&lt;ctwrap.simulation.AdiabaticFlame at 0x7fd05b1efad0&gt;
 </pre></div></div>
 </div>
 </div>
@@ -354,7 +351,7 @@ Simulations for entry `upstream.phi` with values: [0.4, 0.6000000000000001, 0.8,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.simulation.SimulationHandler at 0x1e74ed44f48&gt;
+&lt;ctwrap.simulation.SimulationHandler at 0x7fd05b5019d0&gt;
 </pre></div></div>
 </div>
 </div>
@@ -375,7 +372,32 @@ Simulations for entry `upstream.phi` with values: [0.4, 0.6000000000000001, 0.8,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Wall time: 4.96 s
+    output_00: mixture-averaged flamespeed = 0.201060 m/s
+    output_00: multi-component flamespeed  = 0.215240 m/s
+    output_01: mixture-averaged flamespeed = 0.924044 m/s
+    output_01: multi-component flamespeed  = 0.934298 m/s
+    output_02: mixture-averaged flamespeed = 1.735115 m/s
+    output_02: multi-component flamespeed  = 1.720494 m/s
+    output_03: mixture-averaged flamespeed = 2.321981 m/s
+    output_03: multi-component flamespeed  = 2.289830 m/s
+    output_04: mixture-averaged flamespeed = 2.716008 m/s
+    output_04: multi-component flamespeed  = 2.671847 m/s
+    output_05: mixture-averaged flamespeed = 2.951058 m/s
+    output_05: multi-component flamespeed  = 2.899538 m/s
+    output_06: mixture-averaged flamespeed = 3.051440 m/s
+    output_06: multi-component flamespeed  = 2.997036 m/s
+    output_07: mixture-averaged flamespeed = 3.045362 m/s
+    output_07: multi-component flamespeed  = 2.992064 m/s
+    output_08: mixture-averaged flamespeed = 2.973848 m/s
+    output_08: multi-component flamespeed  = 2.924855 m/s
+    output_09: mixture-averaged flamespeed = 2.860112 m/s
+    output_09: multi-component flamespeed  = 2.817618 m/s
+    output_10: mixture-averaged flamespeed = 2.726691 m/s
+    output_10: multi-component flamespeed  = 2.691153 m/s
+    output_11: mixture-averaged flamespeed = 2.586446 m/s
+    output_11: multi-component flamespeed  = 2.558387 m/s
+CPU times: user 15.5 ms, sys: 38.4 ms, total: 53.9 ms
+Wall time: 12.3 s
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -626,8 +648,7 @@ dict_keys([&#39;output_00_mix&#39;, &#39;output_01_mix&#39;, &#39;output_02_mix&
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_adiabatic_flame_example_23_0.png" src="../_images/examples_adiabatic_flame_example_23_0.png" />
-</div>
+<img alt="../_images/examples_adiabatic_flame_example_23_0.svg" src="../_images/examples_adiabatic_flame_example_23_0.svg" /></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
@@ -693,8 +714,7 @@ dict_keys([&#39;output_00_mix&#39;, &#39;output_01_mix&#39;, &#39;output_02_mix&
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_adiabatic_flame_example_25_0.png" src="../_images/examples_adiabatic_flame_example_25_0.png" />
-</div>
+<img alt="../_images/examples_adiabatic_flame_example_25_0.svg" src="../_images/examples_adiabatic_flame_example_25_0.svg" /></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -724,7 +744,7 @@ dict_keys([&#39;output_00_mix&#39;, &#39;output_01_mix&#39;, &#39;output_02_mix&
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=watch&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=star&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
@@ -747,7 +767,7 @@ dict_keys([&#39;output_00_mix&#39;, &#39;output_01_mix&#39;, &#39;output_02_mix&
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="jupyter.html">Jupyter Notebooks</a><ul>
-      <li>Previous: <a href="parser_example.html" title="previous chapter">Parser Example</a></li>
+      <li>Previous: <a href="jupyter.html" title="previous chapter">Jupyter Notebooks</a></li>
       <li>Next: <a href="ignition_example.html" title="next chapter">Ignition Example</a></li>
   </ul></li>
   </ul></li>

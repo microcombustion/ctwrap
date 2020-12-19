@@ -14,9 +14,6 @@
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -36,7 +33,64 @@
           <div class="body" role="main">
             
   <h1>Source code for ctwrap.parser</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Parser module.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Parser module.</span>
+
+<span class="sd">The parser module defines a convenience object :class:`Parser`, which is to support</span>
+<span class="sd">dimensions via ``pint`` for easy access to underlying data.</span>
+
+<span class="sd">The following illustration assumes configuration data stored using YAML syntax</span>
+<span class="sd">in a file ``config.yaml`` with content:</span>
+
+<span class="sd">.. code-block:: YAML</span>
+
+<span class="sd">   defaults:</span>
+<span class="sd">     upstream:</span>
+<span class="sd">       T: 300. kelvin # temperature</span>
+<span class="sd">       P: 1. atmosphere # pressure</span>
+<span class="sd">       phi: .55 # equivalence ratio</span>
+<span class="sd">       fuel: H2</span>
+<span class="sd">       oxidizer: O2:1,AR:5</span>
+<span class="sd">     chemistry:</span>
+<span class="sd">       mechanism: h2o2.yaml</span>
+<span class="sd">     domain:</span>
+<span class="sd">       width: 30 millimeter # domain width</span>
+
+<span class="sd">A :class:`Parser` object can be created via the class-method :meth:`from.yaml`,</span>
+<span class="sd">which acts much like a dictionary that also includes access via attributes:</span>
+
+<span class="sd">.. code-block:: Python</span>
+
+<span class="sd">   defaults = Parser.from_yaml(&#39;config.yaml&#39;)</span>
+<span class="sd">   keys = default.keys() # returns &#39;upstream&#39;, &#39;chemistry&#39;, &#39;domain&#39;</span>
+<span class="sd">   upstream = defaults.upstream # Parser containing &#39;upstream&#39;</span>
+
+<span class="sd">If dimensions are defined, entries are accessible as ``pint.quantity`` objects:</span>
+
+<span class="sd">.. code-block:: Python</span>
+
+<span class="sd">   defaults.upstream.P # returns &quot;1.0 standard_atmosphere&quot; (pint)</span>
+<span class="sd">   upstream.P # equivalent</span>
+<span class="sd">   upstream[&#39;P&#39;] # equivalent</span>
+<span class="sd">   upstream.P.to(&#39;pascal&#39;) # returns &quot;101325.0 pascal&quot; (pint)</span>
+<span class="sd">   upstream.P.m_as(&#39;pascal&#39;) # returns 101325.0 (float)</span>
+
+<span class="sd">If no dimensions are defined, entries are accessed as conventional dictionaries entries:</span>
+
+<span class="sd">.. code-block:: Python</span>
+
+<span class="sd">   upstream.phi # returns 0.55 (float)</span>
+<span class="sd">   upstream.oxidizer # returns &#39;O2:1,AR:5&#39; (str)</span>
+
+<span class="sd">Underlying dictionaries and/or data are accessed via the ``raw`` attribute, i.e.</span>
+
+<span class="sd">.. code-block:: Python</span>
+
+<span class="sd">   defaults.raw # returns dictionary corresponding to original YAML</span>
+<span class="sd">   defaults.raw[&#39;upstream&#39;][&#39;P&#39;] # returns &#39;1. atmosphere&#39; (str)</span>
+<span class="sd">   defaults.upstream.raw[&#39;P&#39;] # equivalent</span>
+<span class="sd">   upstream.raw[&#39;P&#39;] # equivalent</span>
+<span class="sd">   upstream.raw[&#39;oxidizer&#39;] # returns &#39;O2:1,AR:5&#39; (str)</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">KeysView</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
@@ -239,7 +293,7 @@
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=watch&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=star&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
