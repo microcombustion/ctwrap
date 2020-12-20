@@ -1,5 +1,39 @@
-"""The :mod:`wrapper` module defines a :class:`Simulation` object that
+"""The :any:`wrapper` module defines a :class:`Simulation` object that
 wraps simulation modules.
+
+Usage
++++++
+
+Simulation modules specify tasks to be run in a batch job; a simulation
+module needs to define methods ``defaults`` (default parameters),
+``run`` (running of batch calculations) and ``save`` (saving output;
+optional).
+
+``ctwrap`` defines several pre-configured simulation modules in the
+:any:`ctwrap.modules` submodule. As an example, the ``minimal`` module is
+loaded using the module path as:
+
+.. code-block:: Python
+
+   import ctwrap as cw
+
+   sim = cw.Simulation.from_module('ctwrap.modules.minimal')
+   sim = cw.Simulation.from_module(cw.modules.minimal) # equivalent
+
+Alternatively, a :class:`Simulation` module defined in ``my_test.py``
+is loaded as:
+
+.. code-block:: Python
+
+   sim = cw.Simulation.from_module('my_test.py')
+
+Methods defined within a simulation module can be accessed by
+pass-through methods :meth:`Simulation.defaults` and :meth:`Simulation.new`:
+
+.. code-block:: Python
+
+   defaults = sim.defaults() # load defaults
+   sim.run(**defaults) # run simulation module with default arguments
 
 Class Definition
 ++++++++++++++++
@@ -21,11 +55,6 @@ class Simulation(object):
     """
     The Simulation class wraps simulation modules into a callable object.
 
-    Simulation modules specify tasks to be run in a batch job; a simulation
-    module needs to define methods ``defaults`` (default parameters),
-    ``run`` (running of batch calculations) and ``save`` (saving output;
-    optional).
-
     .. note:: :class:`Simulation` objects should be instantiated using
         the :meth:`from_module` method.
 
@@ -34,7 +63,7 @@ class Simulation(object):
 
     Arguments:
         module: Handle name or handle to module running the simulation
-        output: Used by :class:`SimulationHandler`
+        output: Dictionary defining output (used by :class:`SimulationHandler`)
     """
 
     def __init__(self, module: str, output: Dict[str, Any]=None):
@@ -88,7 +117,7 @@ class Simulation(object):
         return type(name, (cls,), {})(module, output)
 
     def _load_module(self):
-        """Load simulation module"""
+        """Load simulation module (hidden)"""
         if Path(self._module).is_file():
             fname = Path(self._module)
             # https://stackoverflow.com/questions/19009932/import-arbitrary-python-source-file-python-3-3
@@ -102,8 +131,7 @@ class Simulation(object):
     def run(self, name: Optional[str] = 'defaults',
             config: Optional[Dict[str, Any]] = None,
             **kwargs: str) -> None:
-        """
-        Runs the simulation module's run method.
+        """Runs the simulation module's ``run`` method.
 
         This :meth:`run` method is used to call the simulation module's run method.
         If a simulation object ``sim`` was created with simulation module
@@ -250,5 +278,3 @@ class Simulation(object):
                         hdf.attrs[key] = val
 
         save_metadata(output, metadata)
-
-

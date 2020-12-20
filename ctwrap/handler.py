@@ -1,9 +1,49 @@
-"""The :mod:`handler` module defines a :class:`SimulationHandler` object
-that handles batch jobs of wrapped :class:`Simulation` runs.
+"""The :any:`handler` module defines a :class:`SimulationHandler` object
+that handles batch jobs of wrapped :any:`Simulation` module runs.
 
-Simulation modules are passed to this module, where they are run in batches.
-see `adiabatic flame example <adiabatic_flame_example.ipynb>`_ or
-`ignition_example <ignition_example.ipynb>`_.
+Usage
++++++
+
+:class:`SimulationHandler` objects run batch jobs based on YAML configuration
+files. A simple example for a YAML configuration is:
+
+.. code-block:: YAML
+
+   strategy: # parameter variation
+     sequence-1:
+       spam: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
+     sequence-2:
+       eggs: [1, 2, 3]
+   defaults: # default parameters
+     spam: 0.5
+     eggs: 1
+   output:
+     format: h5
+
+In the following, a :class:`SimulationHandler` object is used to run
+batch simulations of a :class:`Simulation` module defined in ``my_test.py``,
+where the ``run`` method takes two arguments (*spam* and *eggs*).
+Assuming that the YAML configuration file ``my_test.yaml`` corresponds to the
+YAML block above, the simulation strategy *sequence-2* is loaded by issuing
+
+.. code-block:: Python
+
+   import ctwrap as cw
+
+   seq = cw.SimulationHandler('my_test.yaml', strategy='sequence-2')
+   tasks = seq.tasks # dictionary with entries 'eggs_1', 'eggs_2', 'eggs_3'
+
+Once loaded, tasks are passed to a :class:`Simulation` object wrapping ``my_test.py``:
+
+.. code-block:: Python
+
+   sim = cw.Simulation.from_module('my_test.py')
+
+   seq.configuration('eggs_2) # return task configuration
+   seq.run_task(sim, 'eggs_2') # run a single simulation task
+
+   seq.run_serial(sim) # run all tasks in series
+   seq.run_parallel(sim) # run all tasks as parallel processes
 
 Class Definition
 ++++++++++++++++
@@ -36,25 +76,6 @@ class SimulationHandler(object):
 
     .. note:: :class:`SimulationHandler` objects should be
         instantiated using the :meth:`from_yaml` method.
-
-    An example of a minimal yaml configuration is:
-
-    .. code-block:: YAML
-
-        strategy: # variation data
-          sequence:
-            sleep: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
-        defaults: # default parameters to run the modules
-          sleep: 0.2
-
-    If a :class:`simulationHandler` object was created from ``test_module.yaml``.
-    To run a single task using :meth:`run_task` method or batch simulations
-    in series :meth:`run_serial` method or parallel :meth:`run_parallel` method
-    using a simulation object created using simulation module ``test_module``,
-    each run method calls the ``run`` method in
-    simulation module ``test_module``, saves the resulting output using
-    the ``save``  method in simulation module ``test_module`` and also
-    saves the `metatada`.
 
     Attributes:
        verbosity (int): verbosity level
@@ -102,21 +123,14 @@ class SimulationHandler(object):
         Alternate constructor using YAML file as input.
 
         The :meth:`from_yaml` method is intended as the main route for the creation of
-        `SimulationHandler` objects.
-
-        For example, a :class:`SimulationHandler` object can be created from a configuration file
-        `test_module.yaml` to run a strategy `sequence` as shown below.
-
-        .. code-block:: Python
-
-           sh = ctwrap.SimulationHandler.from_yaml('test_module.yaml', strategy='sequence')
+        :class:`SimulationHandler` objects.
 
         Arguments:
            yaml_file: YAML file
            strategy: Batch job strategy name (only needed if more than one are defined)
            name: Output name (overrides yaml)
            path: File path (both yaml and output)
-           **kwargs: Dependent on implementation (e.g. verbosity, reacting)
+           **kwargs: Dependent on implementation
         """
 
         # load configuration from yaml
@@ -151,7 +165,7 @@ class SimulationHandler(object):
            strategy: Batch job strategy name (only needed if more than one are defined)
            name: Output name (overrides yaml)
            path: Output path (overrides yaml)
-           **kwargs: Dependent on implementation (e.g. verbosity, reacting)
+           **kwargs: Dependent on implementation
         """
         assert 'ctwrap' in content, 'obsolete yaml file format'
         assert 'defaults' in content, 'obsolete yaml file format'
@@ -180,9 +194,9 @@ class SimulationHandler(object):
         Overrides defaults with keyword arguments.
 
         Arguments:
-           dct (dict, optional): dictionary from yaml input
-           fname (name, optional): filename (overrides yaml)
-           fpath (string, optional): output path (overrides yaml)
+           dct: dictionary from yaml input
+           fname: filename (overrides yaml)
+           fpath: output path (overrides yaml)
 
         Returns:
             Dictionary containing output information
@@ -292,10 +306,9 @@ class SimulationHandler(object):
             sh.run_task(sim, 'sleep_0.4' )
 
         Arguments:
-            sim (object): instance of Simulation class
-            task (str): task to do
-            ** kwargs (optional): dependent on implementation
-            (e.g. verbosity, reacting)
+           sim: instance of :class:`Simulation` class
+           task: task to do
+           **kwargs: dependent on implementation
         """
 
         assert task in self._tasks, 'unknown task `{}`'.format(task)
@@ -328,9 +341,9 @@ class SimulationHandler(object):
             sh.run_serial(sim)
 
         Arguments:
-            sim (object): instance of Simulation class
-            verbosity (int, optional): verbosity
-            ** kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
+            sim: instance of :class:`Simulation` class
+            verbosity: verbosity
+            **kwargs: dependent on implementation
 
         Returns:
             return True when task is completed
@@ -371,18 +384,17 @@ class SimulationHandler(object):
         file in parallel using
         `python multiprocessing <https://docs.python.org/3/library/multiprocessing.html>`_.
         and also saves metadata.
-        A simple usage is:
 
         .. code-block:: Python
 
             # Runs all the variations in parallel
-            sh.run_parallel(sim)
+            sh.run_parallel(sim) # run
 
         Arguments:
-            sim (object): instance of Simulation class
-            number_of_processes(int, optional): number of processes
-            verbosity(int, optional): verbosity level
-            ** kwargs (optional): dependent on implementation (e.g. verbosity, reacting)
+            sim: instance of Simulation class
+            number_of_processes: number of processes
+            verbosity: verbosity level
+            **kwargs: dependent on implementation
 
         Returns:
             return True when task is completed
@@ -416,7 +428,7 @@ class SimulationHandler(object):
         processes = []
         for _ in range(number_of_processes):
             p = mp.Process(
-                target=worker,
+                target=_worker,
                 args=(tasks_to_accomplish, finished_tasks, sim._module, lock,
                       self._output, verbosity))
             processes.append(p)
@@ -440,9 +452,9 @@ class SimulationHandler(object):
         return True
 
 
-def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
-           output: Dict[str, Any],
-           verbosity: int) -> True:
+def _worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
+            output: Dict[str, Any],
+            verbosity: int) -> True:
     """
     Worker function for the `:meth: `run_parallel` method.
 
@@ -457,7 +469,6 @@ def worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
 
     Returns:
         True when tasks are completed
-
     """
 
     this = mp.current_process().name

@@ -13,27 +13,21 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-from pathlib import Path
 import datetime
 
 import ctwrap
 
 # -- Project information -----------------------------------------------------
 
-# get version
-root = Path(__file__).parents[1]
-with open(root / 'ctwrap' / '_version.py') as version_file:
-    exec(version_file.read())
-
 year = datetime.date.today().year
 project = 'ctwrap'
-author = __author__
+author = ctwrap.__author__
 copyright = '2018-{}, {}'.format(year-2000, author)
 
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = __version__
+release = ctwrap.__version__
 
 
 # -- General configuration ---------------------------------------------------
