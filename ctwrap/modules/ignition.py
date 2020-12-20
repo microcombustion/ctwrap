@@ -1,14 +1,15 @@
 """Simulation module running ignition test
 
-Code is based on stock Cantera example:
-https://cantera.org/examples/python/reactors/reactor1.py.html
+Code is based on stock Cantera example `reactor1.py
+<https://cantera.org/examples/python/reactors/reactor1.py.html>`_,
+where differences are:
 
-Differences between stock cantera example and ctwrap version are:
-
-* Content is broken down into methods to load values, run the simulation, and save output
+* Parameter values are passed using a :any:`Parser` object
+* Content is broken down into methods ``defaults`` and ``run``
 """
 import warnings
-from ruamel import yaml
+
+from ctwrap import Parser
 
 
 # pylint: disable=no-member
@@ -20,52 +21,34 @@ except ImportError as err:
         UserWarning)
 
 
-# define default values for simulation parameters (specified as list)
-DEFAULTS = """\
-# default parameters for the `ignition` module
-initial:
-  T: 1000. # temperature (kelvin)
-  P: 101325. # pressure (Pascal)
-  phi: 1. # equivalence ratio
-  fuel: H2
-  oxidizer: O2:1.,AR:3.76
-chemistry:
-  mechanism: h2o2.yaml
-simulation:
-  delta_t: 1.e-5
-  n_points: 500
-  atol: 1.e-15
-  rtol: 1.e-9
-"""
-
-
 def defaults():
-    """Returns dictionary containing default arguments"""
-    return yaml.load(DEFAULTS, Loader=yaml.SafeLoader)
+    """Returns Parser object containing default configuration"""
+    return Parser.from_yaml('ignition.yaml', defaults=True)
 
 
 def run(name, chemistry=None,
         initial=None, simulation=None):
-    """
-    Function handling reactor simulation.
+    """Function handling reactor simulation.
+
+    The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
+    for handling and conversion of units.
 
     Arguments:
         name (str): output group name
-        chemistry  (dict): reflects yaml 'configuration:chemistry'
-        initial    (dict): reflects yaml 'configuration:initial'
-        simulation (dict): reflects yaml 'configuration:simulation'
+        chemistry  (Parser): overloads 'defaults.chemistry'
+        initial    (Parser): overloads 'defaults.initial'
+        simulation (Parser): overloads 'defaults.simulation'
 
     Returns:
         Dictionary containing Cantera SolutionArray
     """
 
     # initialize gas object
-    mech = chemistry['mechanism']
-    gas = ct.Solution(mech)
+    gas = ct.Solution(chemistry.mechanism)
 
     # set temperature, pressure, and composition
-    T = initial['T']
-    P = initial['P']
+    T = initial.T.m_as('kelvin')
+    P = initial.P.m_as('pascal')
     gas.TP = T, P
     phi = initial['phi']
     gas.set_equivalence_ratio(phi, initial['fuel'], initial['oxidizer'])
@@ -73,6 +56,9 @@ def run(name, chemistry=None,
     # define a reactor network
     reactor = ct.IdealGasConstPressureReactor(gas)
     sim = ct.ReactorNet([reactor])
+
+    delta_T_max = 20.
+    reactor.set_advance_limit('temperature', delta_T_max)
 
     # set simulation parameters
     sim.atol = simulation['atol']
@@ -94,8 +80,7 @@ def run(name, chemistry=None,
 
 
 def save(filename, data, task=None, **kwargs):
-    """
-    This function saves the output from the run method
+    """This function saves the output from the run method
 
     Arguments:
         filename (str): naming of file
