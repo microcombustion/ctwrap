@@ -14,8 +14,7 @@ warnings.filterwarnings("ignore", ".*the imp module is deprecated*")
 
 # pylint: disable=import-error
 import ctwrap as cw
-from ctwrap.parser import _parse as parse
-from ctwrap.parser import _write as write
+from ctwrap.parser import _parse, _write, _update
 
 
 PWD = Path(__file__).parents[0]
@@ -23,29 +22,61 @@ ROOT = PWD.parents[0]
 EXAMPLES = ROOT / 'yaml'
 
 
+class TestUpdate(unittest.TestCase):
+
+    _dict = {'foo': {'spam': 2.0, 'eggs': 3.14}, 'bar': 3, 'baz': 'hello world'}
+
+    def test_level1(self):
+
+        value = 4
+        out = _update(self._dict, {'bar': value})
+        self.assertEqual(self._dict['foo'], out['foo'])
+        self.assertEqual(self._dict['baz'], out['baz'])
+        self.assertEqual(out['bar'], value)
+
+    def test_level2(self):
+
+        value = 4
+        out = _update(self._dict, {'foo': {'eggs': value}})
+        self.assertEqual(self._dict['bar'], out['bar'])
+        self.assertEqual(self._dict['foo']['spam'], out['foo']['spam'])
+        self.assertEqual(self._dict['baz'], out['baz'])
+        self.assertEqual(out['foo']['eggs'], value)
+
+    def test_multi_level(self):
+
+        value1 = 4
+        value2 = 5
+        out = _update(self._dict, {'foo': {'eggs': value1}, 'bar': value2})
+        self.assertEqual(self._dict['foo']['spam'], out['foo']['spam'])
+        self.assertEqual(self._dict['baz'], out['baz'])
+        self.assertEqual(out['foo']['eggs'], value1)
+        self.assertEqual(out['bar'], value2)
+
+
 class TestParse(unittest.TestCase):
 
     def test_string(self):
 
-        value, unit = parse('hello world')
+        value, unit = _parse('hello world')
         self.assertEqual(value, 'hello world')
         self.assertIsNone(unit)
 
     def test_full(self):
 
-        value, unit = parse('1 spam')
+        value, unit = _parse('1 spam')
         self.assertEqual(value, '1')
         self.assertEqual(unit, 'spam')
 
     def test_no_unit1(self):
 
-        value, unit = parse('2.')
+        value, unit = _parse('2.')
         self.assertEqual(value, '2.')
         self.assertIsNone(unit)
 
     def test_no_unit2(self):
 
-        value, unit = parse('2. ')
+        value, unit = _parse('2. ')
         self.assertEqual(value, '2.')
         self.assertEqual(unit, 'dimensionless')
 
@@ -54,22 +85,22 @@ class TestWrite(unittest.TestCase):
 
     def test_string(self):
 
-        value = write('hello world')
+        value = _write('hello world')
         self.assertEqual(value, 'hello world')
 
     def test_full(self):
 
-        value = write(1, 'spam')
+        value = _write(1, 'spam')
         self.assertEqual(value, '1 spam')
 
     def test_no_unit1(self):
 
-        value = write(2., None)
+        value = _write(2., None)
         self.assertEqual(value, '2.0')
 
     def test_no_unit2(self):
 
-        value = write(2., 'dimensionless')
+        value = _write(2., 'dimensionless')
         self.assertEqual(value, '2.0')
 
 
@@ -101,6 +132,32 @@ class TestParser(TestPassing):
 
         p = cw.Parser(self._entry)
         self.assertEqual(self._entry.raw, p.raw)
+
+
+class TestMulti(TestParser):
+
+    _dict = {'foo': {'spam': 2.0, 'eggs': 3.14}, 'bar': 3, 'baz': '1. kelvin'}
+    _entry = cw.Parser(_dict)
+    _new = {'foo': {'eggs': 4}, 'bar': 5}
+
+    def check(self, p):
+
+        self.assertEqual(p.foo.spam, self._entry.foo.spam)
+        self.assertEqual(p.baz, self._entry.baz)
+        self.assertEqual(p.foo.eggs, self._new['foo']['eggs'])
+        self.assertEqual(p.bar, self._new['bar'])
+
+    def test_update_dict(self):
+
+        p = cw.Parser(self._dict)
+        p.update(self._new)
+        self.check(p)
+
+    def test_update_parser(self):
+
+        p = self._entry
+        p.update(cw.Parser(self._new))
+        self.check(p)
 
 
 class TestFailing(unittest.TestCase):
