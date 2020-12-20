@@ -97,24 +97,7 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
     return out
 
 
-def save(filename, data, task=None, **kwargs):
-    """
-    This function saves the output from the run method
-
-    Arguments:
-        filename (str): naming of file
-        data (Dict): data to be saved
-        task (str): name of task if running variations
-        kwargs (dict): keyword argument
-    """
-
-    for group, flame in data.items():
-        flame.write_hdf(filename=filename, group=group,
-                        description=task, **kwargs)
-
-
 if __name__ == "__main__":
     """ Main function """
     config = defaults()
     df = run('main', **config, loglevel=1)
-    save('adiabatic_flame.h5', df)

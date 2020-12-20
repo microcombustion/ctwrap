@@ -79,26 +79,7 @@ def run(name, chemistry=None,
     return {name: states}
 
 
-def save(filename, data, task=None, **kwargs):
-    """This function saves the output from the run method
-
-    Arguments:
-        filename (str): naming of file
-        data (dict): data to be saved
-        task (str): name of task if running variations
-        kwargs (dict): keyword arguments
-    """
-
-    # todo: implement subgroup for higher dimensional space
-
-    attrs = {'description': task}
-    for group, states in data.items():
-        states.write_hdf(filename=filename, group=group,
-                         attrs=attrs, **kwargs)
-
-
 if __name__ == "__main__":
     """ Main function """
     config = defaults()
     out = run('main', **config)
-    save('ignition.h5', out)
