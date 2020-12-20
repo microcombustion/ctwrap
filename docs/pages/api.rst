@@ -8,6 +8,7 @@ This reference manual details functions, modules, and objects included in
 .. toctree::
    :maxdepth: 1
 
+        Command line utility <commandline.rst>
         Handler Module <handler.rst>
         Parser Module <parser.rst>
         Strategy Module <strategy.rst>

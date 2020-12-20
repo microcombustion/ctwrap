@@ -48,7 +48,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'nbsphinx',
-    'sphinx.ext.mathjax'
+    'sphinx.ext.mathjax',
+    'sphinxarg.ext'
 ]
 
 suppress_warnings = [
