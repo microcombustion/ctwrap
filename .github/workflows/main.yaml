@@ -10,9 +10,13 @@ on:
       - main
 
 jobs:
-  nosetests-linux:
-    name: Run pytest on Linux
-    runs-on: "ubuntu-latest"
+  nosetests-multi-os:
+    name: Run pytest on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
+      fail-fast: false
     defaults:
       run:
         shell: bash -l {0}
@@ -38,33 +42,6 @@ jobs:
       run: pytest
     - name: Get coverage
       run: coverage report
-
-  nosetests-win:
-    name: Run pytest on Windows
-    runs-on: "windows-latest"
-    defaults:
-      run:
-        shell: bash -l {0}
-    steps:
-    - uses: actions/checkout@v2
-    - uses: conda-incubator/setup-miniconda@v2
-      with:
-        python-version: 3.7
-        mamba-version: "*"
-        channels: conda-forge,cantera/label/dev,defaults
-        channel-priority: true
-        activate-environment: ctwrap
-        environment-file: environment.yml
-        #auto-activate-base: false
-    - name: Check conda status
-      run: |
-        conda info
-        conda list
-    - name: Install ctwrap
-      run: |
-        pip install -e .
-    - name: Run pytest
-      run: pytest
 
   sphinx-docs:
     name: Check sphinx docs on Linux
@@ -95,7 +72,3 @@ jobs:
       with:
         name: DocumentationHTML
         path: docs/_build/
-
-  # nosetests-mac:
-  #   name: OSX
-  #   runs-on: "macos-latest"
