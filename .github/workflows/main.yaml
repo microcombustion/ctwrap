@@ -67,7 +67,7 @@ jobs:
       run: pytest
 
   sphinx-docs:
-    name: Compile sphinx docs on Linux
+    name: Check sphinx docs on Linux
     runs-on: "ubuntu-latest"
     defaults:
       run:
@@ -90,25 +90,11 @@ jobs:
         cd docs
         pip install -r requirements.txt
         sphinx-build -b html . _build
-    - if: github.repository == 'microcombustion/ctwrap'
-      name: Commit documentation changes
-      run: |
-        git clone https://github.com/microcombustion/ctwrap.git --branch gh-pages --single-branch gh-pages
-        cp -r docs/_build/* gh-pages/
-        cd gh-pages
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add .
-        git commit -m "Update documentation" -a || true
-        # The above command will fail if no changes were present, so we ignore
-        # that.
-    - if: github.repository == 'microcombustion/ctwrap'
-      name: Push changes
-      uses: ad-m/github-push-action@master
+    - name: Create artifact of the html output
+      uses: actions/upload-artifact@v2
       with:
-        branch: gh-pages
-        directory: gh-pages
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        name: DocumentationHTML
+        path: docs/_build/
 
   # nosetests-mac:
   #   name: OSX
