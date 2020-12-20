@@ -18,6 +18,4 @@ defaults:
   simulation:
     delta_t: 1.e-5
     n_points: 500
-    atol: 1.e-15
-    rtol: 1.e-9
-ctwrap: 0.2.0
+ctwrap: 0.2.2

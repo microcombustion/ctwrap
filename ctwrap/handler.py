@@ -316,9 +316,12 @@ class SimulationHandler(object):
         # create a new simulation object
         obj = Simulation.from_module(sim._module, self._output)
 
-        # run simulation
-        config = self.configuration(task)
+        # get configuration
+        config = obj.defaults()
+        overload = self.configuration(task)
+        config.update(overload)
 
+        # run simulation
         group = "output_00"
         obj.run(group, config, **kwargs)
         obj._save(task=task)
@@ -363,8 +366,12 @@ class SimulationHandler(object):
             if verbosity > 0:
                 print(indent1 + 'processing `{}`'.format(t))
 
+            # get configuration
+            config = obj.defaults()
+            overload = self.configuration(t)
+            config.update(overload)
+
             # run simulation
-            config = self.configuration(t)
             group = "output_{:0>2d}".format(i)
             obj.run(group, config, **kwargs)
             obj._save(task=t)
@@ -418,9 +425,9 @@ class SimulationHandler(object):
         tasks = list(self._tasks.keys())
         tasks.sort()
         for i, t in enumerate(tasks):
-            config = self.configuration(t)
+            overload = self.configuration(t)
             group = "output_{:0>2d}".format(i)
-            tasks_to_accomplish.put((t, group, config, kwargs))
+            tasks_to_accomplish.put((t, group, overload, kwargs))
 
         lock = mp.Lock()
 
@@ -479,7 +486,7 @@ def _worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
     while True:
         try:
             # retrieve next simulation task
-            task, group, config, kwargs = tasks_to_accomplish.get_nowait()
+            task, group, overload, kwargs = tasks_to_accomplish.get_nowait()
 
         except queue.Empty:
             # no tasks left
@@ -493,6 +500,9 @@ def _worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
             msg = indent1 + 'processing `{}` ({})'
             if verbosity > 0:
                 print(msg.format(task, this))
+
+            config = obj.defaults()
+            config.update(overload)
             obj.run(group, config, **kwargs)
             with lock:
                 obj._save(task=task)
