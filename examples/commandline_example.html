@@ -17,7 +17,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Minimal Example" href="minimal_example.html" />
-    <link rel="prev" title="Ignition Example" href="ignition_example.html" />
+    <link rel="prev" title="Jupyter Notebooks" href="jupyter.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -307,11 +307,10 @@ usage: ctwrap [-h] [--output OUTPUT] [-v] [--parallel]
               [--strategy {sequence,matrix}]
               module_name yaml_config
 
-Simulation of constant pressure ignition (ctwrap).
+Wrapper for batch simulations (ctwrap).
 
 positional arguments:
-  module_name           wrapped module (specifies Python import path as
-                        &lt;module_name&gt; or ctwrap.modules.&lt;module_name&gt;)
+  module_name           name of wrapped simulation module
   yaml_config           yaml configuration file
 
 optional arguments:
@@ -332,8 +331,8 @@ optional arguments:
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>%%time
-# run minimal module
-! ctwrap minimal ../../yaml/minimal.yaml
+# run minimal module (with &#39;sequence&#39; strategy)
+! ctwrap minimal ../../yaml/minimal.yaml --strategy sequence
 </pre></div>
 </div>
 </div>
@@ -342,20 +341,16 @@ optional arguments:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Traceback (most recent call last):
-  File &#34;/usr/share/miniconda/envs/ctwrap/bin/ctwrap&#34;, line 33, in &lt;module&gt;
-    sys.exit(load_entry_point(&#39;ctwrap&#39;, &#39;console_scripts&#39;, &#39;ctwrap&#39;)())
-  File &#34;/home/runner/work/ctwrap/ctwrap/ctwrap/bin/ctwrap.py&#34;, line 72, in main
-    yml_file, strategy=strategy, verbosity=verbosity, name=output_file)
-  File &#34;/home/runner/work/ctwrap/ctwrap/ctwrap/simulation.py&#34;, line 375, in from_yaml
-    return cls.from_dict(content, strategy=strategy, name=name, path=path, **kwargs)
-  File &#34;/home/runner/work/ctwrap/ctwrap/ctwrap/simulation.py&#34;, line 401, in from_dict
-    strategy = Strategy.load(content[&#39;strategy&#39;], name=strategy)
-  File &#34;/home/runner/work/ctwrap/ctwrap/ctwrap/strategy.py&#34;, line 186, in load
-    raise ValueError(&#34;Parameter &#39;name&#39; is required if multiple strategies are defined&#34;)
-ValueError: Parameter &#39;name&#39; is required if multiple strategies are defined
-CPU times: user 13.9 ms, sys: 1.93 ms, total: 15.9 ms
-Wall time: 868 ms
+    - `minimal`: sleeping for 0.1 * 1 = 0.1 seconds ...
+    - `minimal`: sleeping for 0.2 * 1 = 0.2 seconds ...
+    - `minimal`: sleeping for 0.3 * 1 = 0.3 seconds ...
+    - `minimal`: sleeping for 0.4 * 1 = 0.4 seconds ...
+    - `minimal`: sleeping for 0.5 * 1 = 0.5 seconds ...
+    - `minimal`: sleeping for 0.6 * 1 = 0.6 seconds ...
+    - `minimal`: sleeping for 0.7 * 1 = 0.7 seconds ...
+    - `minimal`: sleeping for 0.8 * 1 = 0.8 seconds ...
+CPU times: user 90.8 ms, sys: 20.6 ms, total: 111 ms
+Wall time: 4.4 s
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -364,8 +359,8 @@ Wall time: 868 ms
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>%%time
-# run minimal module
-! ctwrap minimal ../../yaml/minimal.yaml --parallel
+# run minimal module (with &#39;sequence&#39; strategy)
+! ctwrap minimal ../../yaml/minimal.yaml --parallel --strategy sequence
 </pre></div>
 </div>
 </div>
@@ -374,20 +369,16 @@ Wall time: 868 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Traceback (most recent call last):
-  File &#34;/usr/share/miniconda/envs/ctwrap/bin/ctwrap&#34;, line 33, in &lt;module&gt;
-    sys.exit(load_entry_point(&#39;ctwrap&#39;, &#39;console_scripts&#39;, &#39;ctwrap&#39;)())
-  File &#34;/home/runner/work/ctwrap/ctwrap/ctwrap/bin/ctwrap.py&#34;, line 72, in main
-    yml_file, strategy=strategy, verbosity=verbosity, name=output_file)
-  File &#34;/home/runner/work/ctwrap/ctwrap/ctwrap/simulation.py&#34;, line 375, in from_yaml
-    return cls.from_dict(content, strategy=strategy, name=name, path=path, **kwargs)
-  File &#34;/home/runner/work/ctwrap/ctwrap/ctwrap/simulation.py&#34;, line 401, in from_dict
-    strategy = Strategy.load(content[&#39;strategy&#39;], name=strategy)
-  File &#34;/home/runner/work/ctwrap/ctwrap/ctwrap/strategy.py&#34;, line 186, in load
-    raise ValueError(&#34;Parameter &#39;name&#39; is required if multiple strategies are defined&#34;)
-ValueError: Parameter &#39;name&#39; is required if multiple strategies are defined
-CPU times: user 9.68 ms, sys: 5.61 ms, total: 15.3 ms
-Wall time: 838 ms
+    - `minimal`: sleeping for 0.1 * 1 = 0.1 seconds ...
+    - `minimal`: sleeping for 0.2 * 1 = 0.2 seconds ...
+    - `minimal`: sleeping for 0.3 * 1 = 0.3 seconds ...
+    - `minimal`: sleeping for 0.4 * 1 = 0.4 seconds ...
+    - `minimal`: sleeping for 0.5 * 1 = 0.5 seconds ...
+    - `minimal`: sleeping for 0.6 * 1 = 0.6 seconds ...
+    - `minimal`: sleeping for 0.7 * 1 = 0.7 seconds ...
+    - `minimal`: sleeping for 0.8 * 1 = 0.8 seconds ...
+CPU times: user 102 ms, sys: 14 ms, total: 116 ms
+Wall time: 4.41 s
 </pre></div></div>
 </div>
 </div>
@@ -422,8 +413,8 @@ Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 
  * processing `initial.phi_1.4`
  * processing `initial.phi_1.6`
  * processing `initial.phi_1.8`
-CPU times: user 21.8 ms, sys: 2.31 ms, total: 24.2 ms
-Wall time: 1.2 s
+CPU times: user 23.7 ms, sys: 343 µs, total: 24 ms
+Wall time: 1.08 s
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -466,8 +457,8 @@ Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 
  * processing `initial.phi_1.4` (Process-1)
  * processing `initial.phi_1.6` (Process-1)
  * processing `initial.phi_1.8` (Process-1)
-CPU times: user 18.3 ms, sys: 7.54 ms, total: 25.9 ms
-Wall time: 1.24 s
+CPU times: user 20.5 ms, sys: 4.14 ms, total: 24.6 ms
+Wall time: 1.1 s
 </pre></div></div>
 </div>
 </div>
@@ -513,8 +504,8 @@ Wall time: 1.24 s
     output_10: multi-component flamespeed  = 2.691153 m/s
     output_11: mixture-averaged flamespeed = 2.586446 m/s
     output_11: multi-component flamespeed  = 2.558387 m/s
-CPU times: user 172 ms, sys: 23.6 ms, total: 195 ms
-Wall time: 12.5 s
+CPU times: user 188 ms, sys: 37.8 ms, total: 226 ms
+Wall time: 11.8 s
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -567,8 +558,8 @@ Wall time: 12.5 s
     output_10: multi-component flamespeed  = 2.691153 m/s
     output_11: mixture-averaged flamespeed = 2.586446 m/s
     output_11: multi-component flamespeed  = 2.558387 m/s
-CPU times: user 184 ms, sys: 15 ms, total: 199 ms
-Wall time: 12.7 s
+CPU times: user 192 ms, sys: 39.9 ms, total: 232 ms
+Wall time: 11.8 s
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -598,7 +589,7 @@ Wall time: 12.7 s
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=star&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=star&count=False&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
@@ -610,7 +601,6 @@ Wall time: 12.7 s
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">   Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../overview.html">   Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing.html">   Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/batch.html">   Batch Jobs</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="jupyter.html">   Jupyter Notebooks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/api.html">   API Reference</a></li>
@@ -621,7 +611,7 @@ Wall time: 12.7 s
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="jupyter.html">Jupyter Notebooks</a><ul>
-      <li>Previous: <a href="ignition_example.html" title="previous chapter">Ignition Example</a></li>
+      <li>Previous: <a href="jupyter.html" title="previous chapter">Jupyter Notebooks</a></li>
       <li>Next: <a href="minimal_example.html" title="next chapter">Minimal Example</a></li>
   </ul></li>
   </ul></li>

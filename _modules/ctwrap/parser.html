@@ -33,10 +33,12 @@
           <div class="body" role="main">
             
   <h1>Source code for ctwrap.parser</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Parser module.</span>
+<span></span><span class="sd">&quot;&quot;&quot;The :mod:`parser` module defines a convenience object :class:`Parser`, which</span>
+<span class="sd">supports dimensions via ``pint`` for easy access to data defined in YAML</span>
+<span class="sd">configuration files within ``ctwrap`` simulation modules.</span>
 
-<span class="sd">The parser module defines a convenience object :class:`Parser`, which is to support</span>
-<span class="sd">dimensions via ``pint`` for easy access to underlying data.</span>
+<span class="sd">Usage</span>
+<span class="sd">+++++</span>
 
 <span class="sd">The following illustration assumes configuration data stored using YAML syntax</span>
 <span class="sd">in a file ``config.yaml`` with content:</span>
@@ -90,6 +92,9 @@
 <span class="sd">   defaults.upstream.raw[&#39;P&#39;] # equivalent</span>
 <span class="sd">   upstream.raw[&#39;P&#39;] # equivalent</span>
 <span class="sd">   upstream.raw[&#39;oxidizer&#39;] # returns &#39;O2:1,AR:5&#39; (str)</span>
+
+<span class="sd">Class Definition</span>
+<span class="sd">++++++++++++++++</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">KeysView</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Union</span>
@@ -241,17 +246,22 @@
     <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">yml</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">defaults</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Parser&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Load parser from YAML</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">           yml: File name or YAML string</span>
+<span class="sd">           defaults: If `True`, load from ``ctwrap.defaults`` database</span>
 <span class="sd">           path: Relative/absolute path</span>
 <span class="sd">           keys: List of keys</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">yml</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">defaults</span><span class="p">:</span>
+            <span class="c1"># load from &#39;ctwrap/defaults&#39; database</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="s1">&#39;defaults&#39;</span> <span class="o">/</span> <span class="n">fname</span>
+        <span class="k">elif</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">/</span> <span class="n">fname</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -293,7 +303,7 @@
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=star&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=star&count=False&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
@@ -305,7 +315,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">   Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">   Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">   Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pages/batch.html">   Batch Jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/jupyter.html">   Jupyter Notebooks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pages/api.html">   API Reference</a></li>

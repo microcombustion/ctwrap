@@ -48,8 +48,8 @@
   <span class="nt">force_overwrite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="nt">defaults</span><span class="p">:</span>
   <span class="nt">initial</span><span class="p">:</span>
-    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000.</span> <span class="c1"># temperature (Kelvin)</span>
-    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">101325.</span> <span class="c1"># pressure (Pascal)</span>
+    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000. kelvin</span> <span class="c1"># temperature</span>
+    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">101325. pascal</span> <span class="c1"># pressure</span>
     <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.</span> <span class="c1"># equivalence ratio</span>
     <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">H2</span>
     <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1,AR:3.76</span>
@@ -68,15 +68,16 @@
 <h2>Simulation Module<a class="headerlink" href="#simulation-module" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Simulation module running ignition test</span>
 
-<span class="sd">Code is based on stock Cantera example:</span>
-<span class="sd">https://cantera.org/examples/python/reactors/reactor1.py.html</span>
+<span class="sd">Code is based on stock Cantera example `reactor1.py</span>
+<span class="sd">&lt;https://cantera.org/examples/python/reactors/reactor1.py.html&gt;`_,</span>
+<span class="sd">where differences are:</span>
 
-<span class="sd">Differences between stock cantera example and ctwrap version are:</span>
-
-<span class="sd">* Content is broken down into methods to load values, run the simulation, and save output</span>
+<span class="sd">* Parameter values are passed using a :any:`Parser` object</span>
+<span class="sd">* Content is broken down into methods ``defaults`` and ``run``</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
+
+<span class="kn">from</span> <span class="nn">ctwrap</span> <span class="kn">import</span> <span class="n">Parser</span>
 
 
 <span class="c1"># pylint: disable=no-member</span>
@@ -88,52 +89,34 @@
         <span class="ne">UserWarning</span><span class="p">)</span>
 
 
-<span class="c1"># define default values for simulation parameters (specified as list)</span>
-<span class="n">DEFAULTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s2"># default parameters for the `ignition` module</span>
-<span class="s2">initial:</span>
-<span class="s2">  T: 1000. # temperature (kelvin)</span>
-<span class="s2">  P: 101325. # pressure (Pascal)</span>
-<span class="s2">  phi: 1. # equivalence ratio</span>
-<span class="s2">  fuel: H2</span>
-<span class="s2">  oxidizer: O2:1.,AR:3.76</span>
-<span class="s2">chemistry:</span>
-<span class="s2">  mechanism: h2o2.yaml</span>
-<span class="s2">simulation:</span>
-<span class="s2">  delta_t: 1.e-5</span>
-<span class="s2">  n_points: 500</span>
-<span class="s2">  atol: 1.e-15</span>
-<span class="s2">  rtol: 1.e-9</span>
-<span class="s2">&quot;&quot;&quot;</span>
-
-
 <span class="k">def</span> <span class="nf">defaults</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Returns dictionary containing default arguments&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Returns Parser object containing default configuration&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Parser</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s1">&#39;ignition.yaml&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">simulation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Function handling reactor simulation.</span>
+    <span class="sd">&quot;&quot;&quot;Function handling reactor simulation.</span>
+
+<span class="sd">    The function uses the class &#39;ctwrap.Parser&#39; in conjunction with &#39;pint.Quantity&#39;</span>
+<span class="sd">    for handling and conversion of units.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        name (str): output group name</span>
-<span class="sd">        chemistry  (dict): reflects yaml &#39;configuration:chemistry&#39;</span>
-<span class="sd">        initial    (dict): reflects yaml &#39;configuration:initial&#39;</span>
-<span class="sd">        simulation (dict): reflects yaml &#39;configuration:simulation&#39;</span>
+<span class="sd">        chemistry  (Parser): overloads &#39;defaults.chemistry&#39;</span>
+<span class="sd">        initial    (Parser): overloads &#39;defaults.initial&#39;</span>
+<span class="sd">        simulation (Parser): overloads &#39;defaults.simulation&#39;</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dictionary containing Cantera SolutionArray</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># initialize gas object</span>
-    <span class="n">mech</span> <span class="o">=</span> <span class="n">chemistry</span><span class="p">[</span><span class="s1">&#39;mechanism&#39;</span><span class="p">]</span>
-    <span class="n">gas</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">Solution</span><span class="p">(</span><span class="n">mech</span><span class="p">)</span>
+    <span class="n">gas</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">Solution</span><span class="p">(</span><span class="n">chemistry</span><span class="o">.</span><span class="n">mechanism</span><span class="p">)</span>
 
     <span class="c1"># set temperature, pressure, and composition</span>
-    <span class="n">T</span> <span class="o">=</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span>
-    <span class="n">P</span> <span class="o">=</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">initial</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;kelvin&#39;</span><span class="p">)</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">initial</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;pascal&#39;</span><span class="p">)</span>
     <span class="n">gas</span><span class="o">.</span><span class="n">TP</span> <span class="o">=</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span>
     <span class="n">phi</span> <span class="o">=</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;phi&#39;</span><span class="p">]</span>
     <span class="n">gas</span><span class="o">.</span><span class="n">set_equivalence_ratio</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;fuel&#39;</span><span class="p">],</span> <span class="n">initial</span><span class="p">[</span><span class="s1">&#39;oxidizer&#39;</span><span class="p">])</span>
@@ -141,6 +124,9 @@
     <span class="c1"># define a reactor network</span>
     <span class="n">reactor</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">IdealGasConstPressureReactor</span><span class="p">(</span><span class="n">gas</span><span class="p">)</span>
     <span class="n">sim</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">ReactorNet</span><span class="p">([</span><span class="n">reactor</span><span class="p">])</span>
+
+    <span class="n">delta_T_max</span> <span class="o">=</span> <span class="mf">20.</span>
+    <span class="n">reactor</span><span class="o">.</span><span class="n">set_advance_limit</span><span class="p">(</span><span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="n">delta_T_max</span><span class="p">)</span>
 
     <span class="c1"># set simulation parameters</span>
     <span class="n">sim</span><span class="o">.</span><span class="n">atol</span> <span class="o">=</span> <span class="n">simulation</span><span class="p">[</span><span class="s1">&#39;atol&#39;</span><span class="p">]</span>
@@ -162,8 +148,7 @@
 
 
 <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function saves the output from the run method</span>
+    <span class="sd">&quot;&quot;&quot;This function saves the output from the run method</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        filename (str): naming of file</span>
@@ -214,7 +199,7 @@ module above can be run as:</p>
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=star&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=microcombustion&repo=ctwrap&type=star&count=False&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
@@ -226,7 +211,6 @@ module above can be run as:</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">   Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../overview.html">   Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing.html">   Contributing</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="batch.html">   Batch Jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/jupyter.html">   Jupyter Notebooks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">   API Reference</a></li>
