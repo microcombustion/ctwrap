@@ -1,4 +1,4 @@
-"""The :mod:`strategy` module defines :class:`Strategy` and derived objects
+"""The :py:mod:`strategy` module defines :class:`Strategy` and derived objects
 that specify strategies used in batch job simulations.
 
 Batch job strategies are defined using YAML syntax in a ``ctwrap`` YAML
