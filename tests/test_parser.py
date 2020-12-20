@@ -143,8 +143,8 @@ class TestYAML(unittest.TestCase):
 
         with open(EXAMPLES / 'ignition.yaml') as stream:
             yml = yaml.load(stream, Loader=yaml.SafeLoader)
-        initial = yml['defaults']['initial']
-        self.assertIsInstance(initial['T'], float)
+        initial = cw.Parser(yml['defaults']['initial'])
+        self.assertIsInstance(initial.T, pq.Quantity)
         self.assertIsInstance(initial['fuel'], str)
 
     def test_adiabatic_flame(self):

@@ -1,0 +1,14 @@
+# default parameters for the `ignition` module
+initial:
+  T: 1000. kelvin # temperature
+  P: 1. atmosphere # pressure
+  phi: 1. # equivalence ratio
+  fuel: H2
+  oxidizer: O2:1.,AR:3.76
+chemistry:
+  mechanism: h2o2.yaml
+simulation:
+  delta_t: 1.e-5
+  n_points: 500
+  atol: 1.e-15
+  rtol: 1.e-9
