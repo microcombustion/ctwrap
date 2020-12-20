@@ -39,8 +39,6 @@ Class Definition
 """
 from pathlib import Path
 import importlib
-import h5py
-import json
 import warnings
 
 from typing import Dict, Any, Optional, Union
@@ -48,6 +46,7 @@ from typing import Dict, Any, Optional, Union
 
 # ctwrap specific import
 from .parser import Parser
+from .output import _save_hdf
 
 
 class Simulation(object):
@@ -172,8 +171,6 @@ class Simulation(object):
         """
         Save simulation data (hidden)
 
-        The :meth:`_save` is used to call the simulation module's save method.
-
         Arguments:
             **kwargs (optional): keyword arguments
         """
@@ -182,101 +179,11 @@ class Simulation(object):
             return
 
         output = self._output.copy()
-
-        filename = output.pop('file_name')
-
-        if filename is None:
-            return
-
-        filepath = output.pop('path')
-        formatt = "." + output.pop('format')
-        force = output.pop('force_overwrite')
-
-        if filepath is not None:
-            filename = Path(filepath) / filename
-
-        # file check
-        fexists = Path(filename).is_file()
-
-        if fexists:
-            with h5py.File(filename, 'r') as hdf:
-                for group in hdf.keys():
-                    if group in self.data and mode == 'a' and not force:
-                        msg = 'Cannot overwrite existing ' \
-                              'group `{}` (use force to override)'
-                        raise RuntimeError(msg.format(group))
-                    elif group in self.data and mode == 'a' and force:
-                        mode = 'w'
-
-        output.pop('name')
-        output.update(mode=mode)
+        formatt = "." + output.get('format')
 
         if formatt in ('.h5', '.hdf', '.hdf5'):
-            if self._errored:
-                with h5py.File(filename, mode) as hdf:
-                    for group, err in self.data.items():
-                        grp = hdf.create_group(group)
-                        grp.attrs[err[0]] = err[1]
-            else:
-                for group, states in self.data.items():
-                    # pylint: disable=no-member
-                    if type(states).__name__ == 'SolutionArray':
-                        attrs = {'description': task}
-                        states.write_hdf(filename=filename, group=group,
-                                         attrs=attrs, **output)
-                    elif type(states).__name__ in ['FreeFlame']:
-                        states.write_hdf(filename=filename, group=group,
-                                         description=task, **output)
+
+            _save_hdf(self.data, output, task, mode=mode, errored=self._errored)
 
         else:
             raise ValueError("Invalid file format {}".format(formatt))
-
-    def _save_metadata(self,
-                       output: Optional[Dict[str, Any]] = None,
-                       metadata: Optional[Dict[str, Any]] = None,
-                       ) -> None:
-        """
-        Modules saves the input file as an attribute after the
-        batch simulation has been completed
-
-        This method calls the
-        :py:func:`~ctwrap.parser.save_metadata` method.
-
-        Arguments:
-            metadata (dict): data to be saved
-            output (dict): output file information
-        """
-
-        if output is None:
-            output = self._output
-
-        if metadata is None or output is None:
-            return
-
-        def save_metadata(output: Dict[str, Any],
-                        metadata: Dict[str, Any]) -> None:
-            """Function save metadata as attributes to file
-
-            Arguments:
-                output: file information
-                metadata: metadata
-            """
-
-            oname = output['file_name']
-            opath = output['path']
-            #formatt = output['format']
-            #force = output['force_overwrite']
-
-            if oname is None:
-                return
-            if opath is not None:
-                oname = Path(opath) / oname
-
-            with h5py.File(oname, 'r+') as hdf:
-                for key, val in metadata.items():
-                    if isinstance(val, dict):
-                        hdf.attrs[key] = json.dumps(val)
-                    else:
-                        hdf.attrs[key] = val
-
-        save_metadata(output, metadata)
