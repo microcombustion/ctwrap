@@ -1,10 +1,10 @@
 Adiabatic Flame Batch
 =====================
 
-YAML Configuration
-------------------
+YAML Defaults
+-------------
 
-.. literalinclude:: ../../yaml/adiabatic_flame.yaml
+.. literalinclude:: ../../ctwrap/defaults/adiabatic_flame.yaml
    :language: yaml
 
 Simulation Module
@@ -16,7 +16,12 @@ Simulation Module
 Running the Batch Simulation
 ----------------------------
 
-A parallel batch job for adiabatic flame calculations using the
+An example for a batch simulation is given by the YAML configuration
+
+.. literalinclude:: ../../yaml/adiabatic_flame.yaml
+   :language: yaml
+
+A parallel batch job for adiabatic flame calculations using this
 configuration and the simulation module above can be run as:
 
 .. code-block::
