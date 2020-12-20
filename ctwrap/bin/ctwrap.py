@@ -11,31 +11,31 @@ import warnings
 warnings.filterwarnings(action='once')
 # pylint: disable=no-member
 
+# set up argument parser
+parser = argparse.ArgumentParser(
+    description='Wrapper for batch simulations (ctwrap).')
+parser.add_argument(
+    'module_name',
+    help='name of wrapped simulation module'
+)
+parser.add_argument('yaml_config', help='yaml configuration file')
+parser.add_argument('--output', help='name of output file')
+parser.add_argument(
+    '-v', '--verbosity', action='count', default=0, help='verbosity level')
+parser.add_argument(
+    '--parallel',
+    action='store_true',
+    default=False,
+    help='run parallel calculations')
+parser.add_argument(
+    '--strategy',
+    choices=['sequence', 'matrix'],
+    default=None,
+    help='batch job strategy')
+
+
 def main():
     """Main."""
-
-    # set up argument parser
-    parser = argparse.ArgumentParser(
-        description='Simulation of constant pressure ignition (ctwrap).')
-    parser.add_argument(
-        'module_name',
-        help=
-        'wrapped module (specifies Python import path as <module_name> or ctwrap.modules.<module_name>)'
-    )
-    parser.add_argument('yaml_config', help='yaml configuration file')
-    parser.add_argument('--output', help='name of output file')
-    parser.add_argument(
-        '-v', '--verbosity', action='count', default=0, help='verbosity level')
-    parser.add_argument(
-        '--parallel',
-        action='store_true',
-        default=False,
-        help='run parallel calculations')
-    parser.add_argument(
-        '--strategy',
-        choices=['sequence', 'matrix'],
-        default=None,
-        help='batch job strategy')
 
     # parse arguments
     args = parser.parse_args()
@@ -76,3 +76,6 @@ def main():
         sh.run_parallel(sim)
     else:
         sh.run_serial(sim)
+
+if __name__ == '__main__':
+    main()
