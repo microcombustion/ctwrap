@@ -1,12 +1,11 @@
 """Simulation module running adiabatic flame test
 
-Code is based on stock Cantera example:
-https://cantera.org/examples/python/onedim/adiabatic_flame.py.html
+Code is based on stock Cantera example `adiabatic_flame.py
+<https://cantera.org/examples/python/onedim/adiabatic_flame.py.html>`_,
+where differences are:
 
-Differences between stock cantera example and ctwrap version are:
-
-* Parameter values are passed using a `Parser` object (equivalent to dictionary)
-* Content is broken down into methods to load values, run the simulation, and save output
+* Parameter values are passed using a :any:`Parser` object
+* Content is broken down into methods ``defaults`` and ``run``
 """
 import warnings
 
@@ -21,38 +20,22 @@ except ImportError as err:
         UserWarning)
 
 
-# define default values for simulation parameters (string notation)
-DEFAULTS = """\
-# default parameters for the `adiabatic_flame` module
-upstream:
-  T: 300. kelvin # temperature
-  P: 1. atmosphere # pressure
-  phi: .55 # equivalence ratio
-  fuel: H2
-  oxidizer: O2:1.,AR:5
-chemistry:
-  mechanism: h2o2.yaml
-domain:
-  width: 30 millimeter # domain width
-"""
-
-
 def defaults():
-    """Returns dictionary containing default arguments"""
-    return Parser.from_yaml(DEFAULTS)
+    """Returns Parser object containing default configuration"""
+    return Parser.from_yaml('adiabatic_flame.yaml', defaults=True)
 
 
 def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
-    """
-    Function handling adiabatic flame simulation.
+    """Function handling adiabatic flame simulation.
+
     The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
     for handling and conversion of units.
 
     Arguments:
         name (str): output group name
-        chemistry (Parser): reflects yaml 'configuration:chemistry'
-        upstream  (Parser): reflects yaml 'configuration:upstream'
-        domain    (Parser): reflects yaml 'configuration:simulation'
+        chemistry (Parser): overloads 'defaults.chemistry'
+        upstream  (Parser): overloads 'defaults.upstream'
+        domain    (Parser): overloads 'defaults.simulation'
         loglevel   (int): amount of diagnostic output (0 to 8)
 
     Returns:

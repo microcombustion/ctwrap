@@ -211,17 +211,22 @@ class Parser(object):
     def from_yaml(
             cls,
             yml: str,
+            defaults: Optional[bool]=False,
             path: Optional[str]=None,
             keys: Optional[str]=None) -> 'Parser':
         """Load parser from YAML
 
         Arguments:
            yml: File name or YAML string
+           defaults: If `True`, load from ``ctwrap.defaults`` database
            path: Relative/absolute path
            keys: List of keys
         """
         fname = Path(yml)
-        if path is not None:
+        if defaults:
+            # load from 'ctwrap/defaults' database
+            fname = Path(__file__).parents[0] / 'defaults' / fname
+        elif path is not None:
             fname = Path(path) / fname
 
         try:
