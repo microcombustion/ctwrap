@@ -1,17 +1,16 @@
-"""The :any:`wrapper` module defines a :class:`Simulation` object that
+"""The :py:mod:`wrapper` module defines a :class:`Simulation` object that
 wraps simulation modules.
 
 Usage
 +++++
 
 Simulation modules specify tasks to be run in a batch job; a simulation
-module needs to define methods ``defaults`` (default parameters),
-``run`` (running of batch calculations) and ``save`` (saving output;
-optional).
+module needs to define methods ``defaults`` (default parameters) and
+``run`` (running of batch calculations).
 
-``ctwrap`` defines several pre-configured simulation modules in the
-:any:`ctwrap.modules` submodule. As an example, the ``minimal`` module is
-loaded using the module path as:
+:py:mod:`ctwrap` defines several pre-configured simulation modules in the
+:py:mod:`ctwrap.modules` submodule. As an example, the :py:mod:`ctwrap.modules.minimal`
+module is loaded using the module path as:
 
 .. code-block:: Python
 

@@ -1,4 +1,4 @@
-"""The :any:`handler` module defines a :class:`SimulationHandler` object
+"""The :py:mod:`handler` module defines a :class:`SimulationHandler` object
 that handles batch jobs of wrapped :any:`Simulation` module runs.
 
 Usage

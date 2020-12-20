@@ -1,4 +1,4 @@
-"""The :mod:`parser` module defines a convenience object :class:`Parser`, which
+"""The :py:mod:`parser` module defines a convenience object :class:`Parser`, which
 supports dimensions via ``pint`` for easy access to data defined in YAML
 configuration files within ``ctwrap`` simulation modules.
 
