@@ -213,19 +213,22 @@ class Simulation(object):
         output.update(mode=mode)
 
         if formatt in ('.h5', '.hdf', '.hdf5'):
-            module = self._load_module()
-            if hasattr(module, 'save'):
-                if self._errored:
-                    with h5py.File(filename, mode) as hdf:
-                        for group, err in self.data.items():
-                            grp = hdf.create_group(group)
-                            grp.attrs[err[0]] = err[1]
-                else:
-                    module.save(filename, self.data, task, **output)
+            if self._errored:
+                with h5py.File(filename, mode) as hdf:
+                    for group, err in self.data.items():
+                        grp = hdf.create_group(group)
+                        grp.attrs[err[0]] = err[1]
             else:
-                raise AttributeError("{} simulation module has no method 'save' "
-                                     "but output format was defined in configuration "
-                                     "file".format(self._module))
+                for group, states in self.data.items():
+                    # pylint: disable=no-member
+                    if type(states).__name__ == 'SolutionArray':
+                        attrs = {'description': task}
+                        states.write_hdf(filename=filename, group=group,
+                                         attrs=attrs, **output)
+                    elif type(states).__name__ in ['FreeFlame']:
+                        states.write_hdf(filename=filename, group=group,
+                                         description=task, **output)
+
         else:
             raise ValueError("Invalid file format {}".format(formatt))
 

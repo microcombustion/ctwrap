@@ -77,9 +77,6 @@ class SimulationHandler(object):
     .. note:: :class:`SimulationHandler` objects should be
         instantiated using the :meth:`from_yaml` method.
 
-    Attributes:
-       verbosity (int): verbosity level
-
     Arguments:
        strategy: Batch simulation strategy
        defaults: Dictionary containing simulation defaults
@@ -98,7 +95,7 @@ class SimulationHandler(object):
         self._strategy = strategy
         self._defaults = defaults
         self._output = output
-        self.verbosity = verbosity
+        self.verbosity = verbosity # type: int
 
         self._tasks = self._strategy.create_tasks(self._defaults)
         if self.verbosity:

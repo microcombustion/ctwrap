@@ -14,11 +14,6 @@ def run(name, foo=.2, bar=1):
     return {name: {'sleep': [foo]}}
 
 
-def save(filename, data, task=None):
-    """Does nothing for this example"""
-    pass
-
-
 if __name__ == "__main__":
     """ Main function """
     config = defaults()
