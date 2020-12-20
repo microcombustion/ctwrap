@@ -63,9 +63,9 @@ import queue  # imported for using queue.Empty exception
 from .parser import _parse, _write, Parser
 from .strategy import Strategy, Sequence, Matrix
 from .wrapper import Simulation
+from .output import _parse_output, _save_metadata
 
 
-supported = ('.h5', '.hdf', '.hdf5')
 indent1 = ' * '
 indent2 = '   - '
 
@@ -74,8 +74,8 @@ class SimulationHandler(object):
     Class handling parameter variations.
     Class adds methods to switch between multiple configurations.
 
-    .. note:: :class:`SimulationHandler` objects should be
-        instantiated using the :meth:`from_yaml` method.
+    .. note:: :class:`SimulationHandler` objects should be instantiated
+        using factory methods :meth:`from_yaml` or :meth:`from_dict`.
 
     Arguments:
        strategy: Batch simulation strategy
@@ -178,76 +178,9 @@ class SimulationHandler(object):
         defaults = content['defaults']
 
         output = content.get('output', None)
-        output = cls._parse_output(output, fname=name, fpath=path)
+        output = _parse_output(output, fname=name, fpath=path)
 
         return cls(strategy=strategy, defaults=defaults, output=output, **kwargs)
-
-    @staticmethod
-    def _parse_output(dct: Dict[str, Any],
-                      fname: Optional[str] = None,
-                      fpath: Optional[str] = None):
-        """
-        Parse output dictionary (hidden function)
-        Overrides defaults with keyword arguments.
-
-        Arguments:
-           dct: dictionary from yaml input
-           fname: filename (overrides yaml)
-           fpath: output path (overrides yaml)
-
-        Returns:
-            Dictionary containing output information
-        """
-
-        if dct is None:
-            return None
-
-        # establish defaults
-        out = dct.copy()
-        out['path'] = None  # should never be specified inside of yaml
-        if 'format' not in out:
-            out['format'] = ''
-        if 'force_overwrite' not in out:
-            out['force_overwrite'] = False
-
-        fformat = out['format']
-
-        # file name keyword overrides dictionary
-        if fname is not None:
-
-            # fname may contain path information
-            head = Path(fname).parent
-            fname = Path(fname).name
-            if str(head) != "." and fpath is not None:
-                raise RuntimeError('contradictory specification')
-            elif str(head) != ".":
-                fpath = head
-
-            fname = Path(fname).stem
-            ext = Path(fname).suffix
-            if ext in supported:
-                fformat = ext
-
-            out['name'] = fname
-
-        # file path keyword overrides dictionary
-        if fpath is not None:
-            out['path'] = fpath
-
-        # file format
-        if fformat is None:
-            pass
-        elif len(fformat):
-            out['format'] = fformat.lstrip('.')
-        else:
-            out['format'] = 'h5'
-
-        if fformat is None:
-            out['file_name'] = None
-        else:
-            out['file_name'] = '.'.join([out['name'], out['format']])
-
-        return out
 
     def __iter__(self):
         """Returns itself as iterator"""
@@ -292,10 +225,8 @@ class SimulationHandler(object):
         """
         Function to run a specific task.
 
-        The :meth:`run_task` method calls the module's run and save method to run and
-        save the resulting output object and also afterwards calls
-        :py:func:`~ctwrap.parser._save_metadata` to save metadata.
-        A simple usage example is:
+        The :meth:`run_task` method calls the module's run method and
+        saves the resulting output and metadata. A simple example is:
 
         .. code-block:: Python
 
@@ -323,7 +254,7 @@ class SimulationHandler(object):
         obj.run(group, config, **kwargs)
         obj._save(task=task)
         if self._output is not None:
-            obj._save_metadata(self._output, self.metadata)
+            _save_metadata(self._output, self.metadata)
 
     def run_serial(self,
                    sim: Simulation,
@@ -346,7 +277,7 @@ class SimulationHandler(object):
             **kwargs: dependent on implementation
 
         Returns:
-            return True when task is completed
+            True when task is completed
         """
 
         assert isinstance(sim, Simulation), 'need simulation object'
@@ -373,7 +304,7 @@ class SimulationHandler(object):
             obj.run(group, config, **kwargs)
             obj._save(task=t)
         if self._output is not None:
-            obj._save_metadata(self._output, self.metadata)
+            _save_metadata(self._output, self.metadata)
         return True
 
     def run_parallel(self,
@@ -401,7 +332,7 @@ class SimulationHandler(object):
             **kwargs: dependent on implementation
 
         Returns:
-            return True when task is completed
+            True when task is completed
         """
 
         assert isinstance(sim, Simulation), 'need simulation object'
@@ -451,7 +382,7 @@ class SimulationHandler(object):
         if self._output is not None:
             if verbosity > 1:
                 print(indent1 + "Appending metadata")
-            sim._save_metadata(self._output, self.metadata)
+            _save_metadata(self._output, self.metadata)
 
         return True
 
