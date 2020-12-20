@@ -124,6 +124,24 @@ def _write(value: Union[int, float, str], unit: Optional[str]=None):
     return out
 
 
+def _update(value: Dict[str, Any], update: Dict[str, Any]):
+    """Update entries in nested dictionaries (recursive)
+
+    Arguments:
+       value: Multi-level (nested) dictionary
+       update: Dictionary containing updates
+    """
+    for key, val in update.items():
+
+        if key not in value:
+            value[key] = val
+        elif isinstance(val, dict):
+            value[key] = _update(value[key], val)
+        else:
+            value[key] = val
+    return value
+
+
 class Parser(object):
     """A lightweight class that handles units.
 
@@ -252,3 +270,17 @@ class Parser(object):
         if default:
             return default
         return None
+
+    def update(self, new: Union[Dict, 'Parser']):
+        """Update Parser object (recursive)
+
+        Arguments:
+           new: Object containing replacement values
+        """
+        if isinstance(new, Parser):
+            new = new.raw
+        elif not isinstance(new, dict):
+            raise TypeError("Replacement value needs to be 'Parser' or 'dict', "
+                            "not '{}".format(type(new)))
+
+        self.raw = _update(self.raw, new)
