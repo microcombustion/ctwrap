@@ -91,4 +91,4 @@ def run(chemistry=None, upstream=None, domain=None, settings=None):
 if __name__ == "__main__":
     """ Main function """
     config = defaults()
-    out = run(**config, loglevel=1)
+    out = run(**config)
