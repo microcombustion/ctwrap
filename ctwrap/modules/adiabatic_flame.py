@@ -25,18 +25,17 @@ def defaults():
     return Parser.from_yaml('adiabatic_flame.yaml', defaults=True)
 
 
-def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
+def run(chemistry=None, upstream=None, domain=None, settings=None):
     """Function handling adiabatic flame simulation.
 
     The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
     for handling and conversion of units.
 
     Arguments:
-        name (str): output group name
         chemistry (Parser): overloads 'defaults.chemistry'
         upstream  (Parser): overloads 'defaults.upstream'
         domain    (Parser): overloads 'defaults.simulation'
-        loglevel   (int): amount of diagnostic output (0 to 8)
+        settings  (Parser): overloads 'defaults.settings'
 
     Returns:
         Dictionary containing Cantera `Flamebase` object
@@ -58,24 +57,19 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
     # set up flame object
     width = domain.width.m_as('meter')
     f = ct.FreeFlame(gas, width=width)
-    f.set_refine_criteria(ratio=3, slope=0.06, curve=0.12)
-    if loglevel > 0:
+    f.set_refine_criteria(ratio=settings.ratio, slope=settings.slope, curve=settings.curve)
+    if settings.loglevel > 0:
         f.show_solution()
-
-    out = {}
 
     # Solve with mixture-averaged transport model
     f.transport_model = 'Mix'
-    f.solve(loglevel=loglevel, auto=True)
+    f.solve(loglevel=settings.loglevel, auto=True)
 
     # Solve with the energy equation enabled
-    if loglevel > 0:
+    if settings.loglevel > 0:
         f.show_solution()
-    msg = '    {0:s}: mixture-averaged flamespeed = {1:7f} m/s'
-    print(msg.format(name, f.velocity[0]))
-
-    group = name + "_mix"
-    out[group] = f
+    msg = '    mixture-averaged flamespeed = {:7f} m/s'
+    print(msg.format(f.velocity[0]))
 
     f_sol = f.to_solution_array()
 
@@ -85,19 +79,16 @@ def run(name, chemistry=None, upstream=None, domain=None, loglevel=0):
     g = ct.FreeFlame(gas, width=width)
     g.set_initial_guess(data=f_sol)
     g.transport_model = 'Multi'
-    g.solve(loglevel)  # don't use 'auto' on subsequent solves
-    if loglevel > 0:
+    g.solve(settings.loglevel)  # don't use 'auto' on subsequent solves
+    if settings.loglevel > 0:
         g.show_solution()
-    msg = '    {0:s}: multi-component flamespeed  = {1:7f} m/s'
-    print(msg.format(name, g.velocity[0]))
+    msg = '    multi-component flamespeed  = {:7f} m/s'
+    print(msg.format(g.velocity[0]))
 
-    group = name + "_multi"
-    out[group] = g
-
-    return out
+    return {'mix': f, 'multi': g}
 
 
 if __name__ == "__main__":
     """ Main function """
     config = defaults()
-    df = run('main', **config, loglevel=1)
+    out = run(**config, loglevel=1)

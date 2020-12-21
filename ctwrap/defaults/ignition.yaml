@@ -7,7 +7,7 @@ initial:
   oxidizer: O2:1.,AR:3.76
 chemistry:
   mechanism: h2o2.yaml
-simulation:
+settings:
   delta_t: 1.e-5
   n_points: 500
   atol: 1.e-15
