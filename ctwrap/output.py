@@ -1,4 +1,9 @@
-"""The :py:mod:`output` module defines helper functions used for file output
+"""The :py:mod:`output` module defines defines a :class:`Output` object
+and derived classes that handle file output for batch jobs of wrapped
+:any:`Simulation` module runs.
+
+Class Definitions
++++++++++++++++++
 """
 
 from pathlib import Path
