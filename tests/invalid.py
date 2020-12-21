@@ -6,7 +6,7 @@ def defaults():
     return {'foo': 0.2}
 
 
-def run(name, foo=.2):
+def run(foo=.2):
     """Simply raise error"""
     raise RuntimeError("Hello world!")
 
@@ -19,4 +19,4 @@ def save(filename, data, task=None):
 if __name__ == "__main__":
     """ Main function """
     config = defaults()
-    out = run('main', **config)
+    out = run(**config)

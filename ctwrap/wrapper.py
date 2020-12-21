@@ -83,7 +83,7 @@ class Simulation(object):
     @classmethod
     def from_module(cls,
                     module: str,
-                    output: Optional[Dict[str, Any]] = None) -> \
+                    output: Optional[Dict[str, Any]]=None) -> \
             Union['Simulation', Dict[str, Any], str]:
         """
         Alternative constructor for `Simulation` object.
@@ -126,8 +126,8 @@ class Simulation(object):
 
         return importlib.import_module(self._module)
 
-    def run(self, name: Optional[str] = 'defaults',
-            config: Optional[Dict[str, Any]] = None,
+    def run(self, name: Optional[str]='unspecified',
+            config: Optional[Dict[str, Any]]=None,
             **kwargs: str) -> None:
         """Runs the simulation module's ``run`` method.
 
@@ -143,7 +143,7 @@ class Simulation(object):
         Arguments:
             name: Name of simulation run
             config: Configuration used for simulation
-            **kwargs: Optional parameters passed to the job
+            **kwargs: Optional parameters passed to the simulation
         """
 
         module = self._load_module()
@@ -153,7 +153,11 @@ class Simulation(object):
         config = Parser(config)
 
         try:
-            self.data = module.run(name, **config, **kwargs)
+            out = module.run(**config, **kwargs)
+            if isinstance(out, dict):
+                self.data = {'{}_{}'.format(name, k): v for k, v in out.items()}
+            else:
+                self.data = {name: out}
             self._errored = False
         except Exception as err:
             # Convert exception to warning

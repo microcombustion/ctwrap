@@ -26,21 +26,19 @@ def defaults():
     return Parser.from_yaml('ignition.yaml', defaults=True)
 
 
-def run(name, chemistry=None,
-        initial=None, simulation=None):
+def run(chemistry=None, initial=None, settings=None):
     """Function handling reactor simulation.
 
     The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
     for handling and conversion of units.
 
     Arguments:
-        name (str): output group name
         chemistry  (Parser): overloads 'defaults.chemistry'
         initial    (Parser): overloads 'defaults.initial'
-        simulation (Parser): overloads 'defaults.simulation'
+        settings (Parser): overloads 'defaults.settings'
 
     Returns:
-        Dictionary containing Cantera SolutionArray
+        Cantera SolutionArray
     """
 
     # initialize gas object
@@ -61,10 +59,10 @@ def run(name, chemistry=None,
     reactor.set_advance_limit('temperature', delta_T_max)
 
     # set simulation parameters
-    sim.atol = simulation['atol']
-    sim.rtol = simulation['rtol']
-    delta_t = simulation['delta_t']
-    n_points = simulation['n_points']
+    sim.atol = settings['atol']
+    sim.rtol = settings['rtol']
+    delta_t = settings['delta_t']
+    n_points = settings['n_points']
 
     # define SolutionArray and run simulation
     states = ct.SolutionArray(gas, extra=['t'])
@@ -76,10 +74,10 @@ def run(name, chemistry=None,
         sim.advance(time)
         states.append(reactor.thermo.state, t=time)
 
-    return {name: states}
+    return states
 
 
 if __name__ == "__main__":
     """ Main function """
     config = defaults()
-    out = run('main', **config)
+    out = run(**config)

@@ -9,3 +9,8 @@ chemistry:
   mechanism: h2o2.yaml
 domain:
   width: 30 millimeter # domain width
+settings:
+  loglevel: 0 # amount of diagnostic output (0 to 8)
+  ratio: 3
+  slope: 0.06
+  curve: 0.12
