@@ -1,0 +1,23 @@
+# default parameters for the `equilibrium` module
+initial:
+  T: 300. kelvin # temperature
+  P: 1. atmosphere # pressure
+phases:
+  gas: # gas phase
+    mechanism: gri30.yaml
+    moles: 1.
+    phi: .55 # equivalence ratio
+    fuel: CH4
+    oxidizer: O2:1.0, N2:3.76
+  carbon: # solid phase
+    mechanism: graphite.yaml
+    moles: 0.
+    X: C(gr):1.0
+equilibrate:
+  mode: HP
+  solver: gibbs
+  max_steps: 1000
+returns:
+  T: T # temperature
+  P: P # pressure
+  species_names: species_moles
