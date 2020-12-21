@@ -12,7 +12,6 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -36,28 +35,19 @@
             
   <div class="section" id="adiabatic-flame-batch">
 <h1>Adiabatic Flame Batch<a class="headerlink" href="#adiabatic-flame-batch" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="yaml-configuration">
-<h2>YAML Configuration<a class="headerlink" href="#yaml-configuration" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `adiabatic_flame` module</span>
-<span class="c1"># file specifies a parameter variation of the equivalence ratio</span>
-<span class="nt">strategy</span><span class="p">:</span>
-  <span class="nt">sequence</span><span class="p">:</span>
-    <span class="nt">upstream.phi</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">linspace</span><span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">2.6</span><span class="p p-Indicator">],</span><span class="nt"> npoints</span><span class="p">:</span> <span class="nv">12</span> <span class="p p-Indicator">}</span>
-<span class="nt">output</span><span class="p">:</span>
-  <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
-  <span class="nt">force_overwrite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="nt">defaults</span><span class="p">:</span>
-  <span class="nt">upstream</span><span class="p">:</span>
-    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300. kelvin</span> <span class="c1"># temperature</span>
-    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1. atmosphere</span> <span class="c1"># pressure</span>
-    <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.55</span> <span class="c1"># equivalence ratio</span>
-    <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">H2</span>
-    <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1,AR:5</span>
-  <span class="nt">chemistry</span><span class="p">:</span>
-    <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
-  <span class="nt">domain</span><span class="p">:</span>
-    <span class="nt">width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30 millimeter</span> <span class="c1"># domain width</span>
-<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2.0</span>
+<div class="section" id="yaml-defaults">
+<h2>YAML Defaults<a class="headerlink" href="#yaml-defaults" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># default parameters for the `adiabatic_flame` module</span>
+<span class="nt">upstream</span><span class="p">:</span>
+  <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300. kelvin</span> <span class="c1"># temperature</span>
+  <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1. atmosphere</span> <span class="c1"># pressure</span>
+  <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.55</span> <span class="c1"># equivalence ratio</span>
+  <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">H2</span>
+  <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1.,AR:5</span>
+<span class="nt">chemistry</span><span class="p">:</span>
+  <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
+<span class="nt">domain</span><span class="p">:</span>
+  <span class="nt">width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30 millimeter</span> <span class="c1"># domain width</span>
 </pre></div>
 </div>
 </div>
@@ -162,33 +152,39 @@
     <span class="k">return</span> <span class="n">out</span>
 
 
-<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function saves the output from the run method</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">        filename (str): naming of file</span>
-<span class="sd">        data (Dict): data to be saved</span>
-<span class="sd">        task (str): name of task if running variations</span>
-<span class="sd">        kwargs (dict): keyword argument</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">flame</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">flame</span><span class="o">.</span><span class="n">write_hdf</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span>
-                        <span class="n">description</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Main function &quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">()</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">save</span><span class="p">(</span><span class="s1">&#39;adiabatic_flame.h5&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="running-the-batch-simulation">
 <h2>Running the Batch Simulation<a class="headerlink" href="#running-the-batch-simulation" title="Permalink to this headline">¶</a></h2>
-<p>A parallel batch job for adiabatic flame calculations using the
+<p>An example for a batch simulation is given by the YAML configuration</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `adiabatic_flame` module</span>
+<span class="c1"># file specifies a parameter variation of the equivalence ratio</span>
+<span class="nt">strategy</span><span class="p">:</span>
+  <span class="nt">sequence</span><span class="p">:</span>
+    <span class="nt">upstream.phi</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">linspace</span><span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">2.6</span><span class="p p-Indicator">],</span><span class="nt"> npoints</span><span class="p">:</span> <span class="nv">12</span> <span class="p p-Indicator">}</span>
+<span class="nt">output</span><span class="p">:</span>
+  <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
+  <span class="nt">force_overwrite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="nt">defaults</span><span class="p">:</span>
+  <span class="nt">upstream</span><span class="p">:</span>
+    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300. kelvin</span> <span class="c1"># temperature</span>
+    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1. atmosphere</span> <span class="c1"># pressure</span>
+    <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.55</span> <span class="c1"># equivalence ratio</span>
+    <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">H2</span>
+    <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1,AR:5</span>
+  <span class="nt">chemistry</span><span class="p">:</span>
+    <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
+  <span class="nt">domain</span><span class="p">:</span>
+    <span class="nt">width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30 millimeter</span> <span class="c1"># domain width</span>
+<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2.0</span>
+</pre></div>
+</div>
+<p>A parallel batch job for adiabatic flame calculations using this
 configuration and the simulation module above can be run as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap adiabatic_flame adiabatic_flame.yaml --parallel
 </pre></div>
@@ -266,7 +262,7 @@ configuration and the simulation module above can be run as:</p>
       &copy;2018-20, I. Schoegl and D. Akinpelu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -33,7 +32,7 @@
           <div class="body" role="main">
             
   <h1>Source code for ctwrap.parser</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;The :mod:`parser` module defines a convenience object :class:`Parser`, which</span>
+<span></span><span class="sd">&quot;&quot;&quot;The :py:mod:`parser` module defines a convenience object :class:`Parser`, which</span>
 <span class="sd">supports dimensions via ``pint`` for easy access to data defined in YAML</span>
 <span class="sd">configuration files within ``ctwrap`` simulation modules.</span>
 
@@ -157,6 +156,24 @@
         <span class="n">out</span> <span class="o">+=</span> <span class="s1">&#39; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">update</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Update entries in nested dictionaries (recursive)</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">       value: Multi-level (nested) dictionary</span>
+<span class="sd">       update: Dictionary containing updates</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">update</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="n">value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_update</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="k">return</span> <span class="n">value</span>
 
 
 <div class="viewcode-block" id="Parser"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser">[docs]</a><span class="k">class</span> <span class="nc">Parser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -286,7 +303,21 @@
             <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">default</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">default</span>
-        <span class="k">return</span> <span class="kc">None</span></div></div>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Parser.update"><a class="viewcode-back" href="../../pages/parser.html#ctwrap.parser.Parser.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="s1">&#39;Parser&#39;</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Update Parser object (recursive)</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">           new: Object containing replacement values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">Parser</span><span class="p">):</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">raw</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Replacement value needs to be &#39;Parser&#39; or &#39;dict&#39;, &quot;</span>
+                            <span class="s2">&quot;not &#39;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">new</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -355,7 +386,7 @@
       &copy;2018-20, I. Schoegl and D. Akinpelu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

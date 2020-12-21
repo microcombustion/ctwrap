@@ -12,7 +12,6 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,17 +34,16 @@
             
   <div class="section" id="module-ctwrap.wrapper">
 <span id="ctwrap-wrapper"></span><h1>ctwrap Wrapper<a class="headerlink" href="#module-ctwrap.wrapper" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference internal" href="#"><span class="doc">ctwrap Wrapper</span></a> module defines a <a class="reference internal" href="#ctwrap.wrapper.Simulation" title="ctwrap.wrapper.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a> object that
+<p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">wrapper</span></code> module defines a <a class="reference internal" href="#ctwrap.wrapper.Simulation" title="ctwrap.wrapper.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a> object that
 wraps simulation modules.</p>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>Simulation modules specify tasks to be run in a batch job; a simulation
-module needs to define methods <code class="docutils literal notranslate"><span class="pre">defaults</span></code> (default parameters),
-<code class="docutils literal notranslate"><span class="pre">run</span></code> (running of batch calculations) and <code class="docutils literal notranslate"><span class="pre">save</span></code> (saving output;
-optional).</p>
-<p><code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> defines several pre-configured simulation modules in the
-<code class="xref any docutils literal notranslate"><span class="pre">ctwrap.modules</span></code> submodule. As an example, the <code class="docutils literal notranslate"><span class="pre">minimal</span></code> module is
-loaded using the module path as:</p>
+module needs to define methods <code class="docutils literal notranslate"><span class="pre">defaults</span></code> (default parameters) and
+<code class="docutils literal notranslate"><span class="pre">run</span></code> (running of batch calculations).</p>
+<p><code class="xref py py-mod docutils literal notranslate"><span class="pre">ctwrap</span></code> defines several pre-configured simulation modules in the
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">ctwrap.modules</span></code> submodule. As an example, the <code class="xref py py-mod docutils literal notranslate"><span class="pre">ctwrap.modules.minimal</span></code>
+module is loaded using the module path as:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ctwrap</span> <span class="k">as</span> <span class="nn">cw</span>
 
 <span class="n">sim</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">Simulation</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="s1">&#39;ctwrap.modules.minimal&#39;</span><span class="p">)</span>
@@ -221,7 +219,7 @@ simulation module <code class="docutils literal notranslate"><span class="pre">m
       &copy;2018-20, I. Schoegl and D. Akinpelu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

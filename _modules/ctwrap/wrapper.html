@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -33,20 +32,19 @@
           <div class="body" role="main">
             
   <h1>Source code for ctwrap.wrapper</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;The :any:`wrapper` module defines a :class:`Simulation` object that</span>
+<span></span><span class="sd">&quot;&quot;&quot;The :py:mod:`wrapper` module defines a :class:`Simulation` object that</span>
 <span class="sd">wraps simulation modules.</span>
 
 <span class="sd">Usage</span>
 <span class="sd">+++++</span>
 
 <span class="sd">Simulation modules specify tasks to be run in a batch job; a simulation</span>
-<span class="sd">module needs to define methods ``defaults`` (default parameters),</span>
-<span class="sd">``run`` (running of batch calculations) and ``save`` (saving output;</span>
-<span class="sd">optional).</span>
+<span class="sd">module needs to define methods ``defaults`` (default parameters) and</span>
+<span class="sd">``run`` (running of batch calculations).</span>
 
-<span class="sd">``ctwrap`` defines several pre-configured simulation modules in the</span>
-<span class="sd">:any:`ctwrap.modules` submodule. As an example, the ``minimal`` module is</span>
-<span class="sd">loaded using the module path as:</span>
+<span class="sd">:py:mod:`ctwrap` defines several pre-configured simulation modules in the</span>
+<span class="sd">:py:mod:`ctwrap.modules` submodule. As an example, the :py:mod:`ctwrap.modules.minimal`</span>
+<span class="sd">module is loaded using the module path as:</span>
 
 <span class="sd">.. code-block:: Python</span>
 
@@ -75,8 +73,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
-<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
@@ -84,6 +80,7 @@
 
 <span class="c1"># ctwrap specific import</span>
 <span class="kn">from</span> <span class="nn">.parser</span> <span class="kn">import</span> <span class="n">Parser</span>
+<span class="kn">from</span> <span class="nn">.output</span> <span class="kn">import</span> <span class="n">_save_hdf</span>
 
 
 <div class="viewcode-block" id="Simulation"><a class="viewcode-back" href="../../pages/wrapper.html#ctwrap.wrapper.Simulation">[docs]</a><span class="k">class</span> <span class="nc">Simulation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -208,8 +205,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save simulation data (hidden)</span>
 
-<span class="sd">        The :meth:`_save` is used to call the simulation module&#39;s save method.</span>
-
 <span class="sd">        Arguments:</span>
 <span class="sd">            **kwargs (optional): keyword arguments</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -218,101 +213,14 @@
             <span class="k">return</span>
 
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-        <span class="n">filename</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;file_name&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="n">filepath</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
-        <span class="n">formatt</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">output</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;format&#39;</span><span class="p">)</span>
-        <span class="n">force</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;force_overwrite&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="o">/</span> <span class="n">filename</span>
-
-        <span class="c1"># file check</span>
-        <span class="n">fexists</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="n">fexists</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">hdf</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;a&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
-                        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Cannot overwrite existing &#39;</span> \
-                              <span class="s1">&#39;group `</span><span class="si">{}</span><span class="s1">` (use force to override)&#39;</span>
-                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group</span><span class="p">))</span>
-                    <span class="k">elif</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;a&#39;</span> <span class="ow">and</span> <span class="n">force</span><span class="p">:</span>
-                        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span>
-
-        <span class="n">output</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
-        <span class="n">output</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="n">formatt</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;format&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">formatt</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;.hdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.hdf5&#39;</span><span class="p">):</span>
-            <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_module</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s1">&#39;save&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_errored</span><span class="p">:</span>
-                    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">err</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                            <span class="n">grp</span> <span class="o">=</span> <span class="n">hdf</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
-                            <span class="n">grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">err</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">err</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">module</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="o">**</span><span class="n">output</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> simulation module has no method &#39;save&#39; &quot;</span>
-                                     <span class="s2">&quot;but output format was defined in configuration &quot;</span>
-                                     <span class="s2">&quot;file&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="p">))</span>
+
+            <span class="n">_save_hdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">errored</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_errored</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid file format </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">formatt</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                       <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                       <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                       <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Modules saves the input file as an attribute after the</span>
-<span class="sd">        batch simulation has been completed</span>
-
-<span class="sd">        This method calls the</span>
-<span class="sd">        :py:func:`~ctwrap.parser.save_metadata` method.</span>
-
-<span class="sd">        Arguments:</span>
-<span class="sd">            metadata (dict): data to be saved</span>
-<span class="sd">            output (dict): output file information</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span>
-
-        <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="k">def</span> <span class="nf">save_metadata</span><span class="p">(</span><span class="n">output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-                        <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="sd">&quot;&quot;&quot;Function save metadata as attributes to file</span>
-
-<span class="sd">            Arguments:</span>
-<span class="sd">                output: file information</span>
-<span class="sd">                metadata: metadata</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-
-            <span class="n">oname</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
-            <span class="n">opath</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span>
-            <span class="c1">#formatt = output[&#39;format&#39;]</span>
-            <span class="c1">#force = output[&#39;force_overwrite&#39;]</span>
-
-            <span class="k">if</span> <span class="n">oname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span>
-            <span class="k">if</span> <span class="n">opath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">oname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opath</span><span class="p">)</span> <span class="o">/</span> <span class="n">oname</span>
-
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">oname</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                        <span class="n">hdf</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">hdf</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-
-        <span class="n">save_metadata</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid file format </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">formatt</span><span class="p">))</span></div>
 </pre></div>
 
           </div>
@@ -381,7 +289,7 @@
       &copy;2018-20, I. Schoegl and D. Akinpelu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

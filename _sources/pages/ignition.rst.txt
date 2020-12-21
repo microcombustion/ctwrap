@@ -1,10 +1,10 @@
 Ignition Batch Simulation
 =========================
 
-YAML Configuration
-------------------
+YAML Defaults
+-------------
 
-.. literalinclude:: ../../yaml/ignition.yaml
+.. literalinclude:: ../../ctwrap/defaults/ignition.yaml
    :language: yaml
 
 Simulation Module
@@ -15,6 +15,11 @@ Simulation Module
 
 Running the Batch Simulation
 ----------------------------
+
+An example for a batch simulation is given by the YAML configuration
+
+.. literalinclude:: ../../yaml/ignition.yaml
+   :language: yaml
 
 A parallel batch job for ignition calculations using the configuration and the simulation
 module above can be run as:

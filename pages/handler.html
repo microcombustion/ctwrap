@@ -12,7 +12,6 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -36,7 +35,7 @@
             
   <div class="section" id="module-ctwrap.handler">
 <span id="ctwrap-handler"></span><h1>ctwrap Handler<a class="headerlink" href="#module-ctwrap.handler" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference internal" href="#"><span class="doc">ctwrap Handler</span></a> module defines a <a class="reference internal" href="#ctwrap.handler.SimulationHandler" title="ctwrap.handler.SimulationHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationHandler</span></code></a> object
+<p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">handler</span></code> module defines a <a class="reference internal" href="#ctwrap.handler.SimulationHandler" title="ctwrap.handler.SimulationHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationHandler</span></code></a> object
 that handles batch jobs of wrapped <a class="reference internal" href="wrapper.html#ctwrap.wrapper.Simulation" title="ctwrap.wrapper.Simulation"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a> module runs.</p>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
@@ -85,20 +84,9 @@ YAML block above, the simulation strategy <em>sequence-2</em> is loaded by issui
 Class adds methods to switch between multiple configurations.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference internal" href="#ctwrap.handler.SimulationHandler" title="ctwrap.handler.SimulationHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationHandler</span></code></a> objects should be
-instantiated using the <a class="reference internal" href="#ctwrap.handler.SimulationHandler.from_yaml" title="ctwrap.handler.SimulationHandler.from_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_yaml()</span></code></a> method.</p>
+<p><a class="reference internal" href="#ctwrap.handler.SimulationHandler" title="ctwrap.handler.SimulationHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationHandler</span></code></a> objects should be instantiated
+using factory methods <a class="reference internal" href="#ctwrap.handler.SimulationHandler.from_yaml" title="ctwrap.handler.SimulationHandler.from_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_yaml()</span></code></a> or <a class="reference internal" href="#ctwrap.handler.SimulationHandler.from_dict" title="ctwrap.handler.SimulationHandler.from_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_dict()</span></code></a>.</p>
 </div>
-<dl class="py attribute">
-<dt id="ctwrap.handler.SimulationHandler.verbosity">
-<code class="sig-name descname">verbosity</code><a class="headerlink" href="#ctwrap.handler.SimulationHandler.verbosity" title="Permalink to this definition">¶</a></dt>
-<dd><p>verbosity level</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -184,10 +172,8 @@ instantiated using the <a class="reference internal" href="#ctwrap.handler.Simul
 <dt id="ctwrap.handler.SimulationHandler.run_task">
 <code class="sig-name descname">run_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/handler.html#SimulationHandler.run_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.handler.SimulationHandler.run_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to run a specific task.</p>
-<p>The <a class="reference internal" href="#ctwrap.handler.SimulationHandler.run_task" title="ctwrap.handler.SimulationHandler.run_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_task()</span></code></a> method calls the module’s run and save method to run and
-save the resulting output object and also afterwards calls
-<code class="xref py py-func docutils literal notranslate"><span class="pre">_save_metadata()</span></code> to save metadata.
-A simple usage example is:</p>
+<p>The <a class="reference internal" href="#ctwrap.handler.SimulationHandler.run_task" title="ctwrap.handler.SimulationHandler.run_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_task()</span></code></a> method calls the module’s run method and
+saves the resulting output and metadata. A simple example is:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Runs the task `sleep_0.4` using `sim` object</span>
 <span class="n">sh</span><span class="o">.</span><span class="n">run_task</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="s1">&#39;sleep_0.4&#39;</span> <span class="p">)</span>
 </pre></div>
@@ -225,7 +211,7 @@ file in serial and also saves metadata. A simple usage example is:</p>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>return True when task is completed</p>
+<dd class="field-odd"><p>True when task is completed</p>
 </dd>
 </dl>
 </dd></dl>
@@ -255,7 +241,7 @@ and also saves metadata.</p>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>return True when task is completed</p>
+<dd class="field-odd"><p>True when task is completed</p>
 </dd>
 </dl>
 </dd></dl>
@@ -334,7 +320,7 @@ and also saves metadata.</p>
       &copy;2018-20, I. Schoegl and D. Akinpelu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
