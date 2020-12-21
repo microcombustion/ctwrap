@@ -86,6 +86,7 @@ def _save_hdf(data, output, task, mode='a', errored=False):
 
     filepath = output.pop('path')
     force = output.pop('force_overwrite')
+    output.pop('format')
 
     if filepath is not None:
         filename = Path(filepath) / filename
@@ -106,6 +107,9 @@ def _save_hdf(data, output, task, mode='a', errored=False):
     output.pop('name')
     output.update(mode=mode)
 
+    hdf_kwargs = {'mode', 'append', 'compression', 'compression_opts'}
+    kwargs = {k: v for k, v in output.items() if k in hdf_kwargs}
+
     if errored:
         with h5py.File(filename, mode) as hdf:
             for group, err in data.items():
@@ -117,10 +121,10 @@ def _save_hdf(data, output, task, mode='a', errored=False):
             if type(states).__name__ == 'SolutionArray':
                 attrs = {'description': task}
                 states.write_hdf(filename=filename, group=group,
-                                    attrs=attrs, **output)
+                                 attrs=attrs, **kwargs)
             elif type(states).__name__ in ['FreeFlame']:
                 states.write_hdf(filename=filename, group=group,
-                                    description=task, **output)
+                                 description=task, **kwargs)
 
 def _save_metadata(output: Optional[Dict[str, Any]] = None,
                    metadata: Optional[Dict[str, Any]] = None,
