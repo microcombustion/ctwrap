@@ -5,6 +5,11 @@ on:
     # Build on tags that look like releases
     tags:
       - v*
+    tags-ignore:
+      - '**a*'
+      - '**-alpha'
+      - '**b*'
+      - '**-beta'
 
 jobs:
   sphinx-docs:
