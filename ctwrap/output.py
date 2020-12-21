@@ -4,89 +4,187 @@
 from pathlib import Path
 import h5py
 import json
+import warnings
 
 from typing import Dict, Any, Optional, Union
 
 
-supported = ('.h5', '.hdf', '.hdf5')
-
-
-def _parse_output(out: Dict[str, Any],
-                  fname: Optional[str] = None,
-                  fpath: Optional[str] = None):
-    """
-    Parse output dictionary (hidden function)
-    Overrides defaults with keyword arguments.
+class Output:
+    """Class handling file output
 
     Arguments:
-        out: dictionary from yaml input
-        fname: filename (overrides yaml)
-        fpath: output path (overrides yaml)
-
-    Returns:
-        Dictionary containing output information
+       settings: Dictionary specifying output settings
+       file_name: filename (overrides settings enty)
+       file_path: output path (overrides settings entryl)
     """
+    _ext = [None]
 
-    if out is None:
-        return None
+    def __init__(
+            self,
+            settings: Dict[str, Any],
+            file_name: Optional[str]=None,
+            file_path: Optional[str]=None
+        ):
+        """Constructor"""
+        file_format = settings.pop('format', None)
+        if isinstance(file_format, str):
+            file_format = '.' + file_format.lstrip('.')
 
-    # establish defaults
-    out = out.copy()
-    out['path'] = None  # should never be specified inside of yaml
-    if 'format' not in out:
-        out['format'] = ''
-    if 'force_overwrite' not in out:
-        out['force_overwrite'] = False
+        if 'force_overwrite' in settings:
+            settings['force'] = settings.pop('force_overwrite')
+            warnings.warn("Key 'force_overwrite' is replaced by 'force'",
+                          PendingDeprecationWarning)
 
-    fformat = out['format']
+        if 'file_name' in settings:
+            settings['name'] = settings.pop('file_name')
+            warnings.warn("Key 'file_name' is replaced by 'name'",
+                          PendingDeprecationWarning)
 
-    # file name keyword overrides dictionary
-    if fname is not None:
+        # file name keyword overrides dictionary
+        if file_name is None:
+            file_name = Path(settings['name'])
+            if file_format is None:
+                file_format = file_name.suffix
+            file_name = file_name.stem
 
-        # fname may contain path information
-        head = Path(fname).parent
-        fname = Path(fname).name
-        if str(head) != "." and fpath is not None:
-            raise RuntimeError('contradictory specification')
-        elif str(head) != ".":
-            fpath = head
+        else:
+            # file_name may contain path information
+            head = Path(file_name).parent
+            file_name = Path(file_name).name
+            if str(head) != "." and file_path is None:
+                file_path = head
+            elif str(head) != ".":
+                raise RuntimeError('Contradictory path specifications')
 
-        fname = Path(fname).stem
-        ext = Path(fname).suffix
-        if ext in supported:
-            fformat = ext
+            tmp = Path(file_name).suffix
+            if tmp:
+                file_format = tmp
+            file_name = Path(file_name).stem
 
-        out['name'] = fname
+        # ensure extension matches object type
+        if file_format not in self._ext:
+            raise ValueError("Incompatible output type for class {}: {} is "
+                             "not in {}".format(type(self), file_format, self._ext))
 
-    # file path keyword overrides dictionary
-    if fpath is not None:
-        out['path'] = fpath
+        self.force = settings.pop('force', False)
+        self.mode = settings.pop('mode', 'a')
+        self.path = str(file_path)
+        self.name = file_name + file_format
+        self.kwargs = settings.copy()
 
-    # file format
-    if fformat is None:
-        pass
-    elif len(fformat):
-        out['format'] = fformat.lstrip('.')
-    else:
-        out['format'] = 'h5'
+    @property
+    def settings(self):
+        """Output settings"""
+        out = {
+            'format' : Path(self.name).suffix.lstrip('.'),
+            'name': self.name,
+            'path': self.path,
+            'force': self.force,
+            'mode': self.mode
+        }
+        return {**out, **self.kwargs}
 
-    if fformat is None:
-        out['file_name'] = None
-    else:
-        out['file_name'] = '.'.join([out['name'], out['format']])
+    @classmethod
+    def from_dict(
+            cls,
+            settings: Dict[str, Any],
+            file_name: Optional[str]=None,
+            file_path: Optional[str]=None
+        ) -> 'Output':
+        """Factory loader for :class:`Output` objects
 
-    return out
+        Arguments:
+           settings: Dictionary containing output settings
+        """
+        ext = settings.get('format')
+        if ext is None:
+            return Output(settings.copy(), file_name, file_path)
 
-def _save_hdf(data, output, task, mode='a', errored=False):
+        ext = '.' + ext
+        if ext in WriteHDF._ext:
+            return WriteHDF(settings.copy(), file_name, file_path)
 
-    filename = output.pop('file_name')
+        raise NotImplementedError("Invalid file format {}".format(ext))
+
+    def save(
+            self,
+            data: Any,
+            task: str,
+            mode: Optional[str]='a',
+            errored: Optional[bool]=False
+        ) -> bool:
+        """Save output
+
+        Arguments:
+           data: Data to be saved
+           task: Description of simulation task
+           mode: Save mode
+           errored: Boolean describing success of simulation task
+
+        Returns:
+            `True` if data are saved successfully
+        """
+        raise NotImplementedError("Needs to be overloaded by derived methods")
+
+    def save_metadata(
+            self,
+            metadata: Dict[str, Any]
+        ) -> bool:
+        """Save metadata
+
+        Arguments:
+            metadata: Metadata to be appended to the output file
+
+        Returns:
+            `True` if metadata are saved successfully
+        """
+        raise NotImplementedError("Needs to be overloaded by derived methods")
+
+
+class WriteHDF(Output):
+
+    _ext = ['.h5', '.hdf', '.hdf5']
+
+    def save(self, data, task, mode=None, errored=False):
+        ""
+        settings = self.settings
+        if mode is None:
+            mode = settings['mode']
+
+        try:
+            _save_hdf(data, settings, task, mode, errored)
+            return True
+        except OSError as err:
+            # Convert exception to warning
+            msg = "Output of task '{}' failed with error message:\n{}".format(task, err)
+            warnings.warn(msg, RuntimeWarning)
+            return False
+
+    def save_metadata(self, metadata):
+        ""
+        if metadata is None:
+            return None
+
+        try:
+            _save_metadata(self.settings, metadata)
+            return True
+        except OSError as err:
+            # Convert exception to warning
+            msg = "Output of metadata failed with error message:\n{}".format(err)
+            warnings.warn(msg, RuntimeWarning)
+            return False
+
+
+def _save_hdf(data, settings, task, mode='a', errored=False):
+    filename = settings.pop('name')
+    settings.pop('mode')
 
     if filename is None:
         return
 
-    filepath = output.pop('path')
-    force = output.pop('force_overwrite')
-    output.pop('format')
+    filepath = settings.pop('path')
+    force = settings.pop('force')
+    settings.pop('format')
 
     if filepath is not None:
         filename = Path(filepath) / filename
@@ -104,11 +202,10 @@ def _save_hdf(data, output, task, mode='a', errored=False):
                 elif group in data and mode == 'a' and force:
                     mode = 'w'
 
-    output.pop('name')
-    output.update(mode=mode)
+    settings.update(mode=mode)
 
     hdf_kwargs = {'mode', 'append', 'compression', 'compression_opts'}
-    kwargs = {k: v for k, v in output.items() if k in hdf_kwargs}
+    kwargs = {k: v for k, v in settings.items() if k in hdf_kwargs}
 
     if errored:
         with h5py.File(filename, mode) as hdf:
@@ -126,7 +223,7 @@ def _save_hdf(data, output, task, mode='a', errored=False):
                 states.write_hdf(filename=filename, group=group,
                                  description=task, **kwargs)
 
-def _save_metadata(output: Optional[Dict[str, Any]] = None,
+def _save_metadata(settings: Optional[Dict[str, Any]] = None,
                    metadata: Optional[Dict[str, Any]] = None,
                    ) -> None:
     """
@@ -138,16 +235,14 @@ def _save_metadata(output: Optional[Dict[str, Any]] = None,
 
     Arguments:
         metadata (dict): data to be saved
-        output (dict): output file information
+        settings (dict): output file information
     """
 
-    if metadata is None or output is None:
+    if metadata is None or settings is None:
         return
 
-    oname = output['file_name']
-    opath = output['path']
-    #formatt = output['format']
-    #force = output['force_overwrite']
+    oname = settings['name']
+    opath = settings['path']
 
     if oname is None:
         return

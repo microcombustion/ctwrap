@@ -5,7 +5,7 @@ strategy:
     upstream.phi: { mode: linspace, limits: [0.4, 2.6], npoints: 12 }
 output:
   format: h5
-  force_overwrite: True
+  force: True
 defaults:
   upstream:
     T: 300. kelvin # temperature

@@ -63,7 +63,7 @@ import queue  # imported for using queue.Empty exception
 from .parser import _parse, _write, Parser
 from .strategy import Strategy, Sequence, Matrix
 from .wrapper import Simulation
-from .output import _parse_output, _save_metadata
+from .output import Output
 
 
 indent1 = ' * '
@@ -178,7 +178,8 @@ class SimulationHandler(object):
         defaults = content['defaults']
 
         output = content.get('output', None)
-        output = _parse_output(output, fname=name, fpath=path)
+        if output is not None:
+            output = Output.from_dict(output, file_name=name, file_path=path).settings
 
         return cls(strategy=strategy, defaults=defaults, output=output, **kwargs)
 
@@ -212,9 +213,9 @@ class SimulationHandler(object):
     def output_name(self):
         """return output name"""
         if self._output['path'] is None:
-            return self._output['file_name']
+            return self._output['name']
         else:
-            return Path(self._output['path']) / self._output['file_name']
+            return Path(self._output['path']) / self._output['name']
 
     @property
     def tasks(self):
@@ -254,7 +255,8 @@ class SimulationHandler(object):
         obj.run(group, config, **kwargs)
         obj._save(task=task)
         if self._output is not None:
-            _save_metadata(self._output, self.metadata)
+            out = Output.from_dict(self._output)
+            out.save_metadata(self.metadata)
 
     def run_serial(self,
                    sim: Simulation,
@@ -304,7 +306,8 @@ class SimulationHandler(object):
             obj.run(group, config, **kwargs)
             obj._save(task=t)
         if self._output is not None:
-            _save_metadata(self._output, self.metadata)
+            out = Output.from_dict(self._output)
+            out.save_metadata(self.metadata)
         return True
 
     def run_parallel(self,
@@ -382,7 +385,8 @@ class SimulationHandler(object):
         if self._output is not None:
             if verbosity > 1:
                 print(indent1 + "Appending metadata")
-            _save_metadata(self._output, self.metadata)
+            out = Output.from_dict(self._output)
+            out.save_metadata(self.metadata)
 
         return True
 

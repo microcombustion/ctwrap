@@ -55,7 +55,7 @@ class TestWrap(unittest.TestCase):
         self.sim.run()
         self.assertIsInstance(self.sim.data, dict)
         for key in self.sim.data.keys():
-            self.assertIn('defaults', key)
+            self.assertIn('unspecified', key)
 
     def test_handler(self):
         self.assertIsInstance(self.sh.tasks, dict)

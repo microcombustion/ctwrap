@@ -46,7 +46,7 @@ from typing import Dict, Any, Optional, Union
 
 # ctwrap specific import
 from .parser import Parser
-from .output import _save_hdf
+from .output import _save_hdf, Output
 
 
 class Simulation(object):
@@ -79,6 +79,10 @@ class Simulation(object):
         msg = 'module `{}` is missing attribute `{}`'
         for attr in ['defaults', 'run']:
             assert hasattr(mod, attr), msg.format(module, attr)
+
+        if hasattr(mod, 'save'):
+            warnings.warn("Method 'save' in simulation modules are ignored",
+                          DeprecationWarning)
 
     @classmethod
     def from_module(cls,
@@ -171,23 +175,15 @@ class Simulation(object):
         module = self._load_module()
         return module.defaults()
 
-    def _save(self, mode="a", task=None, **kwargs: str) -> None:
-        """
-        Save simulation data (hidden)
+    def _save(self, task=None, mode="a") -> bool:
+        """Save simulation data (hidden)
 
-        Arguments:
-            **kwargs (optional): keyword arguments
+        Returns:
+            `True` if data are saved successfully
         """
 
         if self._output is None:
-            return
+            return None
 
-        output = self._output.copy()
-        formatt = "." + output.get('format')
-
-        if formatt in ('.h5', '.hdf', '.hdf5'):
-
-            _save_hdf(self.data, output, task, mode=mode, errored=self._errored)
-
-        else:
-            raise ValueError("Invalid file format {}".format(formatt))
+        out = Output.from_dict(self._output)
+        return out.save(self.data, task, mode=mode, errored=self._errored)
