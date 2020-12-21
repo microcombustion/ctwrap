@@ -155,7 +155,7 @@ class TestInvalid(TestWrap):
         'strategy': {'sequence': {'foo': [0, 1, 2]}},
         'defaults': {'foo': None},
         'output': {'name': 'invalid', 'format': 'h5'},
-        'ctwrap': '0.2.0'
+        'ctwrap': '0.3.0'
     }
 
     def setUp(self):

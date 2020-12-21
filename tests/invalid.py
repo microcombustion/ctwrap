@@ -11,11 +11,6 @@ def run(foo=.2):
     raise RuntimeError("Hello world!")
 
 
-def save(filename, data, task=None):
-    """Does nothing for this example"""
-    pass
-
-
 if __name__ == "__main__":
     """ Main function """
     config = defaults()

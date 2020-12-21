@@ -45,9 +45,13 @@ class Output:
             warnings.warn("Key 'file_name' is replaced by 'name'",
                           PendingDeprecationWarning)
 
+        file_path = settings.pop('path', file_path)
+        if file_path is not None:
+            file_path = str(file_path)
+
         # file name keyword overrides dictionary
         if file_name is None:
-            file_name = Path(settings['name'])
+            file_name = Path(settings.pop('name'))
             if file_format is None:
                 file_format = file_name.suffix
             file_name = file_name.stem
@@ -57,7 +61,7 @@ class Output:
             head = Path(file_name).parent
             file_name = Path(file_name).name
             if str(head) != "." and file_path is None:
-                file_path = head
+                file_path = str(head)
             elif str(head) != ".":
                 raise RuntimeError('Contradictory path specifications')
 
@@ -73,9 +77,18 @@ class Output:
 
         self.force = settings.pop('force', False)
         self.mode = settings.pop('mode', 'a')
-        self.path = str(file_path)
+        self.path = file_path
         self.name = file_name + file_format
         self.kwargs = settings.copy()
+
+    @property
+    def output_name(self):
+        """Return output name"""
+        if self.path is None:
+            return str(self.name)
+        else:
+            out = Path(self.path) / self.name
+            return str(out)
 
     @property
     def settings(self):
@@ -147,6 +160,7 @@ class Output:
 
 
 class WriteHDF(Output):
+    """Class writing HDF output"""
 
     _ext = ['.h5', '.hdf', '.hdf5']
 
@@ -170,8 +184,18 @@ class WriteHDF(Output):
         if metadata is None:
             return None
 
+        def _save_metadata(output_name, metadata):
+            """Hidden module"""
+
+            with h5py.File(output_name, 'r+') as hdf:
+                for key, val in metadata.items():
+                    if isinstance(val, dict):
+                        hdf.attrs[key] = json.dumps(val)
+                    else:
+                        hdf.attrs[key] = val
+
         try:
-            _save_metadata(self.settings, metadata)
+            _save_metadata(self.output_name, metadata)
             return True
         except OSError as err:
             # Convert exception to warning
@@ -212,6 +236,7 @@ def _save_hdf(data, settings, task, mode='a', errored=False):
     hdf_kwargs = {'mode', 'append', 'compression', 'compression_opts'}
     kwargs = {k: v for k, v in settings.items() if k in hdf_kwargs}
 
+    print(filename)
     if errored:
         with h5py.File(filename, mode) as hdf:
             for group, err in data.items():
@@ -227,36 +252,3 @@ def _save_hdf(data, settings, task, mode='a', errored=False):
             elif type(states).__name__ in ['FreeFlame']:
                 states.write_hdf(filename=filename, group=group,
                                  description=task, **kwargs)
-
-def _save_metadata(settings: Optional[Dict[str, Any]] = None,
-                   metadata: Optional[Dict[str, Any]] = None,
-                   ) -> None:
-    """
-    Modules saves the input file as an attribute after the
-    batch simulation has been completed
-
-    This method calls the
-    :py:func:`~ctwrap.parser.save_metadata` method.
-
-    Arguments:
-        metadata (dict): data to be saved
-        settings (dict): output file information
-    """
-
-    if metadata is None or settings is None:
-        return
-
-    oname = settings['name']
-    opath = settings['path']
-
-    if oname is None:
-        return
-    if opath is not None:
-        oname = Path(opath) / oname
-
-    with h5py.File(oname, 'r+') as hdf:
-        for key, val in metadata.items():
-            if isinstance(val, dict):
-                hdf.attrs[key] = json.dumps(val)
-            else:
-                hdf.attrs[key] = val
