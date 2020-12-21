@@ -76,7 +76,7 @@ class TestWrap(unittest.TestCase):
             self.assertTrue(hdf.is_file())
 
     def test_commandline(self):
-        cmd = 'ctwrap'
+        cmd = ['ctwrap', 'run']
         if isinstance(self._module, str):
             name = self._module
         else:
@@ -89,7 +89,7 @@ class TestWrap(unittest.TestCase):
             pars += ['--strategy', self._strategy]
 
         self.maxDiff = None
-        process = subprocess.Popen([cmd] + pars,
+        process = subprocess.Popen(cmd + pars,
                      stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE)
         _, stderr = process.communicate()

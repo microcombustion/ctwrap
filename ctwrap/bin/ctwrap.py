@@ -14,23 +14,28 @@ warnings.filterwarnings(action='once')
 # set up argument parser
 parser = argparse.ArgumentParser(
     description='Wrapper for batch simulations (ctwrap).')
-parser.add_argument(
-    'module_name',
-    help='name of wrapped simulation module'
-)
-parser.add_argument('yaml_config', help='yaml configuration file')
-parser.add_argument('--output', help='name of output file')
-parser.add_argument(
+subparsers = parser.add_subparsers(dest='command', help='ctwrap sub-commands')
+
+parser_list = subparsers.add_parser(
+    "list", help='list available simulation modules',
+    description='List available simulation modules')
+
+parser_run = subparsers.add_parser(
+    "run", help='run simulation module',
+    description='Run simulation module')
+parser_run.add_argument(
+    'module_name', help='name of wrapped simulation module')
+parser_run.add_argument(
+    'yaml_config', help='yaml configuration file')
+parser_run.add_argument(
+    '--output', help='name of output file')
+parser_run.add_argument(
     '-v', '--verbosity', action='count', default=0, help='verbosity level')
-parser.add_argument(
-    '--parallel',
-    action='store_true',
-    default=False,
+parser_run.add_argument(
+    '--parallel', action='store_true', default=False,
     help='run parallel calculations')
-parser.add_argument(
-    '--strategy',
-    choices=['sequence', 'matrix'],
-    default=None,
+parser_run.add_argument(
+    '--strategy', choices=['sequence', 'matrix'], default=None,
     help='batch job strategy')
 
 
@@ -39,6 +44,14 @@ def main():
 
     # parse arguments
     args = parser.parse_args()
+    if args.command is None:
+        raise ValueError("Missing argument command: type ctwrap --help for information")
+    elif args.command == 'list':
+        for mod in dir(ctwrap.modules):
+            if not mod.startswith('__'):
+                print(' - {}'.format(mod))
+        return
+
     module_name = args.module_name
     yml_file = args.yaml_config
     verbosity = args.verbosity
