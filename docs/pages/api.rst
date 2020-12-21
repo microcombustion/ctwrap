@@ -10,6 +10,7 @@ This reference manual details functions, modules, and objects included in
 
         Command line utility <commandline.rst>
         Handler Module <handler.rst>
+        Output Module <output.rst>
         Parser Module <parser.rst>
         Strategy Module <strategy.rst>
         Wrapper Module <wrapper.rst>
