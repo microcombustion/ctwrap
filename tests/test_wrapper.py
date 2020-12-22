@@ -100,6 +100,20 @@ class TestWrap(unittest.TestCase):
             hdf = Path(EXAMPLES) / self._out
             self.assertTrue(hdf.is_file())
 
+    def test_main(self):
+
+        if isinstance(self._module, str):
+            name = self._module
+        else:
+            name = self._module.__file__
+
+        self.maxDiff = None
+        process = subprocess.Popen(['python', name],
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.PIPE)
+        _, stderr = process.communicate()
+        self.assertEqual(stderr.decode(), '')
+
 
 class TestMatrix(TestWrap):
 
@@ -189,6 +203,10 @@ class TestInvalid(TestWrap):
     def test_serial(self):
         with self.assertWarnsRegex(RuntimeWarning, "Hello world!"):
             super().test_serial()
+
+    def test_main(self):
+        # skip test (does not use setUp and is more involved)
+        pass
 
     def test_commandline(self):
         # skip test (does not use setUp and is more involved)
