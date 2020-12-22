@@ -217,8 +217,7 @@ class Parser(object):
 
     def values(self):
         """Return parser values"""
-        out = {key: Parser(val) for key, val in self.raw.items()}
-        return out.values()
+        return dict(self.items()).values()
 
     def items(self):
         """Return parser items"""
