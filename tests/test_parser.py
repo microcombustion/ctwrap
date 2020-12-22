@@ -112,11 +112,24 @@ class TestPassing(unittest.TestCase):
 
         p = cw.Parser(self._entry)
         self.assertEqual(self._entry, p.raw)
+        for k, v in p.items():
+            orig = self._entry[k]
+            if isinstance(v, cw.Parser):
+                self.assertEqual(orig, v.raw)
+                self.assertEqual(orig, p.get(k).raw)
+            else:
+                self.assertEqual(orig, v)
+                self.assertEqual(orig, p.get(k))
 
 
 class TestKeyStr(TestPassing):
 
     _entry = {'spam': 'eggs'}
+
+
+class TestNone(TestPassing):
+
+    _entry = {'spam': None}
 
 
 class TestParser(TestPassing):
