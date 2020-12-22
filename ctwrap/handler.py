@@ -366,7 +366,7 @@ class SimulationHandler(object):
         tasks.sort()
         for i, t in enumerate(tasks):
             overload = self.configuration(t)
-            group = "output_{:0>2d}".format(i)
+            group = "task_{:d}".format(i)
             tasks_to_accomplish.put((t, group, overload, kwargs))
 
         lock = mp.Lock()
