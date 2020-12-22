@@ -8,6 +8,7 @@ where differences are:
 * Content is broken down into methods ``defaults`` and ``run``
 """
 import warnings
+import pandas as pd
 
 from ctwrap import Parser
 
@@ -29,7 +30,7 @@ def run(initial, phases, equilibrate, returns):
 
     # phases that will be included in the calculation, and their initial moles
     mix_phases = []
-    for key, phase in phases.items():
+    for phase in phases.values():
         ph = ct.Solution(phase.mechanism)
         if all([key in phase for key in ['fuel', 'oxidizer', 'phi']]):
             ph.set_equivalence_ratio(phase.phi, phase.fuel, phase.oxidizer)
@@ -52,14 +53,14 @@ def run(initial, phases, equilibrate, returns):
     print('At phi = {0:12.4g}, Tad = {1:12.4g}'.format(phases.gas.phi, tad))
 
     out = []
-    for k, v in returns.raw.items():
+    for k, v in returns.items():
         value = getattr(mix, str(v))
         if hasattr(mix, k) and isinstance(getattr(mix, k), list):
             out.extend(zip(getattr(mix, k), value))
         else:
             out.append((k, value))
 
-    return out
+    return pd.Series(out)
 
 
 if __name__ == "__main__":
