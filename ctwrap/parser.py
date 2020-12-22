@@ -156,7 +156,7 @@ class Parser(object):
         """Constructor"""
         if isinstance(raw, Parser):
             raw = deepcopy(raw.raw)
-        if not isinstance(raw, (dict, str)):
+        if not isinstance(raw, dict):
             raise TypeError("Cannot construct 'Parser' object from {} "
                             "with type '{}'".format(raw, type(raw)))
         self.raw = raw
@@ -222,7 +222,10 @@ class Parser(object):
 
     def items(self):
         """Return parser items"""
-        out = {key: Parser(val) for key, val in self.raw.items()}
+        out = {
+            key: Parser(val) if isinstance(val, dict) else self[key]
+            for key, val in self.raw.items()
+            }
         return out.items()
 
     @classmethod
