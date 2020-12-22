@@ -9,10 +9,7 @@ phases:
     moles: 1.
     fuel: CH4
     oxidizer: O2:1.0, N2:3.76
-  carbon: # solid phase
-    mechanism: graphite.yaml
-    moles: 0.
-    X: C(gr):1.0
+  other: null
 equilibrate:
   mode: HP
   solver: gibbs
@@ -20,4 +17,3 @@ equilibrate:
 returns:
   T: T # temperature
   P: P # pressure
-  species_names: species_moles
