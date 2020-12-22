@@ -94,8 +94,17 @@ class SimulationHandler(object):
         # parse arguments
         self._strategy = strategy
         self._defaults = defaults
-        self._output = output
         self.verbosity = verbosity # type: int
+
+        if output is not None:
+            out = Output.from_dict(output)
+            if out.force:
+                dest = Path(out.output_name)
+                if dest.is_file():
+                    dest.unlink()
+            output = out.settings
+
+        self._output = output
 
         self._tasks = self._strategy.create_tasks(self._defaults)
         if self.verbosity:
@@ -251,7 +260,7 @@ class SimulationHandler(object):
         config.update(overload)
 
         # run simulation
-        group = "output_00"
+        group = "task_0"
         obj.run(group, config, **kwargs)
         obj._save(task=task)
         if self._output is not None:
@@ -302,7 +311,7 @@ class SimulationHandler(object):
             config.update(overload)
 
             # run simulation
-            group = "output_{:0>2d}".format(i)
+            group = "task_{:d}".format(i)
             obj.run(group, config, **kwargs)
             obj._save(task=t)
         if self._output is not None:
