@@ -39,5 +39,5 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        'numpy', 'ruamel.yaml', 'pint', 'h5py'],
+        'numpy', 'ruamel.yaml', 'pint', 'h5py', 'pandas'],
     zip_safe=False)
