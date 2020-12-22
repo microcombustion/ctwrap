@@ -16,9 +16,7 @@ from ctwrap import Parser
 try:
     import cantera as ct
 except ImportError as err:
-    warnings.warn(
-        "This module will not work without an installation of Cantera",
-        UserWarning)
+    ct = ImportError('Method requires a working cantera installation.')
 
 
 def defaults():
@@ -28,37 +26,36 @@ def defaults():
 
 def run(initial, phases, equilibrate, returns):
 
+    T = initial.T.m_as('kelvin')
+    P = initial.P.m_as('pascal')
+
     # phases that will be included in the calculation, and their initial moles
     mix_phases = []
     for phase in phases.values():
-        ph = ct.Solution(phase.mechanism)
+        if phase is None:
+            continue
+        obj = ct.Solution(phase.mechanism)
         if all([key in phase for key in ['fuel', 'oxidizer']] + ['phi' in initial]) :
-            ph.set_equivalence_ratio(initial.phi, phase.fuel, phase.oxidizer)
+            obj.TP = T, P
+            obj.set_equivalence_ratio(initial.phi, phase.fuel, phase.oxidizer)
         elif 'X' in phase:
-            ph.X = phase.X
+            obj.TPX = T, P, phase.X
         elif 'Y' in phase:
-            ph.Y = phase.Y
-        mix_phases.append((ph, phase.moles))
+            obj.TPY = T, P, phase.Y
+        mix_phases.append((obj, phase.get('moles')))
 
-    # equilibrate the mixture adiabatically at constant P
-    mix = ct.Mixture(mix_phases)
-    mix.T = initial.T.m_as('kelvin')
-    mix.P = initial.P.m_as('pascal')
-    mix.equilibrate(
-        equilibrate.mode, solver=equilibrate.solver,
-        max_steps=equilibrate.max_steps)
+    # equilibrate the mixture based on configuration
+    if len(mix_phases) > 1:
+        obj = ct.Mixture(mix_phases)
+        obj.T = T
+        obj.P = P
+    kwargs = equilibrate.raw
+    mode = kwargs.pop('mode')
+    obj.equilibrate(mode, **kwargs)
 
-    print('Tad = {:8.2f}'.format(mix.T))
+    print('Tad = {:8.2f}'.format(obj.T))
 
-    out = []
-    for k, v in returns.items():
-        value = getattr(mix, str(v))
-        if hasattr(mix, k) and isinstance(getattr(mix, k), list):
-            out.extend(zip(getattr(mix, k), value))
-        else:
-            out.append((k, value))
-
-    return pd.Series(dict(out))
+    return obj, returns
 
 
 if __name__ == "__main__":

@@ -17,10 +17,16 @@ defaults:
       moles: 1.
       fuel: CH4
       oxidizer: O2:1.0, N2:3.76
+    carbon: # solid phase
+      mechanism: graphite.yaml
+      moles: 0.
+      X: C(gr):1.0
   equilibrate:
     mode: HP
+    solver: gibbs
+    max_steps: 1000
   returns:
     T: T # temperature
     P: P # pressure
-    X: X # species mole fractions
+    species_names: species_moles # moles per species
 ctwrap: 0.3.0
