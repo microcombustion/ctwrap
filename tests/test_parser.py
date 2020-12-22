@@ -106,17 +106,12 @@ class TestWrite(unittest.TestCase):
 
 class TestPassing(unittest.TestCase):
 
-    _entry = 'hello world'
+    _entry = {'key': 1.}
 
     def test_parser(self):
 
         p = cw.Parser(self._entry)
         self.assertEqual(self._entry, p.raw)
-
-
-class TestKeyVal(TestPassing):
-
-    _entry = {'key': 1.}
 
 
 class TestKeyStr(TestPassing):
@@ -178,6 +173,11 @@ class TestInt(TestFailing):
 class TestFloat(TestFailing):
 
     _entry = 3.14
+
+
+class TestString(TestFailing):
+
+    _entry = 'hello world'
 
 
 class TestYAML(unittest.TestCase):
