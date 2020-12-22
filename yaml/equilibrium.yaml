@@ -1,0 +1,32 @@
+# YAML file example for the `equilibrium` module
+# file specifes a parameter variation of the equivalence ratio
+strategy:
+  sequence:
+    initial.phi: { mode: linspace, limits: [0.3, 3.5], npoints: 33 }
+output:
+  format: csv
+  force: True
+defaults:
+  initial:
+    T: 300. kelvin # temperature
+    P: 1. atmosphere # pressure
+    phi: .55 # equivalence ratio
+  phases:
+    gas: # gas phase
+      mechanism: gri30.yaml
+      moles: 1.
+      fuel: CH4
+      oxidizer: O2:1.0, N2:3.76
+    carbon: # solid phase
+      mechanism: graphite.yaml
+      moles: 0.
+      X: C(gr):1.0
+  equilibrate:
+    mode: HP
+    solver: gibbs
+    max_steps: 1000
+  returns:
+    T: T # temperature
+    P: P # pressure
+    species_names: species_moles # moles per species
+ctwrap: 0.3.0
