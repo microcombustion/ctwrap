@@ -43,7 +43,7 @@
    "source": [
     "%%time\n",
     "# run minimal module (with 'sequence' strategy)\n",
-    "! ctwrap minimal ../../yaml/minimal.yaml --strategy sequence"
+    "! ctwrap run minimal ../../yaml/minimal.yaml --strategy sequence"
    ]
   },
   {
@@ -54,7 +54,7 @@
    "source": [
     "%%time\n",
     "# run minimal module (with 'sequence' strategy)\n",
-    "! ctwrap minimal ../../yaml/minimal.yaml --parallel --strategy sequence"
+    "! ctwrap run minimal ../../yaml/minimal.yaml --parallel --strategy sequence"
    ]
   },
   {
@@ -72,7 +72,7 @@
    "source": [
     "%%time\n",
     "# run parameter variation\n",
-    "! ctwrap ignition ../../yaml/ignition.yaml -v --output ignition_example.h5"
+    "! ctwrap run ignition ../../yaml/ignition.yaml -v --output ignition_example.h5"
    ]
   },
   {
@@ -93,7 +93,7 @@
    "source": [
     "%%time\n",
     "# run parameter variation\n",
-    "! ctwrap ignition ../../yaml/ignition.yaml -v --output ignition_example.h5 --parallel"
+    "! ctwrap run ignition ../../yaml/ignition.yaml -v --output ignition_example.h5 --parallel"
    ]
   },
   {
@@ -111,7 +111,7 @@
    "source": [
     "%%time\n",
     "# run parameter variation\n",
-    "! ctwrap adiabatic_flame ../../yaml/adiabatic_flame.yaml --output adiabatic_flame_example"
+    "! ctwrap run adiabatic_flame ../../yaml/adiabatic_flame.yaml --output adiabatic_flame_example"
    ]
   },
   {
@@ -132,7 +132,7 @@
    "source": [
     "%%time\n",
     "# run parameter variation\n",
-    "! ctwrap adiabatic_flame ../../yaml/adiabatic_flame.yaml --output adiabatic_flame_example.h5 --parallel"
+    "! ctwrap run adiabatic_flame ../../yaml/adiabatic_flame.yaml --output adiabatic_flame_example.h5 --parallel"
    ]
   },
   {

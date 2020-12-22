@@ -7,7 +7,7 @@ two main classes:
 
 * the :any:`Simulation` class that wraps a simulation module to be run, and
 * the :any:`SimulationHandler` class that handles parameter variations and switches between
-multiple configurations.
+  multiple configurations.
 
 Parameter variations are based on a YAML configuration file, where the auxiliary
 :any:`Parser` class is used to parsed the input file and also

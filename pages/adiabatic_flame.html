@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Adiabatic Flame Batch &#8212; ctwrap 0.2.1 documentation</title>
+    <title>Adiabatic Flame Batch &#8212; ctwrap 0.3.0-beta documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -15,8 +15,8 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Jupyter Notebooks" href="../examples/jupyter.html" />
-    <link rel="prev" title="Ignition Batch Simulation" href="ignition.html" />
+    <link rel="next" title="Equilibrium Batch Simulation" href="equilibrium.html" />
+    <link rel="prev" title="Batch Jobs" href="batch.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -48,6 +48,11 @@
   <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
 <span class="nt">domain</span><span class="p">:</span>
   <span class="nt">width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30 millimeter</span> <span class="c1"># domain width</span>
+<span class="nt">settings</span><span class="p">:</span>
+  <span class="nt">loglevel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span> <span class="c1"># amount of diagnostic output (0 to 8)</span>
+  <span class="nt">ratio</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+  <span class="nt">slope</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.06</span>
+  <span class="nt">curve</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.12</span>
 </pre></div>
 </div>
 </div>
@@ -80,18 +85,17 @@
     <span class="k">return</span> <span class="n">Parser</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s1">&#39;adiabatic_flame.yaml&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">upstream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">upstream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Function handling adiabatic flame simulation.</span>
 
 <span class="sd">    The function uses the class &#39;ctwrap.Parser&#39; in conjunction with &#39;pint.Quantity&#39;</span>
 <span class="sd">    for handling and conversion of units.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        name (str): output group name</span>
 <span class="sd">        chemistry (Parser): overloads &#39;defaults.chemistry&#39;</span>
 <span class="sd">        upstream  (Parser): overloads &#39;defaults.upstream&#39;</span>
 <span class="sd">        domain    (Parser): overloads &#39;defaults.simulation&#39;</span>
-<span class="sd">        loglevel   (int): amount of diagnostic output (0 to 8)</span>
+<span class="sd">        settings  (Parser): overloads &#39;defaults.settings&#39;</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dictionary containing Cantera `Flamebase` object</span>
@@ -113,24 +117,19 @@
     <span class="c1"># set up flame object</span>
     <span class="n">width</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">)</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">FreeFlame</span><span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">set_refine_criteria</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mf">0.06</span><span class="p">,</span> <span class="n">curve</span><span class="o">=</span><span class="mf">0.12</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">set_refine_criteria</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">ratio</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">slope</span><span class="p">,</span> <span class="n">curve</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">curve</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
-
-    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># Solve with mixture-averaged transport model</span>
     <span class="n">f</span><span class="o">.</span><span class="n">transport_model</span> <span class="o">=</span> <span class="s1">&#39;Mix&#39;</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">loglevel</span><span class="o">=</span><span class="n">loglevel</span><span class="p">,</span> <span class="n">auto</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">loglevel</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">loglevel</span><span class="p">,</span> <span class="n">auto</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># Solve with the energy equation enabled</span>
-    <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
-    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    </span><span class="si">{0:s}</span><span class="s1">: mixture-averaged flamespeed = </span><span class="si">{1:7f}</span><span class="s1"> m/s&#39;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-
-    <span class="n">group</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_mix&quot;</span>
-    <span class="n">out</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    mixture-averaged flamespeed = </span><span class="si">{:7f}</span><span class="s1"> m/s&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
     <span class="n">f_sol</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">to_solution_array</span><span class="p">()</span>
 
@@ -140,22 +139,19 @@
     <span class="n">g</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">FreeFlame</span><span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
     <span class="n">g</span><span class="o">.</span><span class="n">set_initial_guess</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f_sol</span><span class="p">)</span>
     <span class="n">g</span><span class="o">.</span><span class="n">transport_model</span> <span class="o">=</span> <span class="s1">&#39;Multi&#39;</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">loglevel</span><span class="p">)</span>  <span class="c1"># don&#39;t use &#39;auto&#39; on subsequent solves</span>
-    <span class="k">if</span> <span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">loglevel</span><span class="p">)</span>  <span class="c1"># don&#39;t use &#39;auto&#39; on subsequent solves</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">g</span><span class="o">.</span><span class="n">show_solution</span><span class="p">()</span>
-    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    </span><span class="si">{0:s}</span><span class="s1">: multi-component flamespeed  = </span><span class="si">{1:7f}</span><span class="s1"> m/s&#39;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;    multi-component flamespeed  = </span><span class="si">{:7f}</span><span class="s1"> m/s&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
-    <span class="n">group</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_multi&quot;</span>
-    <span class="n">out</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span>
-
-    <span class="k">return</span> <span class="n">out</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;mix&#39;</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span> <span class="s1">&#39;multi&#39;</span><span class="p">:</span> <span class="n">g</span><span class="p">}</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Main function &quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">()</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -169,7 +165,7 @@
     <span class="nt">upstream.phi</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">linspace</span><span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">2.6</span><span class="p p-Indicator">],</span><span class="nt"> npoints</span><span class="p">:</span> <span class="nv">12</span> <span class="p p-Indicator">}</span>
 <span class="nt">output</span><span class="p">:</span>
   <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
-  <span class="nt">force_overwrite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+  <span class="nt">force</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="nt">defaults</span><span class="p">:</span>
   <span class="nt">upstream</span><span class="p">:</span>
     <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300. kelvin</span> <span class="c1"># temperature</span>
@@ -181,7 +177,7 @@
     <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
   <span class="nt">domain</span><span class="p">:</span>
     <span class="nt">width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30 millimeter</span> <span class="c1"># domain width</span>
-<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2.0</span>
+<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.3.0</span>
 </pre></div>
 </div>
 <p>A parallel batch job for adiabatic flame calculations using this
@@ -230,8 +226,8 @@ configuration and the simulation module above can be run as:</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="batch.html">Batch Jobs</a><ul>
-      <li>Previous: <a href="ignition.html" title="previous chapter">Ignition Batch Simulation</a></li>
-      <li>Next: <a href="../examples/jupyter.html" title="next chapter">Jupyter Notebooks</a></li>
+      <li>Previous: <a href="batch.html" title="previous chapter">Batch Jobs</a></li>
+      <li>Next: <a href="equilibrium.html" title="next chapter">Equilibrium Batch Simulation</a></li>
   </ul></li>
   </ul></li>
 </ul>

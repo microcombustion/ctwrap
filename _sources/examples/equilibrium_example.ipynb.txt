@@ -4,9 +4,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Ignition Example\n",
+    "# Equilibrium Example\n",
     "\n",
-    "This example uses `ctwrap` for ideal gas constant pressure reactor simulations (i.e. ignition) defined by the simulation module `ignition` (`ctwrap.modules.ignition`)."
+    "This example uses `ctwrap` for equilibrium calculations defined by the simulation module `equilibrium` (`ctwrap.modules.equilibrium`)."
    ]
   },
   {
@@ -24,8 +24,7 @@
    "source": [
     "import matplotlib.pyplot as plt\n",
     "import matplotlib as mpl\n",
-    "import h5py\n",
-    "import json\n",
+    "import pandas as pd\n",
     "col = mpl.rcParams['axes.prop_cycle'].by_key()['color']"
    ]
   },
@@ -43,14 +42,8 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 2. Simulations"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "### 2.1 Create Simulation object\n",
+    "## Simulations\n",
+    "\n",
     "\n",
     "Uses a module in the `modules` folder. Modules do not have to depend on `ctwrap`."
    ]
@@ -61,7 +54,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "sim = cw.Simulation.from_module(cw.modules.ignition)\n",
+    "sim = cw.Simulation.from_module(cw.modules.equilibrium)\n",
     "sim"
    ]
   },
@@ -69,9 +62,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 2.2 Create Simulation Handler\n",
+    "### Single Phase\n",
     "\n",
-    "Parameters are specified via YAML file"
+    "Use YAML configuration defining a single phase"
    ]
   },
   {
@@ -81,16 +74,9 @@
    "outputs": [],
    "source": [
     "# create variation object\n",
-    "fname = '../../yaml/ignition.yaml'\n",
-    "sh = cw.SimulationHandler.from_yaml(fname, verbosity=1)\n",
-    "sh"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "### 2.3 Run parallel simulation"
+    "fname = '../../yaml/equilibrium.yaml'\n",
+    "sh_single = cw.SimulationHandler.from_yaml(fname, verbosity=1)\n",
+    "sh_single"
    ]
   },
   {
@@ -100,8 +86,64 @@
    "outputs": [],
    "source": [
     "%%time\n",
-    "sh.run_parallel(sim)"
+    "# Run parallel simulation\n",
+    "sh_single.run_parallel(sim)"
    ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sh_single.output_name"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Multiple Phases\n",
+    "\n",
+    "Use YAML configuration defining two phases (`gas` and `graphite`)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# create variation object\n",
+    "fname = '../../yaml/equilibrium_multi.yaml'\n",
+    "sh_multi = cw.SimulationHandler.from_yaml(fname, verbosity=1)\n",
+    "sh_multi"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%%time\n",
+    "# Run parallel simulation\n",
+    "sh_multi.run_parallel(sim)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sh_multi.output_name"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": []
   },
   {
    "cell_type": "markdown",
@@ -123,55 +165,9 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "data = h5py.File(sh.output_name, 'r')"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "data.keys()"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "data.attrs.keys()"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "var = json.loads(data.attrs['strategy'])\n",
-    "var"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "default = json.loads(data.attrs['defaults'])\n",
-    "default"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "phi = var['sequence'].get('initial.phi')\n",
-    "phi"
+    "df_single = pd.read_csv(sh_single.output_name)\n",
+    "df_single\n",
+    "df_multi = pd.read_csv(sh_multi.output_name)"
    ]
   },
   {
@@ -191,20 +187,18 @@
    "source": [
     "# create figure and adjust size\n",
     "fig, ax = plt.subplots(1) \n",
-    "fig.set_size_inches(8.,8.)\n",
+    "fig.set_size_inches(8.,6.)\n",
     "\n",
-    "# plot results\n",
-    "for f, key in enumerate(data):\n",
-    "    df = data[key]\n",
-    "    ax.semilogx(1000*df['t'][:],df['T'][:],color=col[f],label=phi[f]) \n",
+    "ax.plot(df_single.initial_phi.values, df_single['T'].values, 'x', markersize=10, label='Gas phase only')\n",
+    "ax.plot(df_multi.initial_phi.values, df_multi['T'].values, 'o', label='Gas and solid carbon')\n",
     "\n",
     "# add title/axis labels\n",
-    "ax.set_title(r'IdealGasConstPressure Reactor')\n",
-    "ax.set_xlabel('Time (ms)')\n",
+    "ax.set_title(r'Chemical equilibrium')\n",
+    "ax.set_xlabel(r'Equivalence ratio -- $\\phi$ (-)')\n",
     "ax.set_ylabel('Temperature (K)')\n",
     "\n",
     "# add legend\n",
-    "leg = ax.legend(loc='upper left', title='Equivalence ratio')\n",
+    "leg = ax.legend(loc='upper right', title='Assumptions')\n",
     "leg.draw_frame(False) "
    ]
   },

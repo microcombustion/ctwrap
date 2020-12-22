@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ignition Batch Simulation &#8212; ctwrap 0.2.1 documentation</title>
+    <title>Ignition Batch Simulation &#8212; ctwrap 0.3.0-beta documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -15,8 +15,8 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Adiabatic Flame Batch" href="adiabatic_flame.html" />
-    <link rel="prev" title="Batch Jobs" href="batch.html" />
+    <link rel="next" title="Jupyter Notebooks" href="../examples/jupyter.html" />
+    <link rel="prev" title="Equilibrium Batch Simulation" href="equilibrium.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -46,7 +46,7 @@
   <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1.,AR:3.76</span>
 <span class="nt">chemistry</span><span class="p">:</span>
   <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
-<span class="nt">simulation</span><span class="p">:</span>
+<span class="nt">settings</span><span class="p">:</span>
   <span class="nt">delta_t</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-5</span>
   <span class="nt">n_points</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500</span>
   <span class="nt">atol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-15</span>
@@ -84,21 +84,19 @@
     <span class="k">return</span> <span class="n">Parser</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s1">&#39;ignition.yaml&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">simulation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">chemistry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Function handling reactor simulation.</span>
 
 <span class="sd">    The function uses the class &#39;ctwrap.Parser&#39; in conjunction with &#39;pint.Quantity&#39;</span>
 <span class="sd">    for handling and conversion of units.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        name (str): output group name</span>
 <span class="sd">        chemistry  (Parser): overloads &#39;defaults.chemistry&#39;</span>
 <span class="sd">        initial    (Parser): overloads &#39;defaults.initial&#39;</span>
-<span class="sd">        simulation (Parser): overloads &#39;defaults.simulation&#39;</span>
+<span class="sd">        settings (Parser): overloads &#39;defaults.settings&#39;</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Dictionary containing Cantera SolutionArray</span>
+<span class="sd">        Cantera SolutionArray</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># initialize gas object</span>
@@ -119,10 +117,10 @@
     <span class="n">reactor</span><span class="o">.</span><span class="n">set_advance_limit</span><span class="p">(</span><span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="n">delta_T_max</span><span class="p">)</span>
 
     <span class="c1"># set simulation parameters</span>
-    <span class="n">sim</span><span class="o">.</span><span class="n">atol</span> <span class="o">=</span> <span class="n">simulation</span><span class="p">[</span><span class="s1">&#39;atol&#39;</span><span class="p">]</span>
-    <span class="n">sim</span><span class="o">.</span><span class="n">rtol</span> <span class="o">=</span> <span class="n">simulation</span><span class="p">[</span><span class="s1">&#39;rtol&#39;</span><span class="p">]</span>
-    <span class="n">delta_t</span> <span class="o">=</span> <span class="n">simulation</span><span class="p">[</span><span class="s1">&#39;delta_t&#39;</span><span class="p">]</span>
-    <span class="n">n_points</span> <span class="o">=</span> <span class="n">simulation</span><span class="p">[</span><span class="s1">&#39;n_points&#39;</span><span class="p">]</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">atol</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;atol&#39;</span><span class="p">]</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">rtol</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;rtol&#39;</span><span class="p">]</span>
+    <span class="n">delta_t</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;delta_t&#39;</span><span class="p">]</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;n_points&#39;</span><span class="p">]</span>
 
     <span class="c1"># define SolutionArray and run simulation</span>
     <span class="n">states</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">SolutionArray</span><span class="p">(</span><span class="n">gas</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">])</span>
@@ -134,13 +132,13 @@
         <span class="n">sim</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
         <span class="n">states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reactor</span><span class="o">.</span><span class="n">thermo</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">states</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">states</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Main function &quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">()</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -154,7 +152,7 @@
     <span class="nt">initial.phi</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">]</span>
 <span class="nt">output</span><span class="p">:</span>
   <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
-  <span class="nt">force_overwrite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+  <span class="nt">force</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="nt">defaults</span><span class="p">:</span>
   <span class="nt">initial</span><span class="p">:</span>
     <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000. kelvin</span> <span class="c1"># temperature</span>
@@ -164,10 +162,10 @@
     <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1,AR:3.76</span>
   <span class="nt">chemistry</span><span class="p">:</span>
     <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
-  <span class="nt">simulation</span><span class="p">:</span>
+  <span class="nt">settings</span><span class="p">:</span>
     <span class="nt">delta_t</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-5</span>
     <span class="nt">n_points</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500</span>
-<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2.2</span>
+<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.3.0</span>
 </pre></div>
 </div>
 <p>A parallel batch job for ignition calculations using the configuration and the simulation
@@ -216,8 +214,8 @@ module above can be run as:</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="batch.html">Batch Jobs</a><ul>
-      <li>Previous: <a href="batch.html" title="previous chapter">Batch Jobs</a></li>
-      <li>Next: <a href="adiabatic_flame.html" title="next chapter">Adiabatic Flame Batch</a></li>
+      <li>Previous: <a href="equilibrium.html" title="previous chapter">Equilibrium Batch Simulation</a></li>
+      <li>Next: <a href="../examples/jupyter.html" title="next chapter">Jupyter Notebooks</a></li>
   </ul></li>
   </ul></li>
 </ul>
