@@ -14,6 +14,16 @@ import warnings
 
 from typing import Dict, Any, Optional, Union
 
+import pkg_resources
+
+# avoid explicit dependence on cantera
+try:
+    pkg_resources.get_distribution('cantera')
+except pkg_resources.DistributionNotFound:
+    ct = ImportError('Method requires a working cantera installation.')
+else:
+    import cantera as ct
+
 
 class Output:
     """Class handling file output
@@ -176,6 +186,29 @@ class WriteCSV(Output):
             raise NotImplementedError("WriteCSV requires a simulation module returning single value")
 
         key, value = list(data.items())[0]
+        value, returns = value
+
+        if type(value).__name__ == 'Solution':
+
+            if isinstance(ct, ImportError):
+                raise ct
+
+            # use cantera native route to pandas.Series via SolutionArray.to_pandas
+            arr = ct.SolutionArray(value, 1)
+            value = arr.to_pandas(cols=list(returns.values())).iloc[0]
+
+        elif type(value).__name__ == 'Mixture':
+
+            # there is no native route in cantera
+            out = []
+            for k, v in returns.items():
+                val = getattr(value, str(v))
+                if hasattr(value, k) and isinstance(getattr(value, k), list):
+                    out.extend(zip(getattr(value, k), val))
+                else:
+                    out.append((k, val))
+
+            value = pd.Series(dict(out))
 
         if isinstance(value, pd.Series):
 
@@ -274,7 +307,6 @@ def _save_hdf(data, settings, task, mode='a', errored=False):
     hdf_kwargs = {'mode', 'append', 'compression', 'compression_opts'}
     kwargs = {k: v for k, v in settings.items() if k in hdf_kwargs}
 
-    print(filename)
     if errored:
         with h5py.File(filename, mode) as hdf:
             for group, err in data.items():
