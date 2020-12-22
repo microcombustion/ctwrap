@@ -162,6 +162,12 @@ class TestEquilibrium(TestWrap):
     _strategy = None
 
 
+class TestEquilibriumMulti(TestEquilibrium):
+
+    _yaml = 'equilibrium_multi.yaml'
+    _out = 'equilibrium_multi.csv'
+
+
 class TestAdiabaticFlame(TestWrap):
 
     _module = cw.modules.adiabatic_flame
