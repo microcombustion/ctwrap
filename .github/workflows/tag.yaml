@@ -8,8 +8,6 @@ on:
     tags-ignore:
       - '**a*'
       - '**-alpha'
-      - '**b*'
-      - '**-beta'
 
 jobs:
   sphinx-docs:
