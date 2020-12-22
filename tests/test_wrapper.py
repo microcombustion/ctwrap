@@ -37,7 +37,7 @@ class TestWrap(unittest.TestCase):
     _module = cw.modules.minimal
     _task = 'foo_0.4'
     _yaml = 'minimal.yaml'
-    _hdf = None
+    _out = None
     _path = None
     _strategy = 'sequence'
 
@@ -46,9 +46,10 @@ class TestWrap(unittest.TestCase):
         self.sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, path=EXAMPLES)
 
     def tearDown(self):
-        if self._hdf:
-            [hdf.unlink() for hdf in Path(EXAMPLES).glob('*.h5')]
-            [hdf.unlink() for hdf in Path(ROOT).glob('*.h5')]
+        if self._out:
+            [out.unlink() for out in Path(EXAMPLES).glob('*.h5')]
+            [out.unlink() for out in Path(ROOT).glob('*.h5')]
+            [out.unlink() for out in Path(ROOT).glob('*.csv')]
 
     def test_simulation(self):
         self.assertIsNone(self.sim.data)
@@ -64,15 +65,15 @@ class TestWrap(unittest.TestCase):
     def test_serial(self):
         self.assertTrue(self.sh.run_serial(self.sim))
 
-        if self._hdf:
-            hdf = Path(EXAMPLES) / self._hdf
+        if self._out:
+            hdf = Path(EXAMPLES) / self._out
             self.assertTrue(hdf.is_file())
 
     def test_parallel(self):
         self.assertTrue(self.sh.run_parallel(self.sim))
 
-        if self._hdf:
-            hdf = Path(EXAMPLES) / self._hdf
+        if self._out:
+            hdf = Path(EXAMPLES) / self._out
             self.assertTrue(hdf.is_file())
 
     def test_commandline(self):
@@ -95,8 +96,8 @@ class TestWrap(unittest.TestCase):
         _, stderr = process.communicate()
         self.assertEqual(stderr.decode(), '')
 
-        if self._hdf:
-            hdf = Path(EXAMPLES) / self._hdf
+        if self._out:
+            hdf = Path(EXAMPLES) / self._out
             self.assertTrue(hdf.is_file())
 
 
@@ -134,7 +135,16 @@ class TestIgnition(TestWrap):
     _module = cw.modules.ignition
     _task = 'initial.phi_0.4'
     _yaml = 'ignition.yaml'
-    _hdf = 'ignition.h5'
+    _out = 'ignition.h5'
+    _strategy = None
+
+
+class TestEquilibrium(TestWrap):
+
+    _module = cw.modules.equilibrium
+    _task = 'initial.phi_0.4'
+    _yaml = 'equilibrium.yaml'
+    _out = 'equilibrium.csv'
     _strategy = None
 
 
@@ -143,7 +153,7 @@ class TestAdiabaticFlame(TestWrap):
     _module = cw.modules.adiabatic_flame
     _task = 'upstream.phi_0.4'
     _yaml = 'adiabatic_flame.yaml'
-    _hdf = 'adiabatic_flame.h5'
+    _out = 'adiabatic_flame.h5'
     _strategy = None
 
 
