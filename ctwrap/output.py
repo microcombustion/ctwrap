@@ -7,6 +7,7 @@ Class Definitions
 """
 
 from pathlib import Path
+import pandas as pd
 import h5py
 import json
 import warnings
@@ -122,6 +123,9 @@ class Output:
         if ext in WriteHDF._ext:
             return WriteHDF(settings.copy(), file_name, file_path)
 
+        if ext in WriteCSV._ext:
+            return WriteCSV(settings.copy(), file_name, file_path)
+
         raise NotImplementedError("Invalid file format {}".format(ext))
 
     def save(
@@ -157,6 +161,40 @@ class Output:
             `True` if metadata are saved successfully
         """
         raise NotImplementedError("Needs to be overloaded by derived methods")
+
+
+class WriteCSV(Output):
+    """Class writing CSV output"""
+
+    _ext = ['.csv']
+
+    def save(self, data, task, mode=None, errored=False):
+        ""
+        if not data:
+            return
+        if len(data) > 1:
+            raise NotImplementedError("WriteCSV requires a simulation module returning single value")
+
+        key, value = list(data.items())[0]
+
+        if isinstance(value, pd.Series):
+
+            case = '{}_{}'.format(key, task).split('_')
+            case = dict(zip([c.replace('.', '_') for c in case[0::2]], case[1::2]))
+            row = pd.concat([pd.Series(case), value])
+
+            fname = Path(self.output_name)
+            if fname.is_file():
+                df = pd.read_csv(fname)
+            else:
+                df = pd.DataFrame(columns=row.keys())
+            df = df.append(row, ignore_index=True)
+            df.to_csv(fname, index=False)
+
+    def save_metadata(self, metadata):
+        ""
+        # don't save metadata
+        pass
 
 
 class WriteHDF(Output):
