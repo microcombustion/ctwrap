@@ -32,8 +32,8 @@ def run(initial, phases, equilibrate, returns):
     mix_phases = []
     for phase in phases.values():
         ph = ct.Solution(phase.mechanism)
-        if all([key in phase for key in ['fuel', 'oxidizer', 'phi']]):
-            ph.set_equivalence_ratio(phase.phi, phase.fuel, phase.oxidizer)
+        if all([key in phase for key in ['fuel', 'oxidizer']] + ['phi' in initial]) :
+            ph.set_equivalence_ratio(initial.phi, phase.fuel, phase.oxidizer)
         elif 'X' in phase:
             ph.X = phase.X
         elif 'Y' in phase:
@@ -41,7 +41,6 @@ def run(initial, phases, equilibrate, returns):
         mix_phases.append((ph, phase.moles))
 
     # equilibrate the mixture adiabatically at constant P
-    print(mix_phases)
     mix = ct.Mixture(mix_phases)
     mix.T = initial.T.m_as('kelvin')
     mix.P = initial.P.m_as('pascal')
@@ -49,8 +48,7 @@ def run(initial, phases, equilibrate, returns):
         equilibrate.mode, solver=equilibrate.solver,
         max_steps=equilibrate.max_steps)
 
-    tad = mix.T
-    print('At phi = {0:12.4g}, Tad = {1:12.4g}'.format(phases.gas.phi, tad))
+    print('Tad = {:8.2f}'.format(mix.T))
 
     out = []
     for k, v in returns.items():
@@ -60,7 +58,7 @@ def run(initial, phases, equilibrate, returns):
         else:
             out.append((k, value))
 
-    return pd.Series(out)
+    return pd.Series(dict(out))
 
 
 if __name__ == "__main__":
