@@ -34,6 +34,7 @@ import warnings
 from copy import deepcopy
 from typing import Dict, Any, List, Optional
 import numpy as np
+import re
 import warnings
 
 from .parser import _parse, _write, Parser
@@ -153,7 +154,13 @@ def _parse_mode(strat_dict):
             msg = "Unknown strategy mode '{}'".format(strat_val['mode'])
             raise KeyError(msg)
 
-        out[key] = value.tolist()
+        # eliminate values affected by machine precision
+        if all(value.astype(int) == value):
+            value = re.findall(r'\d+', repr(value))
+            out[key] = [int(v) for v in value]
+        else:
+            value = re.findall(r'[-+]?\d*\.\d*', repr(value))
+            out[key] = [float(v) for v in value]
 
         if next:
             out.update(_parse_mode(next))
