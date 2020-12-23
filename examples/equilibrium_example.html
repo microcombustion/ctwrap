@@ -284,8 +284,8 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Equilibrium-Example">
 <h1>Equilibrium Example<a class="headerlink" href="#Equilibrium-Example" title="Permalink to this headline">¶</a></h1>
 <p>This example uses <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> for equilibrium calculations defined by the simulation module <code class="docutils literal notranslate"><span class="pre">equilibrium</span></code> (<code class="docutils literal notranslate"><span class="pre">ctwrap.modules.equilibrium</span></code>).</p>
-<div class="section" id="1.-Function/Class-Definitions">
-<h2>1. Function/Class Definitions<a class="headerlink" href="#1.-Function/Class-Definitions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Function/Class-Definitions">
+<h2>Function/Class Definitions<a class="headerlink" href="#Function/Class-Definitions" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -337,7 +337,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.wrapper.Equilibrium at 0x7f936692a490&gt;
+&lt;ctwrap.wrapper.Equilibrium at 0x7f7279710510&gt;
 </pre></div></div>
 </div>
 <div class="section" id="Single-Phase">
@@ -369,7 +369,7 @@ Simulations for entry `initial.phi` with values: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.handler.SimulationHandler at 0x7f936823d390&gt;
+&lt;ctwrap.handler.SimulationHandler at 0x7f727b031950&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -455,8 +455,8 @@ Tad =   972.42
 Tad =   962.61
  * processing `initial.phi_3.5` (Process-1)
 Tad =   954.72
-CPU times: user 59.4 ms, sys: 31.1 ms, total: 90.5 ms
-Wall time: 4.43 s
+CPU times: user 85.7 ms, sys: 16 ms, total: 102 ms
+Wall time: 3.9 s
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -516,7 +516,7 @@ Simulations for entry `initial.phi` with values: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.handler.SimulationHandler at 0x7f93668e9d50&gt;
+&lt;ctwrap.handler.SimulationHandler at 0x7f72796ccf50&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -602,8 +602,8 @@ Tad =   973.13
 Tad =   968.47
  * processing `initial.phi_3.5` (Process-2)
 Tad =   963.98
-CPU times: user 58.5 ms, sys: 33.3 ms, total: 91.8 ms
-Wall time: 4.88 s
+CPU times: user 80.2 ms, sys: 17.7 ms, total: 97.9 ms
+Wall time: 5.08 s
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -637,8 +637,8 @@ PosixPath(&#39;../../yaml/equilibrium_multi.csv&#39;)
 </div>
 <div class="section" id="3.-Create-graphical-output">
 <h2>3. Create graphical output<a class="headerlink" href="#3.-Create-graphical-output" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="3.1-Load-data-from-file">
-<h3>3.1 Load data from file<a class="headerlink" href="#3.1-Load-data-from-file" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Load-data-from-files">
+<h3>Load data from files<a class="headerlink" href="#Load-data-from-files" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
@@ -651,9 +651,9 @@ PosixPath(&#39;../../yaml/equilibrium_multi.csv&#39;)
 </div>
 </div>
 </div>
-<div class="section" id="3.2-Plot">
-<h3>3.2 Plot<a class="headerlink" href="#3.2-Plot" title="Permalink to this headline">¶</a></h3>
-<p>Display time histories for gas temperature.</p>
+<div class="section" id="Generate-Plot">
+<h3>Generate Plot<a class="headerlink" href="#Generate-Plot" title="Permalink to this headline">¶</a></h3>
+<p>Display adiabatic equilibrium temperature as function of equivalence ratio.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
@@ -667,8 +667,8 @@ PosixPath(&#39;../../yaml/equilibrium_multi.csv&#39;)
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_multi</span><span class="o">.</span><span class="n">initial_phi</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df_multi</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Gas and solid carbon&#39;</span><span class="p">)</span>
 
 <span class="c1"># add title/axis labels</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Chemical equilibrium&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Equivalence ratio -- $\phi$ (-)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Thermodynamic equilibrium&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Equivalence ratio - $\phi$ (-)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Temperature (K)&#39;</span><span class="p">)</span>
 
 <span class="c1"># add legend</span>
@@ -681,7 +681,7 @@ PosixPath(&#39;../../yaml/equilibrium_multi.csv&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_equilibrium_example_19_0.svg" src="../_images/examples_equilibrium_example_19_0.svg" /></div>
+<img alt="../_images/examples_equilibrium_example_18_0.svg" src="../_images/examples_equilibrium_example_18_0.svg" /></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:

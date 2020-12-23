@@ -13,7 +13,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 1. Function/Class Definitions"
+    "## Function/Class Definitions"
    ]
   },
   {
@@ -143,11 +143,6 @@
   {
    "cell_type": "markdown",
    "metadata": {},
-   "source": []
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
    "source": [
     "## 3. Create graphical output"
    ]
@@ -156,7 +151,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 3.1 Load data from file"
+    "### Load data from files"
    ]
   },
   {
@@ -174,9 +169,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 3.2 Plot\n",
+    "### Generate Plot\n",
     "\n",
-    "Display time histories for gas temperature."
+    "Display adiabatic equilibrium temperature as function of equivalence ratio."
    ]
   },
   {
@@ -193,8 +188,8 @@
     "ax.plot(df_multi.initial_phi.values, df_multi['T'].values, 'o', label='Gas and solid carbon')\n",
     "\n",
     "# add title/axis labels\n",
-    "ax.set_title(r'Chemical equilibrium')\n",
-    "ax.set_xlabel(r'Equivalence ratio -- $\\phi$ (-)')\n",
+    "ax.set_title(r'Thermodynamic equilibrium')\n",
+    "ax.set_xlabel(r'Equivalence ratio - $\\phi$ (-)')\n",
     "ax.set_ylabel('Temperature (K)')\n",
     "\n",
     "# add legend\n",

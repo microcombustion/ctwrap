@@ -284,8 +284,8 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Ignition-Example">
 <h1>Ignition Example<a class="headerlink" href="#Ignition-Example" title="Permalink to this headline">¶</a></h1>
 <p>This example uses <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> for ideal gas constant pressure reactor simulations (i.e. ignition) defined by the simulation module <code class="docutils literal notranslate"><span class="pre">ignition</span></code> (<code class="docutils literal notranslate"><span class="pre">ctwrap.modules.ignition</span></code>).</p>
-<div class="section" id="1.-Function/Class-Definitions">
-<h2>1. Function/Class Definitions<a class="headerlink" href="#1.-Function/Class-Definitions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Function/Class-Definitions">
+<h2>Function/Class Definitions<a class="headerlink" href="#Function/Class-Definitions" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -319,10 +319,10 @@ div.rendered_html tbody tr:hover {
 </pre></div></div>
 </div>
 </div>
-<div class="section" id="2.-Simulations">
-<h2>2. Simulations<a class="headerlink" href="#2.-Simulations" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="2.1-Create-Simulation-object">
-<h3>2.1 Create Simulation object<a class="headerlink" href="#2.1-Create-Simulation-object" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Simulations">
+<h2>Simulations<a class="headerlink" href="#Simulations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Create-Simulation-object">
+<h3>Create Simulation object<a class="headerlink" href="#Create-Simulation-object" title="Permalink to this headline">¶</a></h3>
 <p>Uses a module in the <code class="docutils literal notranslate"><span class="pre">modules</span></code> folder. Modules do not have to depend on <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -340,12 +340,12 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.wrapper.Ignition at 0x7f8a98f741d0&gt;
+&lt;ctwrap.wrapper.Ignition at 0x7f0b34854290&gt;
 </pre></div></div>
 </div>
 </div>
-<div class="section" id="2.2-Create-Simulation-Handler">
-<h3>2.2 Create Simulation Handler<a class="headerlink" href="#2.2-Create-Simulation-Handler" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Create-Simulation-Handler">
+<h3>Create Simulation Handler<a class="headerlink" href="#Create-Simulation-Handler" title="Permalink to this headline">¶</a></h3>
 <p>Parameters are specified via YAML file</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -373,12 +373,12 @@ Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.handler.SimulationHandler at 0x7f8a99bf4dd0&gt;
+&lt;ctwrap.handler.SimulationHandler at 0x7f0b354d59d0&gt;
 </pre></div></div>
 </div>
 </div>
-<div class="section" id="2.3-Run-parallel-simulation">
-<h3>2.3 Run parallel simulation<a class="headerlink" href="#2.3-Run-parallel-simulation" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Run-parallel-simulation">
+<h3>Run parallel simulation<a class="headerlink" href="#Run-parallel-simulation" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -403,8 +403,8 @@ Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 
  * processing `initial.phi_1.4` (Process-1)
  * processing `initial.phi_1.6` (Process-1)
  * processing `initial.phi_1.8` (Process-1)
-CPU times: user 16.3 ms, sys: 4.74 ms, total: 21.1 ms
-Wall time: 315 ms
+CPU times: user 13.3 ms, sys: 12.2 ms, total: 25.5 ms
+Wall time: 405 ms
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -418,10 +418,10 @@ True
 </div>
 </div>
 </div>
-<div class="section" id="3.-Create-graphical-output">
-<h2>3. Create graphical output<a class="headerlink" href="#3.-Create-graphical-output" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="3.1-Load-data-from-file">
-<h3>3.1 Load data from file<a class="headerlink" href="#3.1-Load-data-from-file" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Create-graphical-output">
+<h2>Create graphical output<a class="headerlink" href="#Create-graphical-output" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Load-data-from-file">
+<h3>Load data from file<a class="headerlink" href="#Load-data-from-file" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -531,8 +531,8 @@ True
 </pre></div></div>
 </div>
 </div>
-<div class="section" id="3.2-Plot">
-<h3>3.2 Plot<a class="headerlink" href="#3.2-Plot" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Plot">
+<h3>Plot<a class="headerlink" href="#Plot" title="Permalink to this headline">¶</a></h3>
 <p>Display time histories for gas temperature.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
