@@ -192,7 +192,7 @@ class WriteCSV(Output):
         if type(value).__name__ == 'Solution':
 
             if isinstance(ct, ImportError):
-                raise ct
+                raise ct # pylint: disable=raising-bad-type
 
             # use cantera native route to pandas.Series via SolutionArray.to_pandas
             arr = ct.SolutionArray(value, 1)
