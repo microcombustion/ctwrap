@@ -185,8 +185,9 @@ class WriteCSV(Output):
         if len(data) > 1:
             raise NotImplementedError("WriteCSV requires a simulation module returning single value")
 
+        returns = self.kwargs.get('returns')
+
         key, value = list(data.items())[0]
-        value, returns = value
 
         if type(value).__name__ == 'Solution':
 
