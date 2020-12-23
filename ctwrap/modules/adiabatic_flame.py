@@ -12,6 +12,7 @@ import warnings
 from ctwrap import Parser
 
 
+# pylint: disable=no-member
 try:
     import cantera as ct
 except ImportError as err:
