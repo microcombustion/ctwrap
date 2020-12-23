@@ -52,6 +52,7 @@ Class Definition
 from pathlib import Path
 from ruamel import yaml
 import warnings
+import textwrap
 
 from typing import Dict, Any, Optional, Union
 
@@ -108,7 +109,8 @@ class SimulationHandler(object):
 
         self._tasks = self._strategy.create_tasks(self._defaults)
         if self.verbosity:
-            print(self._strategy.info)
+            msg = textwrap.wrap(self._strategy.info, 80)
+            print('\n'.join(msg))
 
     @property
     def metadata(self):
