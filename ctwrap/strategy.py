@@ -35,7 +35,6 @@ from copy import deepcopy
 from typing import Dict, Any, List, Optional
 import numpy as np
 import re
-import warnings
 
 from .parser import _parse, _write, Parser
 
