@@ -24,7 +24,7 @@ def defaults():
     return Parser.from_yaml('equilibrium.yaml', defaults=True)
 
 
-def run(initial, phases, equilibrate, returns):
+def run(initial, phases, equilibrate):
 
     T = initial.T.m_as('kelvin')
     P = initial.P.m_as('pascal')
@@ -55,7 +55,7 @@ def run(initial, phases, equilibrate, returns):
 
     print('Tad = {:8.2f}'.format(obj.T))
 
-    return obj, returns
+    return obj
 
 
 if __name__ == "__main__":

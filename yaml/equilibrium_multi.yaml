@@ -6,6 +6,10 @@ strategy:
 output:
   format: csv
   force: True
+  returns:
+    T: T # temperature
+    P: P # pressure
+    species_names: species_moles # moles per species
 defaults:
   initial:
     T: 300. kelvin # temperature
@@ -25,8 +29,4 @@ defaults:
     mode: HP
     solver: gibbs
     max_steps: 1000
-  returns:
-    T: T # temperature
-    P: P # pressure
-    species_names: species_moles # moles per species
 ctwrap: 0.3.0
