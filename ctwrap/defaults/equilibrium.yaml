@@ -12,8 +12,3 @@ phases:
   other: null
 equilibrate:
   mode: HP
-  solver: gibbs
-  max_steps: 1000
-returns:
-  T: T # temperature
-  P: P # pressure

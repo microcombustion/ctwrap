@@ -6,6 +6,10 @@ strategy:
 output:
   format: csv
   force: True
+  returns:
+    T: T # temperature
+    P: P # pressure
+    X: X # species mole fractions
 defaults:
   initial:
     T: 300. kelvin # temperature
@@ -19,8 +23,4 @@ defaults:
       oxidizer: O2:1.0, N2:3.76
   equilibrate:
     mode: HP
-  returns:
-    T: T # temperature
-    P: P # pressure
-    X: X # species mole fractions
 ctwrap: 0.3.0
