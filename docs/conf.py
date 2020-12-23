@@ -75,11 +75,12 @@ html_theme = 'alabaster'
 html_theme_options = {
     'github_user': 'microcombustion',
     'github_repo': 'ctwrap',
-    'github_banner': True,
+    'github_banner': False,
     'github_button': True,
     'github_type': 'star',
     'github_count': False,
     'show_powered_by': True,
+    'page_width': '1010px',
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
