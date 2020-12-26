@@ -53,6 +53,7 @@ from pathlib import Path
 from ruamel import yaml
 import warnings
 import textwrap
+from math import ceil, log10
 
 from typing import Dict, Any, Optional, Union
 
@@ -279,9 +280,12 @@ class SimulationHandler(object):
             tasks_to_accomplish = queue.Queue()
         tasks = list(self._tasks.keys())
         tasks.sort()
+        # add leading zeros to group labels to facilitate sorting
+        digits = ceil(log10(len(tasks))) # number of digits in tasks
+        group_template = "task_{{:0>{:d}d}}".format(digits)
         for i, t in enumerate(tasks):
             overload = self.configuration(t)
-            group = "task_{:d}".format(i)
+            group = group_template.format(i)
             tasks_to_accomplish.put((t, group, overload, kwargs))
 
         return tasks_to_accomplish
