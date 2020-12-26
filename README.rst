@@ -30,38 +30,36 @@ The code was developed with the following objectives in mind. It should:
 * enable parallel execution of (single-threaded) simulations (via `multiprocessing`)
 * enable simple re-import of simulation results into native Cantera objects
 
------
-Usage
------
+-------
+Example
+-------
 
-A parallel batch job for adiabatic flame calculations with parameter variations
-(for this example, a variation of equivalence ratio with 12 cases).
-See `adiabatic_flame <https://microcombustion.github.io/ctwrap/pages/adiabatic_flame.html>`_
-(modified from Cantera's
-`adiabatic_flame example <https://github.com/Cantera/cantera/blob/master/interfaces/cython/cantera/
-examples/onedim/adiabatic_flame.py>`_). The configuration file consists three parts,
-``strategy`` which contains parameter variation information, ``output`` which contains the
-output file information and ``defaults`` which contains the default input parameters needed
-to run the simulation module.
-This can be run as:
+A parallel batch job for adiabatic flame calculations uses the
+`adiabatic_flame <https://microcombustion.github.io/ctwrap/pages/adiabatic_flame.html>`_
+module (modified from Cantera's |adiabatic flame|_ example). Based on the
+YAML configuration given as a reference, a variation of 12 equivalence ratio values
+is run as:
 
 .. code-block::
 
-    $ ctwrap adiabatic_flame adiabatic_flame.yaml --parallel
+    $ ctwrap run adiabatic_flame adiabatic_flame.yaml --parallel
 
 Results are written to a single file ``adiabatic_flame.h5``.
 
-A batch job for a simulation module ``some_simulation.py`` with
-configuration file ``batch_configuration.yaml`` can be run by:
+In general, a custom batch job requires a simulation module ``some_simulation.py`` and
+a configuration file ``batch_configuration.yaml``. The corresponding batch job is run as:
 
 .. code-block::
 
-   $ ctwrap some_simulation.py batch_configuration.yaml --parallel
+   $ ctwrap run some_simulation.py batch_configuration.yaml --parallel
 
 Results are written to a single file ``some_simulation.h5``.
 
 .. note:: the wrapper itself does not depend on a Cantera installation; only the
    simulation modules do.
+
+.. |adiabatic flame| replace:: ``adiabatic_flame.py``
+.. _adiabatic flame: https://github.com/Cantera/cantera/blob/master/interfaces/cython/cantera/examples/onedim/adiabatic_flame.py
 
 .. |ci| image:: https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg
    :target: https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg
