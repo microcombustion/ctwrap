@@ -59,4 +59,4 @@ module above can be run from the command line as:
 
 .. code-block::
 
-    $ ctwrap minimal minimal.yaml --parallel
+    $ ctwrap run minimal minimal.yaml --parallel

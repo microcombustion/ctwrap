@@ -13,8 +13,8 @@ Simulation Module
 .. literalinclude:: ../../ctwrap/modules/ignition.py
    :language: python
 
-Running the Batch Simulation
-----------------------------
+Running a Batch Simulation
+--------------------------
 
 An example for a batch simulation is given by the YAML configuration
 
@@ -26,6 +26,6 @@ module above can be run as:
 
 .. code-block::
 
-    $ ctwrap ignition ignition.yaml --parallel
+    $ ctwrap run ignition ignition.yaml --parallel
 
 Results are written to a single file ``ignition.h5``.
