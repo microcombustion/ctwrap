@@ -65,7 +65,7 @@ import queue  # imported for using queue.Empty exception
 
 # ctwrap specific import
 from .parser import _parse, _write, Parser
-from .strategy import Strategy, Sequence, Matrix
+from .strategy import Strategy, Sequence, Legacy, Matrix
 from .wrapper import Simulation
 from .output import Output
 
@@ -120,7 +120,7 @@ class SimulationHandler(object):
 
         return {
             'defaults': self._defaults,
-            'strategy': {self._strategy.name: self._strategy.definition},
+            'strategy': self._strategy.definition,
             'tasks': list(self._tasks.keys())
         }
 
@@ -193,13 +193,15 @@ class SimulationHandler(object):
             warnings.warn("Parameter 'path' is superseded by 'output_path'", DeprecationWarning)
 
         if 'variation' in content and isinstance(content['variation'], dict):
-            strategy = Sequence.from_legacy(content['variation'])
+            strategies = Legacy.convert(content['variation'])
+            strategy = None
             warnings.warn("Old implementation", PendingDeprecationWarning)
         elif 'strategy' in content and isinstance(content['strategy'], dict):
-            strategy = Strategy.load(content['strategy'], name=strategy)
+            strategies = content['strategy']
         else:
             raise ValueError("Missing or invalid argument: need 'strategy' or 'variation' entry in dictionary")
 
+        strategy = Strategy.load(strategies, name=strategy)
         defaults = content['defaults']
 
         output = content.get('output', None)
