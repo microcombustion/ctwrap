@@ -82,7 +82,7 @@ def main():
     # set up variation
     sim = ctwrap.Simulation.from_module(module)
     sh = ctwrap.SimulationHandler.from_yaml(
-        yml_file, strategy=strategy, verbosity=verbosity, name=output_file)
+        yml_file, strategy=strategy, verbosity=verbosity, output_name=output_file)
 
     # run parameter variation
     if parallel:

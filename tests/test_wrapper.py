@@ -27,7 +27,7 @@ class TestLegacy(unittest.TestCase):
 
     def test_handler(self):
         with self.assertWarnsRegex(PendingDeprecationWarning, "Old implementation"):
-            sh = cw.SimulationHandler.from_yaml('legacy.yaml', path=EXAMPLES)
+            sh = cw.SimulationHandler.from_yaml('legacy.yaml', database=EXAMPLES)
         self.assertIsInstance(sh.tasks, dict)
         self.assertIn('initial.phi_0.4', sh.tasks)
 
@@ -43,7 +43,7 @@ class TestWrap(unittest.TestCase):
 
     def setUp(self):
         self.sim = cw.Simulation.from_module(self._module)
-        self.sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, path=EXAMPLES)
+        self.sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, database=EXAMPLES)
 
     def tearDown(self):
         if self._out:
