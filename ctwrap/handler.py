@@ -58,6 +58,8 @@ from typing import Dict, Any, Optional, Union
 
 # multiprocessing
 import multiprocessing as mp
+from multiprocessing import queues as mpq
+from multiprocessing import synchronize as mps
 import queue  # imported for using queue.Empty exception
 
 # ctwrap specific import
@@ -269,9 +271,24 @@ class SimulationHandler(object):
             out = Output.from_dict(self._output)
             out.save_metadata(self.metadata)
 
+    def _setup_batch(self, parallel: bool=False, **kwargs):
+
+        if parallel:
+            tasks_to_accomplish = mp.Queue()
+        else:
+            tasks_to_accomplish = queue.Queue()
+        tasks = list(self._tasks.keys())
+        tasks.sort()
+        for i, t in enumerate(tasks):
+            overload = self.configuration(t)
+            group = "task_{:d}".format(i)
+            tasks_to_accomplish.put((t, group, overload, kwargs))
+
+        return tasks_to_accomplish
+
     def run_serial(self,
                    sim: Simulation,
-                   verbosity: Optional[int] = None,
+                   verbosity: Optional[int]=None,
                    **kwargs: str) -> bool:
         """
         Run variation in series.
@@ -292,30 +309,21 @@ class SimulationHandler(object):
         Returns:
             True when task is completed
         """
-
         assert isinstance(sim, Simulation), 'need simulation object'
 
         if verbosity is None:
             verbosity = self.verbosity
 
-        # create a new simulation object
-        obj = Simulation.from_module(sim._module, self._output)
+        if verbosity > 0:
+            print(indent1 + 'running serial simulation')
 
-        tasks = list(self._tasks.keys())
-        tasks.sort()
-        for i, t in enumerate(tasks):
-            if verbosity > 0:
-                print(indent1 + 'processing `{}`'.format(t))
+        # set up queues and dispatch worker
+        tasks_to_accomplish = self._setup_batch(parallel=False, **kwargs)
+        finished_tasks = queue.Queue()
+        lock = None
+        _worker(sim._module, tasks_to_accomplish, finished_tasks, lock,
+                self._output, verbosity)
 
-            # get configuration
-            config = obj.defaults()
-            overload = self.configuration(t)
-            config.update(overload)
-
-            # run simulation
-            group = "task_{:d}".format(i)
-            obj.run(group, config, **kwargs)
-            obj._save(task=t)
         if self._output is not None:
             out = Output.from_dict(self._output)
             out.save_metadata(self.metadata)
@@ -323,9 +331,9 @@ class SimulationHandler(object):
 
     def run_parallel(self,
                      sim: Simulation,
-                     number_of_processes: Optional[int] = None,
-                     verbosity: Optional[str] = None,
-                     **kwargs: str) -> bool:
+                     number_of_processes: Optional[int]=None,
+                     verbosity: Optional[int]=None,
+                     **kwargs: Optional[Any]) -> bool:
         """
         Run variation using multiprocessing.
 
@@ -348,7 +356,6 @@ class SimulationHandler(object):
         Returns:
             True when task is completed
         """
-
         assert isinstance(sim, Simulation), 'need simulation object'
 
         if number_of_processes is None:
@@ -358,19 +365,12 @@ class SimulationHandler(object):
             verbosity = self.verbosity
 
         if verbosity > 0:
-            print(indent1 + 'running simulation using ' +
+            print(indent1 + 'running parallel simulation using ' +
                   '{} cores'.format(number_of_processes))
 
-        # set up queues
-        tasks_to_accomplish = mp.Queue()
+        # set up queues and lock
+        tasks_to_accomplish = self._setup_batch(parallel=True, **kwargs)
         finished_tasks = mp.Queue()
-        tasks = list(self._tasks.keys())
-        tasks.sort()
-        for i, t in enumerate(tasks):
-            overload = self.configuration(t)
-            group = "task_{:d}".format(i)
-            tasks_to_accomplish.put((t, group, overload, kwargs))
-
         lock = mp.Lock()
 
         # creating processes
@@ -378,7 +378,7 @@ class SimulationHandler(object):
         for _ in range(number_of_processes):
             p = mp.Process(
                 target=_worker,
-                args=(tasks_to_accomplish, finished_tasks, sim._module, lock,
+                args=(sim._module, tasks_to_accomplish, finished_tasks, lock,
                       self._output, verbosity))
             processes.append(p)
             p.start()
@@ -386,12 +386,6 @@ class SimulationHandler(object):
         # completing process
         for p in processes:
             p.join()
-
-        # print the output
-        while not finished_tasks.empty():
-            msg = finished_tasks.get()
-            if verbosity > 1:
-                print(indent2 + msg)
 
         if self._output is not None:
             if verbosity > 1:
@@ -402,28 +396,36 @@ class SimulationHandler(object):
         return True
 
 
-def _worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
-            output: Dict[str, Any],
-            verbosity: int) -> True:
+def _worker(
+        module: str,
+        tasks_to_accomplish: mpq.Queue,
+        tasks_that_are_done: mpq.Queue,
+        lock: mps.Lock,
+        output: Dict[str, Any],
+        verbosity: int
+    ) -> True:
     """
-    Worker function for the `:meth: `run_parallel` method.
+    Worker function running simulation queues.
 
     Arguments:
-        tasks_to_accomplish (queue): multiprocessing queue of remaining task
-        tasks_that_are_done (queue): multiprocessing queue of complted task
-        module (str): name of handler to be run
-        lock (lock): multiprocessing lock
-        output (dict): dictionary containing output information
-        metadata (dict): dictionary containing metadata
-        verbosity (int): verbosity level
+        module: Name of simulation module to be run
+        tasks_to_accomplish: Queue of remaining tasks
+        tasks_that_are_done: Queue of completed tasks
+        lock: Multiprocessing lock (used for parallel simulations only)
+        output: Dictionary containing output information
+        verbosity: Verbosity level
 
     Returns:
         True when tasks are completed
     """
 
-    this = mp.current_process().name
+    parallel = isinstance(lock, mp.synchronize.Lock)
+    if parallel:
+        this = mp.current_process().name
+    else:
+        this = None
 
-    if verbosity > 1:
+    if verbosity > 1 and parallel:
         print(indent2 + 'starting ' + this)
 
     while True:
@@ -433,23 +435,37 @@ def _worker(tasks_to_accomplish, tasks_that_are_done, module: str, lock,
 
         except queue.Empty:
             # no tasks left
-            if verbosity > 1:
+            if verbosity > 1 and parallel:
                 print(indent2 + 'terminating ' + this)
             break
 
         else:
-            obj = Simulation.from_module(module, output)
-            # perform task
-            msg = indent1 + 'processing `{}` ({})'
             if verbosity > 0:
-                print(msg.format(task, this))
+                if parallel:
+                    msg = indent1 + 'processing `{}` ({})'
+                    print(msg.format(task, this))
+                else:
+                    msg = indent1 + 'processing `{}`'
+                    print(msg.format(task))
 
+            # run task
+            obj = Simulation.from_module(module, output)
             config = obj.defaults()
             config.update(overload)
             obj.run(group, config, **kwargs)
-            with lock:
+
+            # save output
+            if parallel:
+                with lock:
+                    obj._save(task=task)
+            else:
                 obj._save(task=task)
-            msg = 'case `{}` completed by {}'.format(task, this)
-            tasks_that_are_done.put(msg)
+
+            # update queue
+            if parallel:
+                msg = 'case `{}` completed by {}'.format(task, this)
+            else:
+                msg = 'case `{}` completed'.format(task)
+            tasks_that_are_done.put(group)
 
     return True
