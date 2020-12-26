@@ -127,9 +127,9 @@ class SimulationHandler(object):
     @classmethod
     def from_yaml(cls, yaml_file: str,
                   strategy: Optional[str]=None,
-                  name: Optional[str]=None,
-                  path: Optional[str]=None,
-                  **kwargs: str):
+                  output_name: Optional[str]=None,
+                  database: Optional[str]=None,
+                  **kwargs: Optional[Dict]):
         """
         Alternate constructor using YAML file as input.
 
@@ -139,15 +139,19 @@ class SimulationHandler(object):
         Arguments:
            yaml_file: YAML file
            strategy: Batch job strategy name (only needed if more than one are defined)
-           name: Output name (overrides yaml)
-           path: File path (both yaml and output)
+           output_name: Output name (overrides YAML configuration)
+           database: File database (both YAML configuration and output)
            **kwargs: Dependent on implementation
         """
 
+        if 'path' in kwargs:
+            database = kwargs.pop['path']
+            warnings.warn("Parameter 'path' is superseded by 'database'", DeprecationWarning)
+
         # load configuration from yaml
         fname = Path(yaml_file)
-        if path is not None:
-            fname = Path(path) / fname
+        if database is not None:
+            fname = Path(database) / fname
 
         with open(fname) as stream:
             content = yaml.load(stream, Loader=yaml.SafeLoader)
@@ -155,31 +159,38 @@ class SimulationHandler(object):
         output = content.get('output', {})
 
         # naming priorities: keyword / yaml / automatic
-        if name is None:
+        if output_name is None:
             name = '{}'.format(Path(yaml_file).parents[0] / fname.stem)
             name = output.get('name', name)
 
-        return cls.from_dict(content, strategy=strategy, name=name, path=path, **kwargs)
+        return cls.from_dict(content, strategy=strategy, output_name=name, output_path=database, **kwargs)
 
     @classmethod
     def from_dict(cls, content: Dict[str, Any],
                   strategy: Optional[str]=None,
-                  name: Optional[str]=None,
-                  path: Optional[str]=None,
-                  **kwargs: str) -> \
-            Union['SimulationHandler', Dict[str, Any], str]:
+                  output_name: Optional[str]=None,
+                  output_path: Optional[str]=None,
+                  **kwargs: Optional[Dict]
+        ) -> Union['SimulationHandler', Dict[str, Any], str]:
         """
         Alternate constructor using a dictionary as input.
 
         Arguments:
            content: Dictionary from YAML input
            strategy: Batch job strategy name (only needed if more than one are defined)
-           name: Output name (overrides yaml)
-           path: Output path (overrides yaml)
+           output_name: Output name (overrides YAML configuration)
+           output_path: Output path (overrides YAML configuration)
            **kwargs: Dependent on implementation
         """
         assert 'ctwrap' in content, 'obsolete yaml file format'
         assert 'defaults' in content, 'obsolete yaml file format'
+
+        if 'name' in kwargs:
+            output_name = kwargs.pop['name']
+            warnings.warn("Parameter 'name' is superseded by 'output_name'", DeprecationWarning)
+        if 'path' in kwargs:
+            output_path = kwargs.pop['path']
+            warnings.warn("Parameter 'path' is superseded by 'output_path'", DeprecationWarning)
 
         if 'variation' in content and isinstance(content['variation'], dict):
             strategy = Sequence.from_legacy(content['variation'])
@@ -193,7 +204,7 @@ class SimulationHandler(object):
 
         output = content.get('output', None)
         if output is not None:
-            output = Output.from_dict(output, file_name=name, file_path=path).settings
+            output = Output.from_dict(output, file_name=output_name, file_path=output_path).settings
 
         return cls(strategy=strategy, defaults=defaults, output=output, **kwargs)
 
