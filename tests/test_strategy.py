@@ -137,7 +137,8 @@ class TestStrategy(unittest.TestCase):
             seq = cw.Strategy.load({name: self._specs_one})
             self.assertIsInstance(seq, cw.Sequence)
             self.assertEqual(seq.name, name)
-            self.assertIn('foobar', seq.definition)
+            self.assertIn(name, seq.definition)
+            self.assertIn('foobar', seq.definition[name])
 
         seq = cw.Strategy.load({'matrix': self._specs_two})
         self.assertIsInstance(seq, cw.Matrix)
@@ -200,5 +201,7 @@ class TestStrategy(unittest.TestCase):
     def test_legacy(self):
 
         mm = cw.Parser.from_yaml('legacy.yaml', path=EXAMPLES)
-        seq = cw.Sequence.from_legacy(mm.variation.raw)
+        new = cw.Legacy.convert(mm.variation.raw)
+        seq = cw.Strategy.load(new)
+        self.assertIsInstance(seq, cw.Legacy)
         self.assertEqual(seq.sweep['initial.phi'], mm.variation.raw['values'])

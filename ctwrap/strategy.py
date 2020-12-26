@@ -240,6 +240,8 @@ class Strategy:
         hooks = {'strategy': cls}
         for sub in cls.__subclasses__():
             hooks[sub.__name__.lower()] = sub
+            for subsub in sub.__subclasses__():
+                hooks[subsub.__name__.lower()] = subsub
 
         cls_hook = None
         for sub, hook in hooks.items():
@@ -316,15 +318,10 @@ class Sequence(Strategy):
         entry, values = list(self.sweep.items())[0]
         return 'Simulations for entry `{}` with values: {}'.format(entry, values)
 
-    @classmethod
-    def from_legacy(cls, items):
-        """Create Sequence from ctwrap 0.1.0 syntax"""
-        return cls({items['entry']: items['values']})
-
     @property
     def definition(self):
         ""
-        return self.sweep
+        return {self.name: self.sweep}
 
     @property
     def tasks(self):
@@ -334,6 +331,14 @@ class Sequence(Strategy):
     def configurations(self, defaults):
         ""
         return _sweep_matrix(self.sweep, defaults)
+
+
+class Legacy(Sequence):
+
+    @staticmethod
+    def convert(items):
+        """Create Sequence from ctwrap 0.1.0 syntax"""
+        return {'legacy': {items['entry']: items['values']}}
 
 
 class Matrix(Strategy):
