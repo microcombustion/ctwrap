@@ -332,7 +332,7 @@ class SimulationHandler(object):
             verbosity = self.verbosity
 
         if verbosity > 0:
-            print(indent1 + 'running serial simulation')
+            print(indent1 + 'Starting serial batch simulation')
 
         # set up queues and dispatch worker
         tasks_to_accomplish = self._setup_batch(parallel=False)
@@ -384,7 +384,7 @@ class SimulationHandler(object):
             verbosity = self.verbosity
 
         if verbosity > 0:
-            print(indent1 + 'running parallel simulation using ' +
+            print(indent1 + 'Starting parallel batch simulation using ' +
                   '{} cores'.format(number_of_processes))
 
         # set up queues and lock
@@ -447,7 +447,8 @@ def _worker(
 
     # create local copy of strategy object
     strategy = Strategy.load(strategy)
-    task_list = [task for task in strategy.variations]
+    variations = strategy.variations
+    task_list = [task for task in variations]
     finished_tasks = []
 
     while True:
@@ -469,10 +470,10 @@ def _worker(
 
             if verbosity > 0:
                 if parallel:
-                    msg = indent1 + 'processing `{}` ({})'
+                    msg = indent1 + 'running `{}` ({})'
                     print(msg.format(task, this))
                 else:
-                    msg = indent1 + 'processing `{}`'
+                    msg = indent1 + 'running `{}`'
                     print(msg.format(task))
 
             # run task
@@ -484,9 +485,9 @@ def _worker(
             # save output
             if parallel:
                 with lock:
-                    obj._save(group=task)
+                    obj._save(group=task, variation=variations[task])
             else:
-                obj._save(group=task)
+                obj._save(group=task, variation=variations[task])
 
             # update queue
             if parallel:
