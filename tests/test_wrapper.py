@@ -167,7 +167,7 @@ class TestAdiabaticFlame(TestWrap):
     _module = cw.modules.adiabatic_flame
     _yaml = 'adiabatic_flame.yaml'
     _out = 'adiabatic_flame.h5'
-    _strategy = None
+    _strategy = 'sequence'
 
 
 class TestInvalid(TestWrap):

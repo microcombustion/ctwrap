@@ -3,6 +3,9 @@
 strategy:
   sequence:
     upstream.phi: { mode: linspace, limits: [0.4, 2.6], npoints: 12 }
+  matrix:
+    upstream.phi: { mode: linspace, limits: [0.4, 2.6], npoints: 12 }
+    model.transport: ['mix', 'multi', 'soret']
 output:
   format: h5
   force: True
@@ -13,8 +16,9 @@ defaults:
     phi: .55 # equivalence ratio
     fuel: H2
     oxidizer: O2:1,AR:5
-  chemistry:
+  model:
     mechanism: h2o2.yaml
+    transport: mix
   domain:
     width: 30 millimeter # domain width
 ctwrap: 0.3.0
