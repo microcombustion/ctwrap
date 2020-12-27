@@ -288,14 +288,15 @@ class SimulationHandler(object):
             out = Output.from_dict(self._output)
             out.save_metadata(self.metadata)
 
-    def _setup_batch(self, parallel: bool=False, **kwargs):
+    def _setup_batch(self, parallel: bool=False):
+        """Create batch queues used by worker function"""
 
         if parallel:
             tasks_to_accomplish = mp.Queue()
         else:
             tasks_to_accomplish = queue.Queue()
         for task, overload in self._configurations.items():
-            tasks_to_accomplish.put((task, overload, kwargs))
+            tasks_to_accomplish.put((task, overload))
 
         return tasks_to_accomplish
 
@@ -335,10 +336,9 @@ class SimulationHandler(object):
 
         # set up queues and dispatch worker
         tasks_to_accomplish = self._setup_batch(parallel=False)
-        finished_tasks = queue.Queue()
         lock = None
-        _worker(sim._module, tasks_to_accomplish, finished_tasks, lock,
-                self._output, verbosity)
+        _worker(sim._module, self._strategy.definition, self._output,
+                tasks_to_accomplish, lock, verbosity)
 
         if self._output is not None:
             out = Output.from_dict(self._output)
@@ -389,7 +389,6 @@ class SimulationHandler(object):
 
         # set up queues and lock
         tasks_to_accomplish = self._setup_batch(parallel=True)
-        finished_tasks = mp.Queue()
         lock = mp.Lock()
 
         # creating processes
@@ -397,8 +396,8 @@ class SimulationHandler(object):
         for _ in range(number_of_processes):
             p = mp.Process(
                 target=_worker,
-                args=(sim._module, tasks_to_accomplish, finished_tasks, lock,
-                      self._output, verbosity))
+                args=(sim._module, self._strategy.definition, self._output,
+                      tasks_to_accomplish, lock, verbosity))
             processes.append(p)
             p.start()
 
@@ -417,10 +416,10 @@ class SimulationHandler(object):
 
 def _worker(
         module: str,
-        tasks_to_accomplish: mpq.Queue,
-        tasks_that_are_done: mpq.Queue,
-        lock: mps.Lock,
+        strategy: Dict[str, Any],
         output: Dict[str, Any],
+        tasks_to_accomplish: mpq.Queue,
+        lock: mps.Lock,
         verbosity: int
     ) -> True:
     """
@@ -429,7 +428,6 @@ def _worker(
     Arguments:
         module: Name of simulation module to be run
         tasks_to_accomplish: Queue of remaining tasks
-        tasks_that_are_done: Queue of completed tasks
         lock: Multiprocessing lock (used for parallel simulations only)
         output: Dictionary containing output information
         verbosity: Verbosity level
@@ -447,10 +445,15 @@ def _worker(
     if verbosity > 1 and parallel:
         print(indent2 + 'starting ' + this)
 
+    # create local copy of strategy object
+    strategy = Strategy.load(strategy)
+    task_list = [task for task in strategy.variations]
+    finished_tasks = []
+
     while True:
         try:
             # retrieve next simulation task
-            task, overload, kwargs = tasks_to_accomplish.get_nowait()
+            task, overload = tasks_to_accomplish.get_nowait()
 
         except queue.Empty:
             # no tasks left
@@ -459,6 +462,11 @@ def _worker(
             break
 
         else:
+            # update local list of finished tasks
+            # (inexact: tasks could be currently running!)
+            while task_list and task not in finished_tasks:
+                finished_tasks.append(task_list.pop(0))
+
             if verbosity > 0:
                 if parallel:
                     msg = indent1 + 'processing `{}` ({})'
@@ -485,6 +493,5 @@ def _worker(
                 msg = 'case `{}` completed by {}'.format(task, this)
             else:
                 msg = 'case `{}` completed'.format(task)
-            tasks_that_are_done.put(task)
 
     return True
