@@ -26,7 +26,12 @@ def defaults():
     return Parser.from_yaml('adiabatic_flame.yaml', defaults=True)
 
 
-def run(model=None, upstream=None, domain=None, settings=None):
+def restart(base, **kwargs):
+    """Restart calculation"""
+    run(restart=base, **kwargs)
+
+
+def run(model=None, upstream=None, domain=None, settings=None, restart=None):
     """Function handling adiabatic flame simulation.
 
     The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
@@ -37,6 +42,7 @@ def run(model=None, upstream=None, domain=None, settings=None):
         upstream (Parser): overloads 'defaults.upstream'
         domain   (Parser): overloads 'defaults.simulation'
         settings (Parser): overloads 'defaults.settings'
+        restart (ct.FlameBase): previous solution
 
     Returns:
         Dictionary containing Cantera `FlameBase` object

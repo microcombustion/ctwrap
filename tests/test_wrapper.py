@@ -56,6 +56,17 @@ class TestWrap(unittest.TestCase):
         for key in self.sim.data.keys():
             self.assertIn('unspecified', key)
 
+    def test_restart(self):
+        self.sim.run()
+        old = self.sim.data
+        if self.sim.has_restart:
+            self.sim.restart(old)
+            self.assertEqual(type(old), type(self.sim.data))
+            self.assertNotEqual(old, self.sim.data)
+        else:
+            with self.assertRaisesRegex(NotImplementedError, "does not define 'restart'"):
+                self.sim.restart(old)
+
     def test_handler(self):
         self.assertIsInstance(self.sh.tasks, dict)
 
@@ -197,6 +208,10 @@ class TestInvalid(TestWrap):
     def test_simulation(self):
         with self.assertWarnsRegex(RuntimeWarning, "Hello world!"):
             super().test_simulation()
+
+    def test_restart(self):
+        with self.assertWarnsRegex(RuntimeWarning, "Hello world!"):
+            super().test_restart()
 
     def test_serial(self):
         with self.assertWarnsRegex(RuntimeWarning, "Hello world!"):
