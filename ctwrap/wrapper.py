@@ -84,6 +84,8 @@ class Simulation(object):
             warnings.warn("Method 'save' in simulation modules are ignored",
                           DeprecationWarning)
 
+        self.has_restart = hasattr(mod, 'restart')
+
     @classmethod
     def from_module(cls,
                     module: str,
@@ -130,10 +132,26 @@ class Simulation(object):
 
         return importlib.import_module(self._module)
 
-    def run(self, name: Optional[str]='unspecified',
+    def restart(
+            self,
+            name: Optional[str]='unspecified',
             config: Optional[Dict[str, Any]]=None,
-            **kwargs: str) -> None:
-        """Runs the simulation module's ``run`` method.
+            restart: Optional[Any]=None,
+        ) -> bool:
+        """Run the simulation module's ``restart`` method."""
+        if self.has_restart:
+            return self.run(name=name, config=config, restart=restart)
+
+        raise NotImplementedError("Simulation module does not define 'restart' method")
+
+    def run(
+            self,
+            name: Optional[str]='unspecified',
+            config: Optional[Dict[str, Any]]=None,
+            restart: Optional[Any]=None,
+            **kwargs: str
+        ) -> bool:
+        """Run the simulation module's ``run`` method.
 
         This :meth:`run` method is used to call the simulation module's run method.
         If a simulation object ``sim`` was created with simulation module
@@ -147,9 +165,9 @@ class Simulation(object):
         Arguments:
             name: Name of simulation run
             config: Configuration used for simulation
+            restart: Data used for restart
             **kwargs: Optional parameters passed to the simulation
         """
-
         module = self._load_module()
 
         if kwargs:
@@ -160,18 +178,24 @@ class Simulation(object):
         config = Parser(config)
 
         try:
-            out = module.run(**config)
+            if restart is None:
+                out = module.run(**config)
+            else:
+                out = module.restart(restart, **config)
             if isinstance(out, dict):
                 self.data = {'{}_{}'.format(name, k): v for k, v in out.items()}
             else:
                 self.data = {name: out}
             self._errored = False
+
         except Exception as err:
             # Convert exception to warning
             msg = "Simulation of '{}' for '{}' failed with error message:\n{}".format(module.__name__, name, err)
             warnings.warn(msg, RuntimeWarning)
             self.data = {name: (type(err).__name__, str(err))}
             self._errored = True
+
+        return self._errored
 
     def defaults(self) -> Dict[str, Any]:
         """Pass-through returning simulation module defaults as a dictionary"""
