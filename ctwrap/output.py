@@ -141,7 +141,8 @@ class Output:
     def save(
             self,
             data: Any,
-            task: str,
+            group: str,
+            variation: Optional[Dict]=None,
             mode: Optional[str]='a',
             errored: Optional[bool]=False
         ) -> bool:
@@ -149,7 +150,8 @@ class Output:
 
         Arguments:
            data: Data to be saved
-           task: Description of simulation task
+           group: Description of simulation task
+           variation: Parameter values
            mode: Save mode
            errored: Boolean describing success of simulation task
 
@@ -178,7 +180,7 @@ class WriteCSV(Output):
 
     _ext = ['.csv']
 
-    def save(self, data, task, mode=None, errored=False):
+    def save(self, data, group, variation=None, mode=None, errored=False):
         ""
         if not data:
             return
@@ -213,8 +215,12 @@ class WriteCSV(Output):
 
         if isinstance(value, pd.Series):
 
-            case = '{}_{}'.format(key, task).split('_')
-            case = dict(zip([c.replace('.', '_') for c in case[0::2]], case[1::2]))
+            if isinstance(variation, dict):
+                var = {k.replace('.', '_'): v for k, v in variation}
+                value = pd.concat([pd.Series(var), value])
+
+            case = key.split('_')
+            case = {case[0]: case[1]}
             row = pd.concat([pd.Series(case), value])
 
             fname = Path(self.output_name)
@@ -236,18 +242,18 @@ class WriteHDF(Output):
 
     _ext = ['.h5', '.hdf', '.hdf5']
 
-    def save(self, data, task, mode=None, errored=False):
+    def save(self, data, group, variation=None, mode=None, errored=False):
         ""
         settings = self.settings
         if mode is None:
             mode = settings['mode']
 
         try:
-            _save_hdf(data, settings, task, mode, errored)
+            _save_hdf(data, settings, group, variation, mode, errored)
             return True
         except OSError as err:
             # Convert exception to warning
-            msg = "Output of task '{}' failed with error message:\n{}".format(task, err)
+            msg = "Output of group '{}' failed with error message:\n{}".format(group, err)
             warnings.warn(msg, RuntimeWarning)
             return False
 
@@ -276,7 +282,7 @@ class WriteHDF(Output):
             return False
 
 
-def _save_hdf(data, settings, task, mode='a', errored=False):
+def _save_hdf(data, settings, group, variation, mode='a', errored=False):
     filename = settings.pop('name')
     settings.pop('mode')
 
@@ -317,9 +323,16 @@ def _save_hdf(data, settings, task, mode='a', errored=False):
         for group, states in data.items():
             # pylint: disable=no-member
             if type(states).__name__ == 'SolutionArray':
-                attrs = {'description': task}
+                if variation is not None:
+                    attrs = variation
+                else:
+                    attrs = {}
                 states.write_hdf(filename=filename, group=group,
                                  attrs=attrs, **kwargs)
             elif type(states).__name__ in ['FreeFlame']:
+                if variation is not None:
+                    description = '_'.join(['{}_{}'.format(k, v) for k, v in variation.items()])
+                else:
+                    description = None
                 states.write_hdf(filename=filename, group=group,
-                                 description=task, **kwargs)
+                                 description=description, **kwargs)

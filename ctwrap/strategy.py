@@ -34,6 +34,7 @@ import warnings
 from copy import deepcopy
 from typing import Dict, Any, List, Optional
 import numpy as np
+from math import ceil, log10
 import re
 
 from .parser import _parse, _write, Parser
@@ -77,9 +78,9 @@ def _task_list(tasks, prefix=None):
 
     out = []
     for value in values:
-        new = '{}_{}'.format(key, value)
+        new = {key: value}
         if prefix:
-            new = '{}_{}'.format(prefix, new)
+            new = {**new, **prefix}
         if next:
             out.extend(_task_list(next, new))
         else:
@@ -185,6 +186,8 @@ class Strategy:
 
     def __init__(self, value={}, name=None):
         self._check_input(value, 0)
+        self.name = name
+        self._definition = value
         warnings.warn("Base clase does not implement batch simulation strategy")
 
     @property
@@ -202,7 +205,11 @@ class Strategy:
         elif len(value) < min_length:
             raise ValueError("Invalid length: dictionary requires at least "
                              "{} entry/entries.".format(min_length))
-        return True
+
+        if any(isinstance(v, dict) for v in value.values()):
+            value = _parse_mode(value)
+
+        return value
 
     @classmethod
     def load(cls, strategy, name=None):
@@ -234,9 +241,6 @@ class Strategy:
         else:
             raise ValueError("Parameter 'name' is required if multiple strategies are defined")
 
-        if isinstance(value, dict) and any(isinstance(i, dict) for i in value.values()):
-            value = _parse_mode(value)
-
         hooks = {'strategy': cls}
         for sub in cls.__subclasses__():
             hooks[sub.__name__.lower()] = sub
@@ -257,16 +261,68 @@ class Strategy:
     @property
     def definition(self):
         """Definition of batch simulation strategy"""
-        raise NotImplementedError("Needs to be implemented by derived classes")
+        return {self.name: self._definition}
 
     @property
     def tasks(self):
-        """List of tasks to be performed"""
+        warnings.warn("Superseded by 'variations", DeprecationWarning)
+        return self.variations
+
+    @property
+    def variations(self):
+        """Parameter values to be tested grouped by task
+
+        **Example:** The following code applies a parameter variation to the
+        `Sequence` object *strategy*:
+
+        .. code-block:: Python
+
+           # define parameter variation
+           foo = {'foobar': [0, 1, 2, 3]}
+           strategy = ctwrap.Sequence(foo)
+
+           # generate dictionary of varied parameter values
+           vars = strategy.variations
+
+        Returns:
+           Nested dictionary of parameter values
+        """
         raise NotImplementedError("Needs to be implemented by derived classes")
 
     def configurations(self, defaults):
-        """List of configurations to be tested"""
+        """Configurations to be tested grouped by task
+
+        **Example:** The following code applies a parameter variation to the
+        `Sequence` object *strategy* based on a parameter set *defaults*:
+
+        .. code-block:: Python
+
+           # define parameter variation
+           foo = {'foobar': [0, 1, 2, 3]}
+           strategy = ctwrap.Sequence(foo)
+
+           # generate dictionary of configurations based on default parameters
+           defaults = {'foobar': 1, 'spam': 2.0, 'eggs': 3.14}
+           confs = strategy.configurations(defaults)
+
+        Arguments:
+           defaults: Dictionary containing default parameters
+
+        Returns:
+           Nested dictionary of configurations
+        """
         raise NotImplementedError("Needs to be implemented by derived classes")
+
+    @staticmethod
+    def _label(other):
+        """Key/value pairs correspond to group and task names"""
+        # add leading zeros to group labels to facilitate sorting
+        digits = ceil(log10(len(other))) # number of digits in tasks
+        group_template = "case_{{:0>{:d}d}}".format(digits)
+        groups = {}
+        for i, t in enumerate(other):
+            groups[group_template.format(i)] = t
+        return groups
 
     def create_tasks(self, defaults: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Create list of parameter sets for a parameter variation
@@ -290,7 +346,8 @@ class Strategy:
         Returns:
            List of dictionaries with parameter variation
         """
-        return dict(zip(self.tasks, self.configurations(defaults)))
+        warnings.warn("Superseded by 'variations' and 'configurations'", DeprecationWarning)
+        return dict(zip(self.variations.values(), self.configurations(defaults).values()))
 
 
 class Sequence(Strategy):
@@ -307,8 +364,8 @@ class Sequence(Strategy):
     """
 
     def __init__(self, sweep: Dict[str, Any], name: Optional[str]=None):
-        self._check_input(sweep, 1)
-        self.sweep = sweep
+        self._definition = sweep
+        self.sweep = self._check_input(sweep, 1)
         if name is None:
             name = type(self).__name__.lower()
         self.name = name
@@ -319,18 +376,13 @@ class Sequence(Strategy):
         return 'Simulations for entry `{}` with values: {}'.format(entry, values)
 
     @property
-    def definition(self):
+    def variations(self):
         ""
-        return {self.name: self.sweep}
-
-    @property
-    def tasks(self):
-        ""
-        return _task_list(self.sweep)
+        return self._label(_task_list(self.sweep))
 
     def configurations(self, defaults):
         ""
-        return _sweep_matrix(self.sweep, defaults)
+        return self._label(_sweep_matrix(self.sweep, defaults))
 
 
 class Legacy(Sequence):
@@ -356,8 +408,8 @@ class Matrix(Strategy):
     """
 
     def __init__(self, matrix: Dict[str, Any], name: Optional[str]=None):
-        self._check_input(matrix, 2, False)
-        self.matrix = matrix
+        self._definition = matrix
+        self.matrix = self._check_input(matrix, 2, False)
         if name is None:
             name = type(self).__name__.lower()
         self.name = name
@@ -368,18 +420,13 @@ class Matrix(Strategy):
         return 'Simulations for entries {}'.format(entries)
 
     @property
-    def definition(self):
+    def variations(self):
         ""
-        return self.matrix
-
-    @property
-    def tasks(self):
-        ""
-        return _task_list(self.matrix)
+        return self._label(_task_list(self.matrix))
 
     def configurations(self, defaults):
         ""
-        return _sweep_matrix(self.matrix, defaults)
+        return self._label(_sweep_matrix(self.matrix, defaults))
 
 
 class Sobol(Strategy):
@@ -389,9 +436,13 @@ class Sobol(Strategy):
     """
     # Note: old work is Python 2 / Cantera 2.1
 
-    def __init__(self, ranges):
+    def __init__(self, ranges: Dict[str, Any], name: Optional[str]=None):
+        self._definition = ranges
         self._check_input(ranges, 1, False)
         self.ranges = ranges
+        if name is None:
+            name = type(self).__name__.lower()
+        self.name = name
 
     # def create_tasks(self):
     #     raise NotImplementedError("tbd")

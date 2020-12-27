@@ -29,13 +29,11 @@ class TestLegacy(unittest.TestCase):
         with self.assertWarnsRegex(PendingDeprecationWarning, "Old implementation"):
             sh = cw.SimulationHandler.from_yaml('legacy.yaml', database=EXAMPLES)
         self.assertIsInstance(sh.tasks, dict)
-        self.assertIn('initial.phi_0.4', sh.tasks)
 
 
 class TestWrap(unittest.TestCase):
 
     _module = cw.modules.minimal
-    _task = 'foo_0.4'
     _yaml = 'minimal.yaml'
     _out = None
     _path = None
@@ -60,7 +58,6 @@ class TestWrap(unittest.TestCase):
 
     def test_handler(self):
         self.assertIsInstance(self.sh.tasks, dict)
-        self.assertIn(self._task, self.sh.tasks)
 
     def test_serial(self):
         self.assertTrue(self.sh.run_serial(self.sim))
@@ -118,7 +115,6 @@ class TestWrap(unittest.TestCase):
 class TestMatrix(TestWrap):
 
     _strategy = 'matrix'
-    _task ='foo_0.1_bar_0'
 
 
 class TestLocal(TestWrap):
@@ -147,7 +143,6 @@ class TestCustom(TestWrap):
 class TestIgnition(TestWrap):
 
     _module = cw.modules.ignition
-    _task = 'initial.phi_0.4'
     _yaml = 'ignition.yaml'
     _out = 'ignition.h5'
     _strategy = None
@@ -156,7 +151,6 @@ class TestIgnition(TestWrap):
 class TestEquilibrium(TestWrap):
 
     _module = cw.modules.equilibrium
-    _task = 'initial.phi_0.4'
     _yaml = 'equilibrium.yaml'
     _out = 'equilibrium.csv'
     _strategy = None
@@ -171,7 +165,6 @@ class TestEquilibriumMulti(TestEquilibrium):
 class TestAdiabaticFlame(TestWrap):
 
     _module = cw.modules.adiabatic_flame
-    _task = 'upstream.phi_0.4'
     _yaml = 'adiabatic_flame.yaml'
     _out = 'adiabatic_flame.h5'
     _strategy = None
@@ -180,7 +173,6 @@ class TestAdiabaticFlame(TestWrap):
 class TestInvalid(TestWrap):
 
     _module = str(ROOT / 'tests' / 'invalid.py')
-    _task = 'foo_1'
     _dict = {
         'strategy': {'sequence': {'foo': [0, 1, 2]}},
         'defaults': {'foo': None},
