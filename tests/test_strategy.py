@@ -56,35 +56,21 @@ class TestReplace(unittest.TestCase):
 
 class TestParse(unittest.TestCase):
 
-    def test_one(self):
+    _result = [0, 0.2, 0.4, 0.6, 0.8, 1.0]
 
-        _default = {'test_1': {'limits': [0, 1], 'npoints': 6, 'mode': 'linspace'}}
+    def test_linspace(self):
 
-        value = {'test_1': [0, 0.2, 0.4, 0.6, 0.8, 1.0]}
+        value = {'limits': [0, 1], 'npoints': 6, 'mode': 'linspace'}
+        out = _parse_mode(value)
 
-        out = _parse_mode(_default)
+        self.assertEqual(out, self._result)
 
-        value_keys, value_list = list(value.items())[0]
-        out_keys, out_list = list(out.items())[0]
+    def test_arange(self):
 
-        self.assertEqual(value_keys, out_keys)
-        for i in range(len(value_list)):
-            self.assertAlmostEqual(value_list[i], out_list[i])
+        value = {'limits': [0, 1.2], 'step': 0.2, 'mode': 'arange'}
+        out = _parse_mode(value)
 
-    def test_two(self):
-
-        _default = {'test_2': {'limits': [0, 1.2], 'step': 0.2, 'mode': 'arange'}}
-
-        value = {'test_2': [0, 0.2, 0.4, 0.6, 0.8, 1.0]}
-
-        out = _parse_mode(_default)
-
-        value_keys, value_list = list(value.items())[0]
-        out_keys, out_list = list(out.items())[0]
-
-        self.assertEqual(value_keys, out_keys)
-        for i in range(len(value_list)):
-            self.assertAlmostEqual(value_list[i], out_list[i])
+        self.assertEqual(out, self._result)
 
 
 class TestSweep(unittest.TestCase):

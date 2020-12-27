@@ -80,7 +80,7 @@ def _task_list(tasks, prefix=None):
     for value in values:
         new = {key: value}
         if prefix:
-            new = {**new, **prefix}
+            new = {**prefix, **new}
         if next:
             out.extend(_task_list(next, new))
         else:
@@ -112,60 +112,49 @@ def _sweep_matrix(tasks, defaults):
     return out
 
 
-def _parse_mode(strat_dict):
-    """
-    parse the strategy values based on the mode specified (recursive)
+def _parse_mode(strat_val):
+    """Parse the strategy values based on the mode specified
 
     Argument:
-        strat_dict(dict): variation values specification
+        strat_val(dict): Specification of variation values
 
-    Output:
-        out (dict): parsed variation values
+    Returns:
+        List containing parsed variation values
     """
 
-    keys = list(strat_dict.keys())
-    next = strat_dict.copy()
+    strat_limits = strat_val['limits']
+    strat_max = strat_limits[1]
+    strat_min = strat_limits[0]
 
-    out = {}
+    if "mode" not in strat_val:
+        msg = "The required field 'mode' (strategy specification mode) is missing"
+        raise KeyError(msg)
 
-    for key in keys:
-        strat_val = next.pop(key)
-        strat_limits = strat_val['limits']
-        strat_max = strat_limits[1]
-        strat_min = strat_limits[0]
-
-        if "mode" not in strat_val:
-            msg = "The required field 'mode' (strategy specification mode) is missing"
+    if strat_val['mode'] == "linspace":
+        strat_npoints = strat_val.get('npoints')
+        if strat_npoints is None:
+            msg = "The field 'npoints' (number of points) is missing"
             raise KeyError(msg)
-
-        if strat_val['mode'] == "linspace":
-            strat_npoints = strat_val.get('npoints')
-            if strat_npoints is None:
-                msg = "The field 'npoints' (number of points) is missing"
-                raise KeyError(msg)
-            value = np.linspace(strat_min, strat_max, strat_npoints)
-        elif strat_val['mode'] == "arange":
-            if 'step' not in strat_val:
-                msg = "The required field 'step' (step size) is missing"
-                raise KeyError(msg)
-            strat_step = strat_val['step']
-            value = np.arange(strat_min, strat_max, strat_step)
-        else:
-            msg = "Unknown strategy mode '{}'".format(strat_val['mode'])
+        value = np.linspace(strat_min, strat_max, strat_npoints)
+    elif strat_val['mode'] == "arange":
+        if 'step' not in strat_val:
+            msg = "The required field 'step' (step size) is missing"
             raise KeyError(msg)
+        strat_step = strat_val['step']
+        value = np.arange(strat_min, strat_max, strat_step)
+    else:
+        msg = "Unknown strategy mode '{}'".format(strat_val['mode'])
+        raise KeyError(msg)
 
-        # eliminate values affected by machine precision
-        if all(value.astype(int) == value):
-            value = re.findall(r'\d+', repr(value))
-            out[key] = [int(v) for v in value]
-        else:
-            value = re.findall(r'[-+]?\d*\.\d*', repr(value))
-            out[key] = [float(v) for v in value]
+    # eliminate values affected by machine precision
+    if all(value.astype(int) == value):
+        value = re.findall(r'\d+', repr(value))
+        value = [int(v) for v in value]
+    else:
+        value = re.findall(r'[-+]?\d*\.\d*', repr(value))
+        value = [float(v) for v in value]
 
-        if next:
-            out.update(_parse_mode(next))
-
-    return out
+    return value
 
 
 class Strategy:
@@ -206,10 +195,14 @@ class Strategy:
             raise ValueError("Invalid length: dictionary requires at least "
                              "{} entry/entries.".format(min_length))
 
-        if any(isinstance(v, dict) for v in value.values()):
-            value = _parse_mode(value)
+        out = {}
+        for key, val in value.items():
+            if isinstance(val, dict):
+                out[key] = _parse_mode(val)
+            else:
+                out[key] = val
 
-        return value
+        return out
 
     @classmethod
     def load(cls, strategy, name=None):
@@ -348,6 +341,25 @@ class Strategy:
         """
         warnings.warn("Superseded by 'variations' and 'configurations'", DeprecationWarning)
         return dict(zip(self.variations.values(), self.configurations(defaults).values()))
+
+    def base(self, task):
+        """Return basis for a restart"""
+        base = None
+        vars = self.variations
+        for key in vars:
+            if key == task:
+                break
+            base = key
+
+        # a base case only differs in the last variation
+        pars = list(vars[task].keys())
+        for par in pars[:-1]:
+            if base is None:
+                break
+            if vars[base][par] != vars[task][par]:
+                base = None
+
+        return base
 
 
 class Sequence(Strategy):
