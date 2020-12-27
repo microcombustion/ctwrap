@@ -100,9 +100,13 @@ class TestSweep(unittest.TestCase):
                 val = items.pop(0)
                 self.assertEqual(str(config[key]), val)
 
+    @staticmethod
+    def stringify(items):
+        return ['_'.join(['{}_{}'.format(k, v) for k, v in dd.items()]) for dd in items]
+
     def test_one(self):
         dd = {'foo': [1, 2, 3, 4]}
-        out = _task_list(dd)
+        out = self.stringify(_task_list(dd))
         self.assertEqual(len(out), 4)
         configs = _sweep_matrix(dd, self._default)
         self.assertEqual(len(configs), 4)
@@ -110,7 +114,7 @@ class TestSweep(unittest.TestCase):
 
     def test_two(self):
         dd = {'foo': [1, 2, 3, 4], 'bar': [5, 6, 7]}
-        out = _task_list(dd)
+        out = self.stringify(_task_list(dd))
         self.assertEqual(len(out), 12)
         configs = _sweep_matrix(dd, self._default)
         self.assertEqual(len(configs), 12)
@@ -118,7 +122,7 @@ class TestSweep(unittest.TestCase):
 
     def test_three(self):
         dd = {'foo': [1, 2, 3, 4], 'bar': [5, 6, 7], 'baz': [8, 9]}
-        out = _task_list(dd)
+        out = self.stringify(_task_list(dd))
         self.assertEqual(len(out), 24)
         configs = _sweep_matrix(dd, self._default)
         self.assertEqual(len(configs), 24)
@@ -172,7 +176,7 @@ class TestStrategy(unittest.TestCase):
 
         seq = cw.Sequence(self._specs_one)
         defaults = {'foobar': 1, 'spam': 2.0, 'eggs': 3.14}
-        tasks = seq.create_tasks(defaults)
+        tasks = seq.configurations(defaults)
         task_keys = list(tasks.keys())
 
         values = self._specs_one['foobar']
@@ -183,7 +187,7 @@ class TestStrategy(unittest.TestCase):
 
         mat = cw.Matrix(self._specs_two)
         defaults = {'foo': None, 'bar': None, 'baz': 3.14}
-        tasks = mat.create_tasks(defaults)
+        tasks = mat.configurations(defaults)
         self.assertEqual(len(tasks), 6)
 
     def test_minimal(self):

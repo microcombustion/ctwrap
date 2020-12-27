@@ -175,7 +175,7 @@ class Simulation(object):
         module = self._load_module()
         return module.defaults()
 
-    def _save(self, task=None, mode="a") -> bool:
+    def _save(self, group=None, variation=None, mode="a") -> bool:
         """Save simulation data (hidden)
 
         Returns:
@@ -186,4 +186,4 @@ class Simulation(object):
             return None
 
         out = Output.from_dict(self._output)
-        return out.save(self.data, task, mode=mode, errored=self._errored)
+        return out.save(self.data, group, variation=variation, mode=mode, errored=self._errored)

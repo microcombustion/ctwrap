@@ -110,7 +110,8 @@ class SimulationHandler(object):
 
         self._output = output
 
-        self._tasks = self._strategy.create_tasks(self._defaults)
+        self._variations = self._strategy.variations
+        self._configurations = self._strategy.configurations(self._defaults)
         if self.verbosity:
             msg = textwrap.wrap(self._strategy.info, 80)
             print('\n'.join(msg))
@@ -121,7 +122,7 @@ class SimulationHandler(object):
         return {
             'defaults': self._defaults,
             'strategy': self._strategy.definition,
-            'tasks': list(self._tasks.keys())
+            'cases': self._variations
         }
 
     @classmethod
@@ -213,11 +214,11 @@ class SimulationHandler(object):
     def __iter__(self):
         """Returns itself as iterator"""
 
-        for task in self._tasks:
+        for task in self._variations:
             yield task
 
     def __getitem__(self, task: str):
-        return self.configuration(task)
+        return self._variations(task)
 
     def configuration(self, task: str):
         """
@@ -229,7 +230,7 @@ class SimulationHandler(object):
         Returns:
            updated configuration dictionary based on the task
         """
-        return self._tasks[task]
+        return self._configurations[task]
 
     @property
     def verbose(self):
@@ -247,7 +248,7 @@ class SimulationHandler(object):
     @property
     def tasks(self):
         """tasks defined in terms of the variation entry and values"""
-        return self._tasks
+        return self._variations
 
     def run_task(self, sim: Simulation, task: str, **kwargs: str):
         """
@@ -267,7 +268,7 @@ class SimulationHandler(object):
            **kwargs: dependent on implementation
         """
 
-        assert task in self._tasks, 'unknown task `{}`'.format(task)
+        assert task in self._variations, 'unknown task `{}`'.format(task)
 
         # create a new simulation object
         obj = Simulation.from_module(sim._module, self._output)
@@ -278,9 +279,8 @@ class SimulationHandler(object):
         config.update(overload)
 
         # run simulation
-        group = "task_0"
-        obj.run(group, config, **kwargs)
-        obj._save(task=task)
+        obj.run(task, config, **kwargs)
+        obj._save(group=task, variation=self._variations[task])
         if self._output is not None:
             out = Output.from_dict(self._output)
             out.save_metadata(self.metadata)
@@ -291,15 +291,8 @@ class SimulationHandler(object):
             tasks_to_accomplish = mp.Queue()
         else:
             tasks_to_accomplish = queue.Queue()
-        tasks = list(self._tasks.keys())
-        tasks.sort()
-        # add leading zeros to group labels to facilitate sorting
-        digits = ceil(log10(len(tasks))) # number of digits in tasks
-        group_template = "task_{{:0>{:d}d}}".format(digits)
-        for i, t in enumerate(tasks):
-            overload = self.configuration(t)
-            group = group_template.format(i)
-            tasks_to_accomplish.put((t, group, overload, kwargs))
+        for task, overload in self._configurations.items():
+            tasks_to_accomplish.put((task, overload, kwargs))
 
         return tasks_to_accomplish
 
@@ -448,7 +441,7 @@ def _worker(
     while True:
         try:
             # retrieve next simulation task
-            task, group, overload, kwargs = tasks_to_accomplish.get_nowait()
+            task, overload, kwargs = tasks_to_accomplish.get_nowait()
 
         except queue.Empty:
             # no tasks left
@@ -469,20 +462,20 @@ def _worker(
             obj = Simulation.from_module(module, output)
             config = obj.defaults()
             config.update(overload)
-            obj.run(group, config, **kwargs)
+            obj.run(task, config, **kwargs)
 
             # save output
             if parallel:
                 with lock:
-                    obj._save(task=task)
+                    obj._save(group=task)
             else:
-                obj._save(task=task)
+                obj._save(group=task)
 
             # update queue
             if parallel:
                 msg = 'case `{}` completed by {}'.format(task, this)
             else:
                 msg = 'case `{}` completed'.format(task)
-            tasks_that_are_done.put(group)
+            tasks_that_are_done.put(task)
 
     return True
