@@ -216,7 +216,7 @@ class WriteCSV(Output):
         if isinstance(value, pd.Series):
 
             if isinstance(variation, dict):
-                var = {k.replace('.', '_'): v for k, v in variation}
+                var = {k.replace('.', '_'): v for k, v in variation.items()}
                 value = pd.concat([pd.Series(var), value])
 
             case = key.split('_')
