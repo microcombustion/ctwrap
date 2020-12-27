@@ -5,8 +5,9 @@ upstream:
   phi: .55 # equivalence ratio
   fuel: H2
   oxidizer: O2:1.,AR:5
-chemistry:
+model:
   mechanism: h2o2.yaml
+  transport: mix
 domain:
   width: 30 millimeter # domain width
 settings:

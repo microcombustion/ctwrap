@@ -26,27 +26,27 @@ def defaults():
     return Parser.from_yaml('adiabatic_flame.yaml', defaults=True)
 
 
-def run(chemistry=None, upstream=None, domain=None, settings=None):
+def run(model=None, upstream=None, domain=None, settings=None):
     """Function handling adiabatic flame simulation.
 
     The function uses the class 'ctwrap.Parser' in conjunction with 'pint.Quantity'
     for handling and conversion of units.
 
     Arguments:
-        chemistry (Parser): overloads 'defaults.chemistry'
-        upstream  (Parser): overloads 'defaults.upstream'
-        domain    (Parser): overloads 'defaults.simulation'
-        settings  (Parser): overloads 'defaults.settings'
+        model    (Parser): overloads 'defaults.model'
+        upstream (Parser): overloads 'defaults.upstream'
+        domain   (Parser): overloads 'defaults.simulation'
+        settings (Parser): overloads 'defaults.settings'
 
     Returns:
-        Dictionary containing Cantera `Flamebase` object
+        Dictionary containing Cantera `FlameBase` object
     """
 
     # initialize
 
     # IdealGasMix object used to compute mixture properties, set to the state of the
     # upstream fuel-air mixture
-    gas = ct.Solution(chemistry.mechanism)
+    gas = ct.Solution(model.mechanism)
 
     # temperature, pressure, and composition
     T = upstream.T.m_as('kelvin')
