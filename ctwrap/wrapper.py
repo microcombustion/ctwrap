@@ -152,12 +152,15 @@ class Simulation(object):
 
         module = self._load_module()
 
+        if kwargs:
+            warnings.warn("Keyword arguments are deprecated and ignored", DeprecationWarning)
+
         if config is None:
             config = module.defaults()
         config = Parser(config)
 
         try:
-            out = module.run(**config, **kwargs)
+            out = module.run(**config)
             if isinstance(out, dict):
                 self.data = {'{}_{}'.format(name, k): v for k, v in out.items()}
             else:
