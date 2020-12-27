@@ -146,7 +146,7 @@ class SimulationHandler(object):
         """
 
         if 'path' in kwargs:
-            database = kwargs.pop['path']
+            database = kwargs.pop['path'] # pylint: disable=unsubscriptable-object
             warnings.warn("Parameter 'path' is superseded by 'database'", DeprecationWarning)
 
         # load configuration from yaml
@@ -187,10 +187,10 @@ class SimulationHandler(object):
         assert 'defaults' in content, 'obsolete yaml file format'
 
         if 'name' in kwargs:
-            output_name = kwargs.pop['name']
+            output_name = kwargs.pop['name'] # pylint: disable=unsubscriptable-object
             warnings.warn("Parameter 'name' is superseded by 'output_name'", DeprecationWarning)
         if 'path' in kwargs:
-            output_path = kwargs.pop['path']
+            output_path = kwargs.pop['path'] # pylint: disable=unsubscriptable-object
             warnings.warn("Parameter 'path' is superseded by 'output_path'", DeprecationWarning)
 
         if 'variation' in content and isinstance(content['variation'], dict):
@@ -270,6 +270,9 @@ class SimulationHandler(object):
 
         assert task in self._variations, 'unknown task `{}`'.format(task)
 
+        if kwargs:
+            warnings.warn("Keyword arguments are deprecated and ignored", DeprecationWarning)
+
         # create a new simulation object
         obj = Simulation.from_module(sim._module, self._output)
 
@@ -279,7 +282,7 @@ class SimulationHandler(object):
         config.update(overload)
 
         # run simulation
-        obj.run(task, config, **kwargs)
+        obj.run(task, config)
         obj._save(group=task, variation=self._variations[task])
         if self._output is not None:
             out = Output.from_dict(self._output)
@@ -321,6 +324,9 @@ class SimulationHandler(object):
         """
         assert isinstance(sim, Simulation), 'need simulation object'
 
+        if kwargs:
+            warnings.warn("Keyword arguments are deprecated and ignored", DeprecationWarning)
+
         if verbosity is None:
             verbosity = self.verbosity
 
@@ -328,7 +334,7 @@ class SimulationHandler(object):
             print(indent1 + 'running serial simulation')
 
         # set up queues and dispatch worker
-        tasks_to_accomplish = self._setup_batch(parallel=False, **kwargs)
+        tasks_to_accomplish = self._setup_batch(parallel=False)
         finished_tasks = queue.Queue()
         lock = None
         _worker(sim._module, tasks_to_accomplish, finished_tasks, lock,
@@ -368,6 +374,9 @@ class SimulationHandler(object):
         """
         assert isinstance(sim, Simulation), 'need simulation object'
 
+        if kwargs:
+            warnings.warn("Keyword arguments are deprecated and ignored", DeprecationWarning)
+
         if number_of_processes is None:
             number_of_processes = mp.cpu_count() // 2
 
@@ -379,7 +388,7 @@ class SimulationHandler(object):
                   '{} cores'.format(number_of_processes))
 
         # set up queues and lock
-        tasks_to_accomplish = self._setup_batch(parallel=True, **kwargs)
+        tasks_to_accomplish = self._setup_batch(parallel=True)
         finished_tasks = mp.Queue()
         lock = mp.Lock()
 
@@ -462,7 +471,7 @@ def _worker(
             obj = Simulation.from_module(module, output)
             config = obj.defaults()
             config.update(overload)
-            obj.run(task, config, **kwargs)
+            obj.run(task, config)
 
             # save output
             if parallel:
