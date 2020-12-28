@@ -182,6 +182,14 @@ class TestAdiabaticFlame(TestWrap):
     _strategy = 'sequence'
 
 
+class TestAdiabaticFlameMatrix(TestAdiabaticFlame):
+
+    _module = cw.modules.adiabatic_flame
+    _yaml = 'adiabatic_flame.yaml'
+    _out = 'adiabatic_flame.h5'
+    _strategy = 'matrix'
+
+
 class TestInvalid(TestWrap):
 
     _module = str(ROOT / 'tests' / 'invalid.py')
@@ -207,16 +215,20 @@ class TestInvalid(TestWrap):
             h5.unlink()
 
     def test_simulation(self):
-        with self.assertWarnsRegex(RuntimeWarning, "Hello world!"):
+        with self.assertRaisesRegex(RuntimeError, "Hello world!"):
             super().test_simulation()
 
     def test_restart(self):
-        with self.assertWarnsRegex(RuntimeWarning, "Hello world!"):
-            super().test_restart()
+        with self.assertRaisesRegex(RuntimeError, "Hello world!"):
+           super().test_restart()
 
     def test_serial(self):
         with self.assertWarnsRegex(RuntimeWarning, "Hello world!"):
             super().test_serial()
+
+    def test_parallel(self):
+        with self.assertWarnsRegex(RuntimeWarning, "unable to open file"):
+            super().test_parallel()
 
     def test_main(self):
         # skip test (does not use setUp and is more involved)

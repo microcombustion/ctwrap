@@ -273,7 +273,7 @@ class SimulationHandler(object):
             warnings.warn("Keyword arguments are deprecated and ignored", DeprecationWarning)
 
         # create a new simulation object
-        obj = Simulation.from_module(sim._module, self._output)
+        obj = Simulation.from_module(sim._module)
 
         # get configuration
         config = obj.defaults()
@@ -282,9 +282,9 @@ class SimulationHandler(object):
 
         # run simulation
         obj.run(task, config)
-        obj._save(group=task, variation=self._variations[task])
-        if self._output is not None:
+        if self._output and obj.data:
             out = Output.from_dict(self._output)
+            out.save(obj.data, group=task, variation=self._variations[task])
             out.save_metadata(self.metadata)
 
     def _setup_batch(self, parallel: bool=False):
@@ -449,6 +449,12 @@ def _worker(
     variations = strategy.variations # pylint: disable=no-member
     tasks = set(variations.keys())
 
+    # create local copy of output object
+    if isinstance(output, dict):
+        out = Output.from_dict(output)
+    else:
+        out = None
+
     other = None
     reschedule = 0
     while reschedule < len(tasks):
@@ -462,55 +468,61 @@ def _worker(
                 print(indent2 + 'terminating ' + this)
             break
 
-        # create object
-        obj = Simulation.from_module(module, output)
+        try:
+            # create object
+            obj = Simulation.from_module(module)
 
-        base = strategy.base(task)
-        restart = None
-        if obj.has_restart and base is not None:
-            out = Output.from_dict(output)
-            if parallel:
-                with lock:
+            base = strategy.base(task)
+            restart = None
+            if obj.has_restart and out and base:
+                if parallel:
+                    with lock:
+                        done = set(out.dir())
+                        restart = out.load_like(base, other)
+                else:
                     done = set(out.dir())
                     restart = out.load_like(base, other)
+                invalid = done - tasks # empty if labels follow task names
+                if restart is None and not invalid:
+                    # need to pick another task
+                    if verbosity > 1:
+                        print(indent2 + 'rescheduling {} ({})'.format(task, this))
+                    tasks_to_accomplish.put((task, overload))
+                    reschedule += 1
+                    continue
+
+            if verbosity > 0:
+                msg = indent1 + 'running `{}` ({})'
+                print(msg.format(task, this))
+
+            # run task
+            config = obj.defaults()
+            config.update(overload)
+
+            if restart is None:
+                obj.run(task, config)
             else:
-                done = set(out.dir())
-                restart = out.load_like(base, other)
-            invalid = done - tasks # empty if labels follow task names
-            if restart is None and not invalid:
-                # need to pick another task
-                if verbosity > 1:
-                    print(indent2 + 'rescheduling {} ({})'.format(task, this))
-                tasks_to_accomplish.put((task, overload))
-                reschedule += 1
-                continue
+                obj.restart(task, config, restart)
 
-        if verbosity > 0:
-            msg = indent1 + 'running `{}` ({})'
-            print(msg.format(task, this))
+            data = obj.data
+            errored = False
 
-        # run task
-        config = obj.defaults()
-        config.update(overload)
+        except Exception as err:
+            # Convert exception to warning
+            msg = "Simulation of '{}' for '{}' failed with error message:\n{}".format(type(obj).__name__, task, err)
+            warnings.warn(msg, RuntimeWarning)
 
-        if restart is None:
-            obj.run(task, config)
-        else:
-            obj.restart(task, config, restart)
+            data = {task: (type(err).__name__, str(err))}
+            errored = True
 
         # save output
-        if parallel:
-            with lock:
-                obj._save(group=task, variation=variations[task])
-        else:
-            obj._save(group=task, variation=variations[task])
+        if out and obj.data:
+            if parallel:
+                with lock:
+                    out.save(obj.data, group=task, variation=variations[task], errored=errored)
+            else:
+                out.save(obj.data, group=task, variation=variations[task], errored=errored)
 
-        other = obj.data.get(task)
-
-        # update queue
-        if parallel:
-            msg = 'case `{}` completed by {}'.format(task, this)
-        else:
-            msg = 'case `{}` completed'.format(task)
+            other = obj.data.get(task)
 
     return True
