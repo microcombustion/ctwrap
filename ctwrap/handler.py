@@ -397,8 +397,8 @@ class SimulationHandler(object):
                 target=_worker,
                 args=(sim._module, self._strategy.definition, self._output,
                       tasks_to_accomplish, lock, verbosity))
-            processes.append(p)
             p.start()
+            processes.append(p)
 
         # completing process
         for p in processes:
@@ -439,17 +439,17 @@ def _worker(
     if parallel:
         this = mp.current_process().name
     else:
-        this = None
+        this = 'main'
 
     if verbosity > 1 and parallel:
         print(indent2 + 'starting ' + this)
 
     # create local copy of strategy object
     strategy = Strategy.load(strategy)
-    variations = strategy.variations
-    task_list = [task for task in variations]
-    finished_tasks = []
+    variations = strategy.variations # pylint: disable=no-member
+    tasks = set(variations.keys())
 
+    other = None
     while True:
         try:
             # retrieve next simulation task
@@ -462,37 +462,40 @@ def _worker(
             break
 
         else:
-            # update local list of finished tasks
-            # (inexact: tasks could be currently running!)
-            while task_list and task not in finished_tasks:
-                finished_tasks.append(task_list.pop(0))
+            # create object
+            obj = Simulation.from_module(module, output)
+
+            base = strategy.base(task)
+            restart = None
+            if obj.has_restart and base is not None:
+                out = Output.from_dict(output)
+                if parallel:
+                    with lock:
+                        done = set(out.dir())
+                        restart = out.load_like(base, other)
+                else:
+                    done = set(out.dir())
+                    restart = out.load_like(base, other)
+                invalid = done - tasks # empty if labels follow task names
+                if restart is None and not invalid:
+                    # need to pick another task
+                    if verbosity > 1:
+                        print(indent2 + 'rescheduling {} ({})'.format(task, this))
+                    tasks_to_accomplish.put((task, overload))
+                    continue
 
             if verbosity > 0:
-                if parallel:
-                    msg = indent1 + 'running `{}` ({})'
-                    print(msg.format(task, this))
-                else:
-                    msg = indent1 + 'running `{}`'
-                    print(msg.format(task))
+                msg = indent1 + 'running `{}` ({})'
+                print(msg.format(task, this))
 
             # run task
-            obj = Simulation.from_module(module, output)
             config = obj.defaults()
             config.update(overload)
 
-            base = strategy.base(task)
-            if obj.has_restart and base is not None:
-                out = obj.output
-                if parallel:
-                    with lock:
-                        finished = out.dir()
-                else:
-                    finished = out.dir()
-                if base in finished:
-                    print('hello world ' + base)
-                # todo: restart here
-
-            obj.run(task, config)
+            if restart is None:
+                obj.run(task, config)
+            else:
+                obj.restart(task, config, restart)
 
             # save output
             if parallel:
@@ -500,6 +503,8 @@ def _worker(
                     obj._save(group=task, variation=variations[task])
             else:
                 obj._save(group=task, variation=variations[task])
+
+            other = obj.data[task]
 
             # update queue
             if parallel:
