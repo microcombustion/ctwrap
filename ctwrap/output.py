@@ -12,7 +12,7 @@ import h5py
 import json
 import warnings
 
-from typing import Dict, Any, Optional, Union
+from typing import Dict, List, Any, Optional, Union
 
 import pkg_resources
 
@@ -160,6 +160,10 @@ class Output:
         """
         raise NotImplementedError("Needs to be overloaded by derived methods")
 
+    def dir(self) -> List[str]:
+        """List previously saved cases"""
+        raise NotImplementedError("Needs to be overloaded by derived methods")
+
     def save_metadata(
             self,
             metadata: Dict[str, Any]
@@ -219,9 +223,7 @@ class WriteCSV(Output):
                 var = {k.replace('.', '_'): v for k, v in variation.items()}
                 value = pd.concat([pd.Series(var), value])
 
-            case = key.split('_')
-            case = {case[0]: case[1]}
-            row = pd.concat([pd.Series(case), value])
+            row = pd.concat([pd.Series({'output': key}), value])
 
             fname = Path(self.output_name)
             if fname.is_file():
@@ -230,6 +232,15 @@ class WriteCSV(Output):
                 df = pd.DataFrame(columns=row.keys())
             df = df.append(row, ignore_index=True)
             df.to_csv(fname, index=False)
+
+    def dir(self):
+        ""
+        fname = Path(self.output_name)
+        if not fname.is_file():
+            return []
+
+        df = pd.read_csv(fname)
+        return list(df.output)
 
     def save_metadata(self, metadata):
         ""
@@ -256,6 +267,16 @@ class WriteHDF(Output):
             msg = "Output of group '{}' failed with error message:\n{}".format(group, err)
             warnings.warn(msg, RuntimeWarning)
             return False
+
+    def dir(self):
+        ""
+        fname = Path(self.output_name)
+        if not fname.is_file():
+            return []
+
+        with h5py.File(fname, 'r') as hdf:
+            keys = list(hdf.keys())
+        return keys
 
     def save_metadata(self, metadata):
         ""

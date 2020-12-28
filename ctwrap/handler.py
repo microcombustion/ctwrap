@@ -479,6 +479,19 @@ def _worker(
             obj = Simulation.from_module(module, output)
             config = obj.defaults()
             config.update(overload)
+
+            base = strategy.base(task)
+            if obj.has_restart and base is not None:
+                out = obj.output
+                if parallel:
+                    with lock:
+                        finished = out.dir()
+                else:
+                    finished = out.dir()
+                if base in finished:
+                    print('hello world ' + base)
+                # todo: restart here
+
             obj.run(task, config)
 
             # save output

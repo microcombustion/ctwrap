@@ -202,6 +202,11 @@ class Simulation(object):
         module = self._load_module()
         return module.defaults()
 
+    @property
+    def output(self):
+        """Return object handling output"""
+        return Output.from_dict(self._output)
+
     def _save(self, group=None, variation=None, mode="a") -> bool:
         """Save simulation data (hidden)
 
