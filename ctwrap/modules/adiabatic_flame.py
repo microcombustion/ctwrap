@@ -28,7 +28,7 @@ def defaults():
 
 def restart(base, **kwargs):
     """Restart calculation"""
-    run(restart=base, **kwargs)
+    return run(restart=base, **kwargs)
 
 
 def run(model=None, upstream=None, domain=None, settings=None, restart=None):
@@ -61,38 +61,34 @@ def run(model=None, upstream=None, domain=None, settings=None, restart=None):
     phi = upstream.phi
     gas.set_equivalence_ratio(phi, upstream.fuel, upstream.oxidizer)
 
-    # set up flame object
-    width = domain.width.m_as('meter')
-    f = ct.FreeFlame(gas, width=width)
+    if restart:
+        f = restart
+        f.P = P
+        f.inlet.T = T
+        f.inlet.X = gas.X
+        auto = False
+    else:
+        # set up flame object
+        width = domain.width.m_as('meter')
+        f = ct.FreeFlame(gas, width=width)
+        auto = True
+        if model.transport.lower() != 'mix':
+            raise ValueError("Initial simulation should use mixture-averaged transport")
+
     f.set_refine_criteria(ratio=settings.ratio, slope=settings.slope, curve=settings.curve)
-    if settings.loglevel > 0:
-        f.show_solution()
+    if model.transport.lower() == 'soret':
+        f.transport_model = 'Multi'
+        f.soret_enabled = True
+    else:
+        f.transport_model = model.transport.capitalize()
 
     # Solve with mixture-averaged transport model
-    f.transport_model = 'Mix'
-    f.solve(loglevel=settings.loglevel, auto=True)
+    f.solve(loglevel=settings.loglevel, auto=auto)
 
     # Solve with the energy equation enabled
-    if settings.loglevel > 0:
-        f.show_solution()
-    msg = '    mixture-averaged flamespeed = {:7f} m/s'
-    print(msg.format(f.velocity[0]))
-
-    f_sol = f.to_solution_array()
-
-    # Solve with multi-component transport properties
-    gas.TP = T, P
-    gas.set_equivalence_ratio(phi, upstream.fuel, upstream.oxidizer)
-    g = ct.FreeFlame(gas, width=width)
-    g.set_initial_guess(data=f_sol)
-    g.transport_model = 'Multi'
-    g.solve(settings.loglevel)  # don't use 'auto' on subsequent solves
-    if settings.loglevel > 0:
-        g.show_solution()
-    msg = '    multi-component flamespeed  = {:7f} m/s'
-    print(msg.format(g.velocity[0]))
-
-    return {'mix': f, 'multi': g}
+    msg = '    flamespeed = {:7f} m/s ({})'
+    print(msg.format(f.velocity[0], model.transport))
+    return f
 
 
 if __name__ == "__main__":
