@@ -202,7 +202,7 @@ class WriteCSV(Output):
 
         returns = self.kwargs.get('returns')
 
-        key, value = list(data.items())[0]
+        key, value = next(iter(data.items()))
 
         if type(value).__name__ == 'Solution':
 

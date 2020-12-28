@@ -72,17 +72,17 @@ def _task_list(tasks, prefix=None):
     Arguments:
        tasks: Dictionary of variations
     """
-    key = list(tasks.keys())[0]
-    next = tasks.copy()
-    values = next.pop(key)
+    key = next(iter(tasks.keys()))
+    sub = tasks.copy()
+    values = sub.pop(key)
 
     out = []
     for value in values:
         new = {key: value}
         if prefix:
             new = {**prefix, **new}
-        if next:
-            out.extend(_task_list(next, new))
+        if sub:
+            out.extend(_task_list(sub, new))
         else:
             out.append(new)
 
@@ -96,16 +96,16 @@ def _sweep_matrix(tasks, defaults):
        defaults: Default parameters
        tasks: Dictionary of variations
     """
-    key = list(tasks.keys())[0]
-    next = tasks.copy()
-    values = next.pop(key)
+    key = next(iter(tasks.keys()))
+    sub = tasks.copy()
+    values = sub.pop(key)
     entry = key.split('.')
 
     out = []
     for value in values:
         new = _replace_entry(deepcopy(defaults), entry, value)
-        if next:
-            out.extend(_sweep_matrix(next, new))
+        if sub:
+            out.extend(_sweep_matrix(sub, new))
         else:
             out.append(new)
 
@@ -229,7 +229,7 @@ class Strategy:
             key = name
             value = strategy[name]
         elif len(strategy) == 1:
-            key, value = list(strategy.items())[0]
+            key, value = next(iter(strategy.items()))
             name = key
         else:
             raise ValueError("Parameter 'name' is required if multiple strategies are defined")
@@ -389,7 +389,7 @@ class Sequence(Strategy):
 
     @property
     def info(self):
-        entry, values = list(self.sweep.items())[0]
+        entry, values = next(iter(self.sweep.items()))
         return 'Simulations for entry `{}` with values: {}'.format(entry, values)
 
     @property
