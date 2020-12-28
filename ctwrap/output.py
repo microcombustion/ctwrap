@@ -164,6 +164,15 @@ class Output:
         """List previously saved cases"""
         raise NotImplementedError("Needs to be overloaded by derived methods")
 
+    def load_like(self, group: str, other: Any) -> Any:
+        """Load previously saved output
+
+        Arguments:
+           group: Label of entry to be loaded
+           other: Object of the same type as the one to be loaded
+        """
+        raise NotImplementedError("Needs to be overloaded by derived methods")
+
     def save_metadata(
             self,
             metadata: Dict[str, Any]
@@ -242,6 +251,10 @@ class WriteCSV(Output):
         df = pd.read_csv(fname)
         return list(df.output)
 
+    def load_like(self, group, other):
+        ""
+        raise NotImplementedError("Loader not implemented for '{}'".format(type(other).__name__))
+
     def save_metadata(self, metadata):
         ""
         # don't save metadata
@@ -277,6 +290,40 @@ class WriteHDF(Output):
         with h5py.File(fname, 'r') as hdf:
             keys = list(hdf.keys())
         return keys
+
+    def load_like(self, group, other):
+        ""
+        if other is None:
+            return None
+
+        fname = Path(self.output_name)
+        if not fname.is_file():
+            return None
+
+        with h5py.File(fname, 'r') as hdf:
+            if group not in hdf.keys():
+                return None
+
+        if type(other).__name__ == 'SolutionArray':
+
+            if isinstance(ct, ImportError):
+                raise ct # pylint: disable=raising-bad-type
+
+            extra = list(other._extra.keys())
+            out = ct.SolutionArray(other.gas, extra=extra)
+            out.read_hdf(fname, group=group)
+            return out
+
+        elif type(other).__name__ == 'FreeFlame':
+
+            if isinstance(ct, ImportError):
+                raise ct # pylint: disable=raising-bad-type
+
+            out = ct.FreeFlame(other.gas)
+            out.read_hdf(fname, group=group)
+            return out
+
+        raise NotImplementedError("Loader not implemented for '{}'".format(type(other).__name__))
 
     def save_metadata(self, metadata):
         ""

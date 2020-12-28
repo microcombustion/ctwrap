@@ -173,7 +173,7 @@ class Strategy:
         seq = ctwrap.Strategy.load(strategy_dict, 'sequence-1')
     """
 
-    def __init__(self, value={}, name=None):
+    def __init__(self, value: Dict={}, name: Optional[str]=None):
         self._check_input(value, 0)
         self.name = name
         self._definition = value
@@ -205,7 +205,7 @@ class Strategy:
         return out
 
     @classmethod
-    def load(cls, strategy, name=None):
+    def load(cls, strategy: Dict[str, Dict], name: Optional[str]=None) -> 'Strategy':
         """Factory loader for strategy objects
 
         **Example:** The following code creates a `Sequence` object *strategy* that varies
@@ -282,7 +282,7 @@ class Strategy:
         """
         raise NotImplementedError("Needs to be implemented by derived classes")
 
-    def configurations(self, defaults):
+    def configurations(self, defaults: Dict[str, Any]):
         """Configurations to be tested grouped by task
 
         **Example:** The following code applies a parameter variation to the
@@ -342,8 +342,13 @@ class Strategy:
         warnings.warn("Superseded by 'variations' and 'configurations'", DeprecationWarning)
         return dict(zip(self.variations.values(), self.configurations(defaults).values()))
 
-    def base(self, task):
+    def base(self, task: str):
         """Return basis for a restart"""
+        nvars = len(self._definition)
+        if nvars < 2:
+            # only restart if more than one axis is defined
+            return None
+
         base = None
         vars = self.variations
         for key in vars:
@@ -351,7 +356,7 @@ class Strategy:
                 break
             base = key
 
-        # a base case only differs in the last variation
+        # a base case only differ on the last axis
         pars = list(vars[task].keys())
         for par in pars[:-1]:
             if base is None:
