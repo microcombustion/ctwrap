@@ -58,11 +58,12 @@ class TestWrap(unittest.TestCase):
 
     def test_restart(self):
         self.sim.run()
-        old = self.sim.data
+        old = next(iter(self.sim.data.values()))
         if self.sim.has_restart:
             self.sim.restart(old)
-            self.assertEqual(type(old), type(self.sim.data))
-            self.assertNotEqual(old, self.sim.data)
+            new = next(iter(self.sim.data.values()))
+            self.assertEqual(type(old), type(new))
+            self.assertNotEqual(old, new)
         else:
             with self.assertRaisesRegex(NotImplementedError, "does not define 'restart'"):
                 self.sim.restart(old)

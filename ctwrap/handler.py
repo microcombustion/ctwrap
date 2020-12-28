@@ -450,7 +450,8 @@ def _worker(
     tasks = set(variations.keys())
 
     other = None
-    while True:
+    reschedule = 0
+    while reschedule < len(tasks):
         try:
             # retrieve next simulation task
             task, overload = tasks_to_accomplish.get_nowait()
@@ -461,55 +462,55 @@ def _worker(
                 print(indent2 + 'terminating ' + this)
             break
 
-        else:
-            # create object
-            obj = Simulation.from_module(module, output)
+        # create object
+        obj = Simulation.from_module(module, output)
 
-            base = strategy.base(task)
-            restart = None
-            if obj.has_restart and base is not None:
-                out = Output.from_dict(output)
-                if parallel:
-                    with lock:
-                        done = set(out.dir())
-                        restart = out.load_like(base, other)
-                else:
-                    done = set(out.dir())
-                    restart = out.load_like(base, other)
-                invalid = done - tasks # empty if labels follow task names
-                if restart is None and not invalid:
-                    # need to pick another task
-                    if verbosity > 1:
-                        print(indent2 + 'rescheduling {} ({})'.format(task, this))
-                    tasks_to_accomplish.put((task, overload))
-                    continue
-
-            if verbosity > 0:
-                msg = indent1 + 'running `{}` ({})'
-                print(msg.format(task, this))
-
-            # run task
-            config = obj.defaults()
-            config.update(overload)
-
-            if restart is None:
-                obj.run(task, config)
-            else:
-                obj.restart(task, config, restart)
-
-            # save output
+        base = strategy.base(task)
+        restart = None
+        if obj.has_restart and base is not None:
+            out = Output.from_dict(output)
             if parallel:
                 with lock:
-                    obj._save(group=task, variation=variations[task])
+                    done = set(out.dir())
+                    restart = out.load_like(base, other)
             else:
+                done = set(out.dir())
+                restart = out.load_like(base, other)
+            invalid = done - tasks # empty if labels follow task names
+            if restart is None and not invalid:
+                # need to pick another task
+                if verbosity > 1:
+                    print(indent2 + 'rescheduling {} ({})'.format(task, this))
+                tasks_to_accomplish.put((task, overload))
+                reschedule += 1
+                continue
+
+        if verbosity > 0:
+            msg = indent1 + 'running `{}` ({})'
+            print(msg.format(task, this))
+
+        # run task
+        config = obj.defaults()
+        config.update(overload)
+
+        if restart is None:
+            obj.run(task, config)
+        else:
+            obj.restart(task, config, restart)
+
+        # save output
+        if parallel:
+            with lock:
                 obj._save(group=task, variation=variations[task])
+        else:
+            obj._save(group=task, variation=variations[task])
 
-            other = obj.data[task]
+        other = obj.data.get(task)
 
-            # update queue
-            if parallel:
-                msg = 'case `{}` completed by {}'.format(task, this)
-            else:
-                msg = 'case `{}` completed'.format(task)
+        # update queue
+        if parallel:
+            msg = 'case `{}` completed by {}'.format(task, this)
+        else:
+            msg = 'case `{}` completed'.format(task)
 
     return True
