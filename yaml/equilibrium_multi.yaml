@@ -3,13 +3,6 @@
 strategy:
   sequence:
     initial.phi: { mode: linspace, limits: [0.3, 3.5], npoints: 33 }
-output:
-  format: csv
-  force: True
-  returns:
-    T: T # temperature
-    P: P # pressure
-    species_names: species_moles # moles per species
 defaults:
   initial:
     T: 300. kelvin # temperature
@@ -29,4 +22,11 @@ defaults:
     mode: HP
     solver: gibbs
     max_steps: 1000
+output:
+  format: csv
+  force: True
+  returns:
+    T: T # temperature
+    P: P # pressure
+    species_names: species_moles # moles per species
 ctwrap: 0.3.0

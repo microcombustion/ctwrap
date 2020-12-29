@@ -9,8 +9,6 @@
 variation:
   entry: initial.phi
   values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
-output:
-  format: h5
 defaults:
   initial:
     T: [1000., kelvin, 'initial temperature']
@@ -25,4 +23,6 @@ defaults:
     n_points: 500
     atol: 1.e-15
     rtol: 1.e-9
+output:
+  format: h5
 ctwrap: 0.1.0

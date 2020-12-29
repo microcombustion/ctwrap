@@ -3,9 +3,6 @@
 strategy:
   sequence:
     initial.phi: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
-output:
-  format: h5
-  force: True
 defaults:
   initial:
     T: 1000. kelvin # temperature
@@ -18,4 +15,7 @@ defaults:
   settings:
     delta_t: 1.e-5
     n_points: 500
+output:
+  format: h5
+  force: True
 ctwrap: 0.3.0
