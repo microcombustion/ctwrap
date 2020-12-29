@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import pint.quantity as pq
 import importlib
+from ruamel import yaml
 import h5py
 
 import warnings
@@ -37,11 +38,14 @@ class TestWrap(unittest.TestCase):
     _yaml = 'minimal.yaml'
     _out = None
     _path = None
+    _parser = False
     _strategy = 'sequence'
     _data_default = 'dict'
     _skip_long = False
 
     def setUp(self):
+        with open(EXAMPLES / self._yaml) as stream:
+            self.config = yaml.load(stream, Loader=yaml.SafeLoader)
         self.sim = cw.Simulation.from_module(self._module)
         self.sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, database=EXAMPLES)
 
@@ -53,10 +57,19 @@ class TestWrap(unittest.TestCase):
 
     def test_simulation(self):
         self.assertIsNone(self.sim.data)
-        self.sim.run()
+        defaults = self.config['defaults']
+        if self._parser:
+            self.sim.run(cw.Parser(defaults))
+        else:
+            self.sim.run(defaults)
         self.assertEqual(type(self.sim.data).__name__, self._data_default)
 
     def test_restart(self):
+        defaults = self.config['defaults']
+        if self._parser:
+            self.sim.run(cw.Parser(defaults))
+        else:
+            self.sim.run(defaults)
         self.sim.run()
         old = self.sim.data
         if self.sim.has_restart:
@@ -161,6 +174,7 @@ class TestIgnition(TestWrap):
     _module = cw.modules.ignition
     _yaml = 'ignition.yaml'
     _out = 'ignition.h5'
+    _parser = True
     _strategy = None
     _data_default = 'SolutionArray'
 
@@ -170,6 +184,7 @@ class TestSolution(TestWrap):
     _module = cw.modules.solution
     _yaml = 'solution.yaml'
     _out = 'solution.csv'
+    _parser = True
     _strategy = None
     _data_default = 'Solution'
 
@@ -179,6 +194,7 @@ class TestEquilibrium(TestWrap):
     _module = cw.modules.equilibrium
     _yaml = 'equilibrium.yaml'
     _out = 'equilibrium.csv'
+    _parser = True
     _strategy = None
     _data_default = 'Solution'
 
@@ -187,7 +203,7 @@ class TestEquilibriumMulti(TestEquilibrium):
 
     _yaml = 'equilibrium_multi.yaml'
     _out = 'equilibrium_multi.csv'
-    _data_default = 'Solution' # default has single phase
+    _data_default = 'Mixture'
 
 
 class TestFreeFlame(TestWrap):
@@ -195,6 +211,7 @@ class TestFreeFlame(TestWrap):
     _module = cw.modules.freeflame
     _yaml = 'freeflame.yaml'
     _out = 'freeflame.h5'
+    _parser = True
     _strategy = 'sequence'
     _data_default = 'FreeFlame'
 
@@ -219,6 +236,8 @@ class TestInvalid(TestWrap):
     }
 
     def setUp(self):
+        with open(EXAMPLES / self._yaml) as stream:
+            self.config = yaml.load(stream, Loader=yaml.SafeLoader)
         self.sim = cw.Simulation.from_module(self._module)
         self.sh = cw.SimulationHandler.from_dict(self._dict)
 
