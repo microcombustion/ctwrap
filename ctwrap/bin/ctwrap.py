@@ -35,8 +35,7 @@ parser_run.add_argument(
     '--parallel', action='store_true', default=False,
     help='run parallel calculations')
 parser_run.add_argument(
-    '--strategy', choices=['sequence', 'matrix'], default=None,
-    help='batch job strategy')
+    '--strategy', default=None, help='batch job strategy')
 
 
 def main():

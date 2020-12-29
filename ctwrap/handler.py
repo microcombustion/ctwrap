@@ -160,10 +160,10 @@ class SimulationHandler(object):
 
         # naming priorities: keyword / yaml / automatic
         if output_name is None:
-            name = '{}'.format(Path(yaml_file).parents[0] / fname.stem)
-            name = output.get('name', name)
+            output_name = '{}'.format(Path(yaml_file).parents[0] / fname.stem)
+            output_name = output.get('name', output_name)
 
-        return cls.from_dict(content, strategy=strategy, output_name=name, output_path=database, **kwargs)
+        return cls.from_dict(content, strategy=strategy, output_name=output_name, output_path=database, **kwargs)
 
     @classmethod
     def from_dict(cls, content: Dict[str, Any],
