@@ -126,19 +126,17 @@ class Simulation(object):
 
     def restart(
             self,
-            name: Optional[str]='unspecified',
+            restart: Any,
             config: Optional[Dict[str, Any]]=None,
-            restart: Optional[Any]=None,
         ) -> bool:
         """Run the simulation module's ``restart`` method."""
         if self.has_restart:
-            return self.run(name=name, config=config, restart=restart)
+            return self.run(config=config, restart=restart)
 
         raise NotImplementedError("Simulation module does not define 'restart' method")
 
     def run(
             self,
-            name: Optional[str]='unspecified',
             config: Optional[Dict[str, Any]]=None,
             restart: Optional[Any]=None,
             **kwargs: str
@@ -155,7 +153,6 @@ class Simulation(object):
             sim.run()
 
         Arguments:
-            name: Name of simulation run
             config: Configuration used for simulation
             restart: Data used for restart
             **kwargs: Optional parameters passed to the simulation
@@ -171,13 +168,9 @@ class Simulation(object):
         config = Parser(config)
 
         if restart is None:
-            out = module.run(**config)
+            self.data = module.run(**config)
         else:
-            out = module.restart(restart, **config)
-        if isinstance(out, dict):
-            self.data = {'{}_{}'.format(name, k): v for k, v in out.items()}
-        elif out is not None:
-            self.data = {name: out}
+            self.data = module.restart(restart, **config)
 
     def defaults(self) -> Dict[str, Any]:
         """Pass-through returning simulation module defaults as a dictionary"""
