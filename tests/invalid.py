@@ -6,7 +6,7 @@ def defaults():
     return {'foo': 0.2}
 
 
-def run(foo=.2):
+def run(foo=.2, **kwargs):
     """Simply raise error"""
     raise RuntimeError("Hello world!")
 

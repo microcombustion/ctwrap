@@ -163,9 +163,10 @@ class Simulation(object):
         if kwargs:
             warnings.warn("Keyword arguments are deprecated and ignored", DeprecationWarning)
 
-        if config is None:
-            config = module.defaults()
-        config = Parser(config)
+        setup = module.defaults()
+        if config:
+            setup.update(config)
+        config = Parser(setup)
 
         if restart is None:
             self.data = module.run(**config)

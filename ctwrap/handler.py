@@ -276,13 +276,8 @@ class SimulationHandler(object):
         # create a new simulation object
         obj = Simulation.from_module(sim._module)
 
-        # get configuration
-        config = obj.defaults()
-        overload = self.configuration(task)
-        config.update(overload)
-
         # run simulation
-        obj.run(config)
+        obj.run(self.configuration(task))
         if self._output and obj.data:
             out = Output.from_dict(self._output)
             out.save(obj.data, entry=task, variation=self._variations[task])
@@ -295,8 +290,8 @@ class SimulationHandler(object):
             tasks_to_accomplish = mp.Queue()
         else:
             tasks_to_accomplish = queue.Queue()
-        for task, overload in self._configurations.items():
-            tasks_to_accomplish.put((task, overload))
+        for task, config in self._configurations.items():
+            tasks_to_accomplish.put((task, config))
 
         return tasks_to_accomplish
 
@@ -462,7 +457,7 @@ def _worker(
     while reschedule < len(tasks):
         try:
             # retrieve next simulation task
-            task, overload = tasks_to_accomplish.get_nowait()
+            task, config = tasks_to_accomplish.get_nowait()
 
         except queue.Empty:
             # no tasks left
@@ -489,7 +484,7 @@ def _worker(
                     # need to pick another task
                     if verbosity > 1:
                         print(indent2 + 'rescheduling {} ({})'.format(task, this))
-                    tasks_to_accomplish.put((task, overload))
+                    tasks_to_accomplish.put((task, config))
                     reschedule += 1
                     continue
 
@@ -498,9 +493,6 @@ def _worker(
                 print(msg.format(task, this))
 
             # run task
-            config = obj.defaults()
-            config.update(overload)
-
             if restart is None:
                 obj.run(config)
             else:
