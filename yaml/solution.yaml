@@ -1,0 +1,23 @@
+# YAML file example for the `solution` module
+# file specifes a parameter variation of temperature
+strategy:
+  sequence:
+    state.T: { mode: arange, limits: [300, 2001], step: 25 }
+defaults:
+  mechanism: gri30.yaml
+  state:
+    T: 300. kelvin # temperature
+    P: 1. atmosphere # pressure
+    X: 'O2:1,H2:1'
+output:
+  format: csv
+  force: True
+  returns:
+    T: T # temperature
+    P: P # pressure
+    u: u # internal energy
+    h: h # enthalpy
+    s: s # entropy
+    cp: cp # specific heat
+    cv: cv # specific heat
+ctwrap: 0.3.0
