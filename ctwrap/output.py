@@ -309,7 +309,7 @@ class WriteHDF(Output):
                 raise ct # pylint: disable=raising-bad-type
 
             extra = list(other._extra.keys())
-            out = ct.SolutionArray(other.gas, extra=extra)
+            out = ct.SolutionArray(other._phase, extra=extra)
             out.read_hdf(fname, group=entry)
             return out
 
