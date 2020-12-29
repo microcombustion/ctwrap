@@ -6,6 +6,6 @@ Jupyter Notebooks
 
 	    Commandline Example <commandline_example.ipynb>
 	    Minimal Example <minimal_example.ipynb>
-	    Adiabatic Flame Example <adiabatic_flame_example.ipynb>
+	    Free Flame Example <freeflame_example.ipynb>
 	    Equilibrium Example <equilibrium_example.ipynb>
 	    Ignition Example <ignition_example.ipynb>

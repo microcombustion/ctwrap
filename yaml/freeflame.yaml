@@ -1,4 +1,4 @@
-# YAML file example for the `adiabatic_flame` module
+# YAML file example for the `freeflame` module
 # file specifies a parameter variation of the equivalence ratio
 strategy:
   sequence:

@@ -4,6 +4,6 @@ Batch Jobs
 .. toctree::
     :maxdepth: 2
 
-    Adiabatic Flame Batch Simulation <adiabatic_flame.rst>
     Equilibrium Batch Simulation <equilibrium.rst>
+    Free Flame Batch Simulation <freeflame.rst>
     Ignition Batch Simulation <ignition.rst>

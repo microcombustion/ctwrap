@@ -23,7 +23,7 @@ except ImportError as err:
 
 def defaults():
     """Returns Parser object containing default configuration"""
-    return Parser.from_yaml('adiabatic_flame.yaml', defaults=True)
+    return Parser.from_yaml('freeflame.yaml', defaults=True)
 
 
 def restart(base, **kwargs):
