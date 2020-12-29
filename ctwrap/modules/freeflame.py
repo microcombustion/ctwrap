@@ -45,7 +45,7 @@ def run(model=None, upstream=None, domain=None, settings=None, restart=None):
         restart (ct.FlameBase): previous solution
 
     Returns:
-        Dictionary containing Cantera `FlameBase` object
+        Cantera `FlameBase` object
     """
 
     # initialize

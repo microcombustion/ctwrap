@@ -8,7 +8,6 @@ where differences are:
 * Content is broken down into methods ``defaults`` and ``run``
 """
 import warnings
-import pandas as pd
 
 from ctwrap import Parser
 
@@ -25,7 +24,20 @@ def defaults():
 
 
 def run(initial, phases, equilibrate):
+    """Function handling equilibrium calculations.
 
+    The function handles equilibrium calculations for both single
+    phases (``Solution``; single entry in *phases* argument) and multiple
+    phases (``Mixture``; multiple entries in *phases* argument).
+
+    Arguments:
+        initial (Parser): Initial condition
+        phases (Parser): Definition of phases
+        equilibrate (Parser): Arguments of ``equilibrate`` function
+
+    Returns:
+        Cantera `Solution` or `Mixture` object
+    """
     T = initial.T.m_as('kelvin')
     P = initial.P.m_as('pascal')
 
