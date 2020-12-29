@@ -1,5 +1,5 @@
-Ignition Batch Simulation
-=========================
+Ignition Batch Jobs
+===================
 
 YAML Defaults
 -------------
