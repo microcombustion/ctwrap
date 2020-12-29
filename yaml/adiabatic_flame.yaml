@@ -4,7 +4,7 @@ strategy:
   sequence:
     upstream.phi: { mode: linspace, limits: [0.4, 2.6], npoints: 12 }
   matrix:
-    upstream.phi: { mode: linspace, limits: [0.4, 2.6], npoints: 12 }
+    upstream.phi: { mode: linspace, limits: [0.4, 2.4], npoints: 6 }
     model.transport: ['mix', 'multi', 'soret']
 output:
   format: h5
