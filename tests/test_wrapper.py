@@ -165,6 +165,15 @@ class TestIgnition(TestWrap):
     _data_default = 'SolutionArray'
 
 
+class TestSolution(TestWrap):
+
+    _module = cw.modules.solution
+    _yaml = 'solution.yaml'
+    _out = 'solution.csv'
+    _strategy = None
+    _data_default = 'Solution'
+
+
 class TestEquilibrium(TestWrap):
 
     _module = cw.modules.equilibrium
