@@ -217,10 +217,10 @@ class TestYAML(unittest.TestCase):
         self.assertIsInstance(initial.T, pq.Quantity)
         self.assertIsInstance(initial['fuel'], str)
 
-    def test_adiabatic_flame(self):
+    def test_freeflame(self):
 
         parser = cw.Parser.from_yaml(
-            'adiabatic_flame.yaml', path=EXAMPLES, keys=['defaults'])
+            'freeflame.yaml', path=EXAMPLES, keys=['defaults'])
         up = parser.defaults.upstream
         self.assertIsInstance(up.T, pq.Quantity)
         self.assertIsInstance(up.T.m, float)

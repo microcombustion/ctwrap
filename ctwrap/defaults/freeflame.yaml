@@ -1,4 +1,4 @@
-# default parameters for the `adiabatic_flame` module
+# default parameters for the `freeflame` module
 upstream:
   T: 300. kelvin # temperature
   P: 1. atmosphere # pressure

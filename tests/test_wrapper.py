@@ -174,19 +174,19 @@ class TestEquilibriumMulti(TestEquilibrium):
     _out = 'equilibrium_multi.csv'
 
 
-class TestAdiabaticFlame(TestWrap):
+class TestFreeFlame(TestWrap):
 
-    _module = cw.modules.adiabatic_flame
-    _yaml = 'adiabatic_flame.yaml'
-    _out = 'adiabatic_flame.h5'
+    _module = cw.modules.freeflame
+    _yaml = 'freeflame.yaml'
+    _out = 'freeflame.h5'
     _strategy = 'sequence'
 
 
-class TestAdiabaticFlameMatrix(TestAdiabaticFlame):
+class TestFreeFlameMatrix(TestFreeFlame):
 
-    _module = cw.modules.adiabatic_flame
-    _yaml = 'adiabatic_flame.yaml'
-    _out = 'adiabatic_flame.h5'
+    _module = cw.modules.freeflame
+    _yaml = 'freeflame.yaml'
+    _out = 'freeflame.h5'
     _strategy = 'matrix'
 
 
