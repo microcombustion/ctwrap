@@ -1,5 +1,5 @@
-Equilibrium Batch Simulation
-============================
+Equilibrium Batch Jobs
+======================
 
 YAML Defaults
 -------------

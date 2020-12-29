@@ -4,6 +4,7 @@ Batch Jobs
 .. toctree::
     :maxdepth: 2
 
-    Equilibrium Batch Simulation <equilibrium.rst>
-    Free Flame Batch Simulation <freeflame.rst>
-    Ignition Batch Simulation <ignition.rst>
+    Equilibrium Batch <equilibrium.rst>
+    Free Flame Batch <freeflame.rst>
+    Ignition Batch <ignition.rst>
+    Solution Batch <solution.rst>
