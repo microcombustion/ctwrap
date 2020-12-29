@@ -141,7 +141,7 @@ class Output:
     def save(
             self,
             data: Any,
-            group: str,
+            entry: str,
             variation: Optional[Dict]=None,
             mode: Optional[str]='a',
             errored: Optional[bool]=False
@@ -150,7 +150,7 @@ class Output:
 
         Arguments:
            data: Data to be saved
-           group: Description of simulation task
+           entry: Description of simulation task
            variation: Parameter values
            mode: Save mode
            errored: Boolean describing success of simulation task
@@ -164,16 +164,16 @@ class Output:
         """List previously saved cases"""
         raise NotImplementedError("Needs to be overloaded by derived methods")
 
-    def load_like(self, group: str, other: Any) -> Any:
+    def load_like(self, entry: str, other: Any) -> Any:
         """Load previously saved output
 
         Arguments:
-           group: Label of entry to be loaded
+           entry: Label of entry to be loaded
            other: Object of the same type as the one to be loaded
         """
         raise NotImplementedError("Needs to be overloaded by derived methods")
 
-    def save_metadata(
+    def finalize(
             self,
             metadata: Dict[str, Any]
         ) -> bool:
@@ -193,46 +193,43 @@ class WriteCSV(Output):
 
     _ext = ['.csv']
 
-    def save(self, data, group, variation=None, mode=None, errored=False):
+    def save(self, data, entry, variation=None, mode=None, errored=False):
         ""
         if not data:
             return
-        if len(data) > 1:
-            raise NotImplementedError("WriteCSV requires a simulation module returning single value")
 
         returns = self.kwargs.get('returns')
+        # key, value = next(iter(data.items()))
 
-        key, value = next(iter(data.items()))
-
-        if type(value).__name__ == 'Solution':
+        if type(data).__name__ == 'Solution':
 
             if isinstance(ct, ImportError):
                 raise ct # pylint: disable=raising-bad-type
 
             # use cantera native route to pandas.Series via SolutionArray.to_pandas
-            arr = ct.SolutionArray(value, 1)
-            value = arr.to_pandas(cols=list(returns.values())).iloc[0]
+            arr = ct.SolutionArray(data, 1)
+            data = arr.to_pandas(cols=list(returns.values())).iloc[0]
 
-        elif type(value).__name__ == 'Mixture':
+        elif type(data).__name__ == 'Mixture':
 
             # there is no native route in cantera
             out = []
             for k, v in returns.items():
-                val = getattr(value, str(v))
-                if hasattr(value, k) and isinstance(getattr(value, k), list):
-                    out.extend(zip(getattr(value, k), val))
+                val = getattr(data, str(v))
+                if hasattr(data, k) and isinstance(getattr(data, k), list):
+                    out.extend(zip(getattr(data, k), val))
                 else:
                     out.append((k, val))
 
-            value = pd.Series(dict(out))
+            data = pd.Series(dict(out))
 
-        if isinstance(value, pd.Series):
+        if isinstance(data, pd.Series):
 
             if isinstance(variation, dict):
                 var = {k.replace('.', '_'): v for k, v in variation.items()}
-                value = pd.concat([pd.Series(var), value])
+                data = pd.concat([pd.Series(var), data])
 
-            row = pd.concat([pd.Series({'output': key}), value])
+            row = pd.concat([pd.Series({'output': entry}), data])
 
             fname = Path(self.output_name)
             if fname.is_file():
@@ -251,11 +248,11 @@ class WriteCSV(Output):
         df = pd.read_csv(fname)
         return list(df.output)
 
-    def load_like(self, group, other):
+    def load_like(self, entry, other):
         ""
         raise NotImplementedError("Loader not implemented for '{}'".format(type(other).__name__))
 
-    def save_metadata(self, metadata):
+    def finalize(self, metadata):
         ""
         # don't save metadata
         pass
@@ -266,18 +263,20 @@ class WriteHDF(Output):
 
     _ext = ['.h5', '.hdf', '.hdf5']
 
-    def save(self, data, group, variation=None, mode=None, errored=False):
+    def save(self, data, entry, variation=None, errored=False):
         ""
-        settings = self.settings
-        if mode is None:
-            mode = settings['mode']
-
         try:
-            _save_hdf(data, settings, group, variation, mode, errored)
+            if isinstance(data, dict):
+                for key, val in data.items():
+                    grp = '{}/{}'.format(entry, key)
+                    _save_hdf(val, self.settings, grp, variation,errored)
+            else:
+                _save_hdf(data, self.settings, entry, variation, errored)
             return True
+
         except OSError as err:
             # Convert exception to warning
-            msg = "Output of group '{}' failed with error message:\n{}".format(group, err)
+            msg = "Output of entry '{}' failed with error message:\n{}".format(entry, err)
             warnings.warn(msg, RuntimeWarning)
             return False
 
@@ -291,7 +290,7 @@ class WriteHDF(Output):
             keys = list(hdf.keys())
         return keys
 
-    def load_like(self, group, other):
+    def load_like(self, entry, other):
         ""
         if other is None:
             return None
@@ -301,7 +300,7 @@ class WriteHDF(Output):
             return None
 
         with h5py.File(fname, 'r') as hdf:
-            if group not in hdf.keys():
+            if entry not in hdf.keys():
                 return None
 
         if type(other).__name__ == 'SolutionArray':
@@ -311,7 +310,7 @@ class WriteHDF(Output):
 
             extra = list(other._extra.keys())
             out = ct.SolutionArray(other.gas, extra=extra)
-            out.read_hdf(fname, group=group)
+            out.read_hdf(fname, group=entry)
             return out
 
         elif type(other).__name__ == 'FreeFlame':
@@ -320,17 +319,17 @@ class WriteHDF(Output):
                 raise ct # pylint: disable=raising-bad-type
 
             out = ct.FreeFlame(other.gas)
-            out.read_hdf(fname, group=group)
+            out.read_hdf(fname, group=entry)
             return out
 
         raise NotImplementedError("Loader not implemented for '{}'".format(type(other).__name__))
 
-    def save_metadata(self, metadata):
+    def finalize(self, metadata):
         ""
         if metadata is None:
             return None
 
-        def _save_metadata(output_name, metadata):
+        def _finalize(output_name, metadata):
             """Hidden module"""
 
             with h5py.File(output_name, 'r+') as hdf:
@@ -341,8 +340,9 @@ class WriteHDF(Output):
                         hdf.attrs[key] = val
 
         try:
-            _save_metadata(self.output_name, metadata)
+            _finalize(self.output_name, metadata)
             return True
+
         except OSError as err:
             # Convert exception to warning
             msg = "Output of metadata failed with error message:\n{}".format(err)
@@ -350,9 +350,9 @@ class WriteHDF(Output):
             return False
 
 
-def _save_hdf(data, settings, group, variation, mode='a', errored=False):
+def _save_hdf(data, settings, entry, variation, errored=False):
     filename = settings.pop('name')
-    settings.pop('mode')
+    mode = settings.pop('mode', 'a')
 
     if filename is None:
         return
@@ -370,11 +370,11 @@ def _save_hdf(data, settings, group, variation, mode='a', errored=False):
     if fexists:
         with h5py.File(filename, 'r') as hdf:
             for group in hdf.keys():
-                if group in data and mode == 'a' and not force:
-                    msg = 'Cannot overwrite existing ' \
-                            'group `{}` (use force to override)'
-                    raise RuntimeError(msg.format(group))
-                elif group in data and mode == 'a' and force:
+                if group == entry and mode == 'a' and not force:
+                    msg = ('Cannot overwrite existing '
+                           'group `{}` (use force to override)')
+                    raise RuntimeError(msg.format(entry))
+                elif group == entry and mode == 'a' and force:
                     mode = 'w'
 
     settings.update(mode=mode)
@@ -384,23 +384,20 @@ def _save_hdf(data, settings, group, variation, mode='a', errored=False):
 
     if errored:
         with h5py.File(filename, mode) as hdf:
-            for group, err in data.items():
-                grp = hdf.create_group(group)
-                grp.attrs[err[0]] = err[1]
+            grp = hdf.create_group(entry)
+            grp.attrs[data[0]] = data[1]
     else:
-        for group, states in data.items():
-            # pylint: disable=no-member
-            if type(states).__name__ == 'SolutionArray':
-                if variation is not None:
-                    attrs = variation
-                else:
-                    attrs = {}
-                states.write_hdf(filename=filename, group=group,
-                                 attrs=attrs, **kwargs)
-            elif type(states).__name__ in ['FreeFlame']:
-                if variation is not None:
-                    description = '_'.join(['{}_{}'.format(k, v) for k, v in variation.items()])
-                else:
-                    description = None
-                states.write_hdf(filename=filename, group=group,
-                                 description=description, **kwargs)
+        if type(data).__name__ == 'SolutionArray':
+            if variation is not None:
+                attrs = variation
+            else:
+                attrs = {}
+            data.write_hdf(filename=filename, group=entry,
+                           attrs=attrs, **kwargs)
+        elif type(data).__name__ in ['FreeFlame']:
+            if variation is not None:
+                description = '_'.join(['{}_{}'.format(k, v) for k, v in variation.items()])
+            else:
+                description = None
+            data.write_hdf(filename=filename, group=entry,
+                           description=description, **kwargs)

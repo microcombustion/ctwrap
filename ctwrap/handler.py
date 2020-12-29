@@ -266,6 +266,7 @@ class SimulationHandler(object):
            task: task to do
            **kwargs: dependent on implementation
         """
+        # pylint: disable=no-member
 
         assert task in self._variations, 'unknown task `{}`'.format(task)
 
@@ -281,11 +282,11 @@ class SimulationHandler(object):
         config.update(overload)
 
         # run simulation
-        obj.run(task, config)
+        obj.run(config)
         if self._output and obj.data:
             out = Output.from_dict(self._output)
-            out.save(obj.data, group=task, variation=self._variations[task])
-            out.save_metadata(self.metadata)
+            out.save(obj.data, entry=task, variation=self._variations[task])
+            out.finalize(self.metadata)
 
     def _setup_batch(self, parallel: bool=False):
         """Create batch queues used by worker function"""
@@ -341,7 +342,7 @@ class SimulationHandler(object):
 
         if self._output is not None:
             out = Output.from_dict(self._output)
-            out.save_metadata(self.metadata)
+            out.finalize(self.metadata)
         return True
 
     def run_parallel(self,
@@ -408,7 +409,7 @@ class SimulationHandler(object):
             if verbosity > 1:
                 print(indent1 + "Appending metadata")
             out = Output.from_dict(self._output)
-            out.save_metadata(self.metadata)
+            out.finalize(self.metadata)
 
         return True
 
@@ -434,6 +435,7 @@ def _worker(
     Returns:
         True when tasks are completed
     """
+    # pylint: disable=no-member
 
     parallel = isinstance(lock, mp.synchronize.Lock)
     if parallel:
@@ -500,9 +502,9 @@ def _worker(
             config.update(overload)
 
             if restart is None:
-                obj.run(task, config)
+                obj.run(config)
             else:
-                obj.restart(task, config, restart)
+                obj.restart(restart, config)
 
             data = obj.data
             errored = False
@@ -519,10 +521,10 @@ def _worker(
         if out and obj.data:
             if parallel:
                 with lock:
-                    out.save(obj.data, group=task, variation=variations[task], errored=errored)
+                    out.save(data, entry=task, variation=variations[task], errored=errored)
             else:
-                out.save(obj.data, group=task, variation=variations[task], errored=errored)
+                out.save(data, entry=task, variation=variations[task], errored=errored)
 
-            other = obj.data.get(task)
+            other = obj.data
 
     return True
