@@ -50,4 +50,4 @@ A parallel batch job for adiabatic flame calculations uses the `freeflame` modul
 $ ctwrap run freeflame freeflame.yaml --parallel
 ```
 
-Results are written to a single file `adiabatic_flame.h5`.
+Results are written to a single file `freeflame.h5`.
