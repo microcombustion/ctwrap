@@ -25,7 +25,7 @@ import ctwrap as cw
 
 PWD = Path(__file__).parents[0]
 ROOT = PWD.parents[0]
-EXAMPLES = ROOT / 'yaml'
+EXAMPLES = ROOT / 'ctwrap' / 'yaml'
 
 
 class TestLegacy(unittest.TestCase):

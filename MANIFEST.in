@@ -1,6 +1,6 @@
 include MANIFEST.in
 include LICENSE
-include README.rst
+include README.md
 include INSTALL.rst
 include CONTRIBUTING.rst
 include setup.py
@@ -8,6 +8,6 @@ include setup.py
 include ctwrap/*.py
 include ctwrap/modules/*.py
 include ctwrap/bin/*.py
+include ctwrap/yaml/*.yaml
 include docs/examples/*.ipynb
 include docs/examples/*.py
-include yaml/*.yaml
