@@ -141,7 +141,8 @@ class SimulationHandler(object):
         :class:`SimulationHandler` objects.
 
         Arguments:
-           yaml_file: YAML file
+           yaml_file: YAML file located in current folder, *database* (argument),
+               or ctwrap's preconfigured YAML database (``yaml`` folder)
            strategy: Batch job strategy name (only needed if more than one are defined)
            output_name: Output name (overrides YAML configuration)
            database: File database (both YAML configuration and output)
@@ -153,18 +154,28 @@ class SimulationHandler(object):
             warnings.warn("Parameter 'path' is superseded by 'database'", DeprecationWarning)
 
         # load configuration from yaml
-        fname = Path(yaml_file)
         if database is not None:
-            fname = Path(database) / fname
+            full_name = Path(database) / yaml_file
 
-        with open(fname) as stream:
+        elif not Path(yaml_file).is_file():
+            # attempt to load standard configuration
+            full_name = Path(__file__).parents[1] / 'yaml' / yaml_file
+
+        else:
+            full_name = Path(yaml_file)
+
+        if not full_name.is_file():
+            raise IOError("Unable to locate YAML configuration file '{}'"
+                          "".format(yaml_file))
+
+        with open(full_name) as stream:
             content = yaml.load(stream, Loader=yaml.SafeLoader)
 
         output = content.get('output', {})
 
         # naming priorities: keyword / yaml / automatic
         if output_name is None:
-            output_name = '{}'.format(Path(yaml_file).parents[0] / fname.stem)
+            output_name = '{}'.format(Path(yaml_file).parents[0] / full_name.stem)
             output_name = output.get('name', output_name)
 
         return cls.from_dict(content, strategy=strategy, output_name=output_name, output_path=database, **kwargs)
