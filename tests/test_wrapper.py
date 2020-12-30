@@ -35,6 +35,11 @@ class TestLegacy(unittest.TestCase):
             sh = cw.SimulationHandler.from_yaml('legacy.yaml', database=EXAMPLES)
         self.assertIsInstance(sh.tasks, dict)
 
+    def test_database(self):
+        with self.assertWarnsRegex(PendingDeprecationWarning, "Old implementation"):
+            sh = cw.SimulationHandler.from_yaml('legacy.yaml')
+        self.assertIsInstance(sh.tasks, dict)
+
 
 class TestWrap(unittest.TestCase):
 
