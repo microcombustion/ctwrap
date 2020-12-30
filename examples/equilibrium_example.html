@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Equilibrium Example &#8212; ctwrap 0.3.1 documentation</title>
+    <title>Equilibrium Example &#8212; ctwrap 0.3.2 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -314,7 +314,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&#39;0.3.1&#39;
+&#39;0.3.2&#39;
 </pre></div></div>
 </div>
 </div>
@@ -337,7 +337,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.wrapper.Equilibrium at 0x7f8aa8ba9b10&gt;
+&lt;ctwrap.wrapper.Equilibrium at 0x7f14656aaf90&gt;
 </pre></div></div>
 </div>
 <div class="section" id="Single-Phase">
@@ -349,7 +349,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># create variation object</span>
-<span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;../../yaml/equilibrium.yaml&#39;</span>
+<span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;equilibrium.yaml&#39;</span>
 <span class="n">sh_single</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">SimulationHandler</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">sh_single</span>
 </pre></div>
@@ -371,7 +371,7 @@ Simulations for entry `initial.phi` with values: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.handler.SimulationHandler at 0x7f8aaa481890&gt;
+&lt;ctwrap.handler.SimulationHandler at 0x7f14662c5490&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -457,8 +457,8 @@ Tad =   972.42
 Tad =   962.61
  * running `case_32` (Process-1)
 Tad =   954.72
-CPU times: user 42.6 ms, sys: 34.1 ms, total: 76.8 ms
-Wall time: 3.52 s
+CPU times: user 38.1 ms, sys: 51 ms, total: 89.1 ms
+Wall time: 3.6 s
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -485,7 +485,7 @@ True
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-PosixPath(&#39;../../yaml/equilibrium.csv&#39;)
+&#39;equilibrium.csv&#39;
 </pre></div></div>
 </div>
 </div>
@@ -498,7 +498,7 @@ PosixPath(&#39;../../yaml/equilibrium.csv&#39;)
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># create variation object</span>
-<span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;../../yaml/equilibrium_multi.yaml&#39;</span>
+<span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;equilibrium_multi.yaml&#39;</span>
 <span class="n">sh_multi</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">SimulationHandler</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">sh_multi</span>
 </pre></div>
@@ -520,7 +520,7 @@ Simulations for entry `initial.phi` with values: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.handler.SimulationHandler at 0x7f8aa8b5f950&gt;
+&lt;ctwrap.handler.SimulationHandler at 0x7f1465633590&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -606,8 +606,8 @@ Tad =   973.13
 Tad =   968.47
  * running `case_32` (Process-2)
 Tad =   963.98
-CPU times: user 59.3 ms, sys: 20.8 ms, total: 80.1 ms
-Wall time: 4.82 s
+CPU times: user 63.4 ms, sys: 25.4 ms, total: 88.8 ms
+Wall time: 5.17 s
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -634,7 +634,7 @@ True
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-PosixPath(&#39;../../yaml/equilibrium_multi.csv&#39;)
+&#39;equilibrium_multi.csv&#39;
 </pre></div></div>
 </div>
 </div>

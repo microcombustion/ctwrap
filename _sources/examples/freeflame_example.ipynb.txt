@@ -66,7 +66,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "fname = '../../yaml/freeflame.yaml'\n",
+    "fname = 'freeflame.yaml'\n",
     "s = cw.SimulationHandler.from_yaml(fname, strategy='matrix', verbosity=1)\n",
     "s"
    ]

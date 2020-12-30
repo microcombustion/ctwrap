@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Installation &#8212; ctwrap 0.3.1 documentation</title>
+    <title>Installation &#8212; ctwrap 0.3.2 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -35,10 +35,32 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installing-ctwrap">
-<h2>Installing ctwrap<a class="headerlink" href="#installing-ctwrap" title="Permalink to this headline">¶</a></h2>
-<p>To install ctwrap, we strongly recommend using a <code class="docutils literal notranslate"><span class="pre">conda</span></code> (anaconda or miniconda) environment.
-Dependencies for a fully functional environment are listed in the <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> file in
+<div class="section" id="base-installation">
+<h2>Base Installation<a class="headerlink" href="#base-installation" title="Permalink to this headline">¶</a></h2>
+<p>The simplest approach is to install <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> from the Python Package
+Index (PyPI), i.e.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install ctwrap
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> itself does not depend on a Cantera installation (only simulation
+modules do). It is recommended to install Cantera before <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> in a
+separate step.</p>
+</div>
+</div>
+<div class="section" id="full-installation">
+<h2>Full Installation<a class="headerlink" href="#full-installation" title="Permalink to this headline">¶</a></h2>
+<p>As an alternative to <code class="docutils literal notranslate"><span class="pre">pip</span></code>, the full package (i.e. including test suite and
+documentation) can be installed by cloning the GitHub repository. For this
+approach, a <code class="docutils literal notranslate"><span class="pre">conda</span></code> (anaconda or miniconda) environment is strongly
+recommended.</p>
+<p><strong>Clone repository:</strong> Use <code class="docutils literal notranslate"><span class="pre">git</span></code> to clone the repository, i.e.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/microcombustion/ctwrap.git
+$ cd ctwrap
+</pre></div>
+</div>
+<p>Dependencies for a fully functional environment are listed in the <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> file in
 the root folder of the repository.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ctwrap conda package dependencies</span>
 <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ctwrap</span>
@@ -63,36 +85,23 @@ the root folder of the repository.</p>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">matplotlib</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="conda-environment">
-<h2>Conda environment<a class="headerlink" href="#conda-environment" title="Permalink to this headline">¶</a></h2>
-<p>To install, provide the <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> configuration to <code class="docutils literal notranslate"><span class="pre">conda</span></code>, i.e.</p>
+<p><strong>Create Environment:</strong> To create the enviroment, provide the
+<code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> configuration to <code class="docutils literal notranslate"><span class="pre">conda</span></code>, i.e.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda env create -f environment.yml
 $ conda activate ctwrap
 </pre></div>
 </div>
-</div>
-<div class="section" id="clone-repository-and-install">
-<h2>Clone Repository and Install<a class="headerlink" href="#clone-repository-and-install" title="Permalink to this headline">¶</a></h2>
-<p>The following uses <code class="docutils literal notranslate"><span class="pre">pip</span></code> to install <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> within your
-python environment (e.g. Anaconda).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/microcombustion/ctwrap.git
-$ cd ctwrap
-$ pip install .
+<p><strong>Installation:</strong> Use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to install <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> within your python environment.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install .
 </pre></div>
 </div>
 <p>For a linked installation, run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span></code> instead.</p>
-</div>
-<div class="section" id="update">
-<h2>Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
-<p>Within the <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> source folder, run</p>
+<p><strong>Update:</strong> Within the <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> source folder, run</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git pull
 $ python setup.py develop
 </pre></div>
 </div>
-</div>
-<div class="section" id="uninstall">
-<h2>Uninstall<a class="headerlink" href="#uninstall" title="Permalink to this headline">¶</a></h2>
+<p><strong>Uninstall:</strong> To uninstall, simply remove the <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment, i.e.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip uninstall ctwrap
 </pre></div>
 </div>
