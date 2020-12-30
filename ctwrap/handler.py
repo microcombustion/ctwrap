@@ -50,7 +50,6 @@ Class Definition
 """
 
 from pathlib import Path
-from ruamel import yaml
 import warnings
 import textwrap
 
@@ -61,6 +60,11 @@ import multiprocessing as mp
 from multiprocessing import queues as mpq
 from multiprocessing import synchronize as mps
 import queue  # imported for using queue.Empty exception
+
+try:
+    import ruamel_yaml as yaml
+except ImportError:
+    from ruamel import yaml
 
 # ctwrap specific import
 from .parser import _parse, _write, Parser

@@ -8,8 +8,12 @@ from pathlib import Path
 import subprocess
 import pint.quantity as pq
 import importlib
-from ruamel import yaml
 import h5py
+
+try:
+    import ruamel_yaml as yaml
+except ImportError:
+    from ruamel import yaml
 
 import warnings
 # add exception as pywintypes imports a deprecated module
