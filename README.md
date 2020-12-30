@@ -31,10 +31,20 @@ The software was developed with the following objectives in mind. It should:
 > Although core functions of this software are continuously tested, there
   may be remaining bugs, non-working features, or other issues that could prevent a user from using this software to their specification. If you find problems, please report them in the issue tracker.
 
+## Installation
+
+The simplest approach is to install `ctwrap` via `pip`, i.e.
+
+```
+$ pip install ctwrap
+```
+
+> Note that `ctwrap` itself does not depend on a Cantera installation (only
+  simulation modules do). It is recommended to install Cantera before ctwrap in a separate step.
+
 ## Example
 
-A parallel batch job for adiabatic flame calculations uses the
-`freeflame` module (modified from Cantera's `adiabatic_flame.py` example). Based on the YAML configuration given as a reference, a variation of 12 equivalence ratio values is run as:
+A parallel batch job for adiabatic flame calculations uses the `freeflame` module (modified from Cantera's `adiabatic_flame.py` example). Based on the YAML configuration given as a reference, a variation of 12 equivalence ratio values is run as:
 
 ```
 $ ctwrap run freeflame freeflame.yaml --parallel
