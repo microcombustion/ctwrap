@@ -48,7 +48,7 @@ The inputs are passed through a YAML configuration file. The YAML input has thre
 
 The structure of a YAML configuration file is illustrated by the following *minimal example*:
 
-.. literalinclude:: ../yaml/minimal.yaml
+.. literalinclude:: ../ctwrap/yaml/minimal.yaml
    :language: yaml
 
 Running a Batch Job

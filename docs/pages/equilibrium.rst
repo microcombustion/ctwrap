@@ -25,7 +25,7 @@ Single Phase
 An example for a batch simulation for a single thermodynamic phase is
 given by the YAML configuration
 
-.. literalinclude:: ../../yaml/equilibrium.yaml
+.. literalinclude:: ../../ctwrap/yaml/equilibrium.yaml
    :language: yaml
 
 A parallel batch job for equilibrium calculations using the configuration
@@ -43,7 +43,7 @@ Multiple Phases
 An example for a batch simulation with multiple thermodynamic phases is
 given by the YAML configuration
 
-.. literalinclude:: ../../yaml/equilibrium_multi.yaml
+.. literalinclude:: ../../ctwrap/yaml/equilibrium_multi.yaml
    :language: yaml
 
 A parallel batch job for equilibrium calculations using the configuration
