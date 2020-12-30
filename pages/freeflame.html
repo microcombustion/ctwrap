@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FreeFlame Batch Jobs &#8212; ctwrap 0.3.2 documentation</title>
+    <title>FreeFlame Batch Jobs &#8212; ctwrap 0.3.3 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -77,9 +77,7 @@
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">cantera</span> <span class="k">as</span> <span class="nn">ct</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;This module will not work without an installation of Cantera&quot;</span><span class="p">,</span>
-        <span class="ne">UserWarning</span><span class="p">)</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;Method requires a working cantera installation.&#39;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">defaults</span><span class="p">():</span>
@@ -162,32 +160,6 @@
 <div class="section" id="running-a-batch-simulation">
 <h2>Running a Batch Simulation<a class="headerlink" href="#running-a-batch-simulation" title="Permalink to this headline">¶</a></h2>
 <p>An example for a batch simulation is given by the YAML configuration</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `freeflame` module</span>
-<span class="c1"># file specifies a parameter variation of the equivalence ratio</span>
-<span class="nt">strategy</span><span class="p">:</span>
-  <span class="nt">sequence</span><span class="p">:</span>
-    <span class="nt">upstream.phi</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">linspace</span><span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">2.6</span><span class="p p-Indicator">],</span><span class="nt"> npoints</span><span class="p">:</span> <span class="nv">12</span> <span class="p p-Indicator">}</span>
-  <span class="nt">matrix</span><span class="p">:</span>
-    <span class="nt">upstream.phi</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">linspace</span><span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">2.4</span><span class="p p-Indicator">],</span><span class="nt"> npoints</span><span class="p">:</span> <span class="nv">6</span> <span class="p p-Indicator">}</span>
-    <span class="nt">model.transport</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;mix&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;multi&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;soret&#39;</span><span class="p p-Indicator">]</span>
-<span class="nt">defaults</span><span class="p">:</span>
-  <span class="nt">upstream</span><span class="p">:</span>
-    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300. kelvin</span> <span class="c1"># temperature</span>
-    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1. atmosphere</span> <span class="c1"># pressure</span>
-    <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.55</span> <span class="c1"># equivalence ratio</span>
-    <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">H2</span>
-    <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1,AR:5</span>
-  <span class="nt">model</span><span class="p">:</span>
-    <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
-    <span class="nt">transport</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mix</span>
-  <span class="nt">domain</span><span class="p">:</span>
-    <span class="nt">width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30 millimeter</span> <span class="c1"># domain width</span>
-<span class="nt">output</span><span class="p">:</span>
-  <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
-  <span class="nt">force</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.3.0</span>
-</pre></div>
-</div>
 <p>A parallel batch job for adiabatic flame calculations using this
 configuration and the simulation module above can be run as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap run freeflame freeflame.yaml --parallel

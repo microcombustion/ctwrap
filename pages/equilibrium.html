@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Equilibrium Batch Jobs &#8212; ctwrap 0.3.2 documentation</title>
+    <title>Equilibrium Batch Jobs &#8212; ctwrap 0.3.3 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -143,34 +143,6 @@ of both single and multiple phases.</p>
 <h3>Single Phase<a class="headerlink" href="#single-phase" title="Permalink to this headline">¶</a></h3>
 <p>An example for a batch simulation for a single thermodynamic phase is
 given by the YAML configuration</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `equilibrium` module</span>
-<span class="c1"># file specifes a parameter variation of the equivalence ratio</span>
-<span class="nt">strategy</span><span class="p">:</span>
-  <span class="nt">sequence</span><span class="p">:</span>
-    <span class="nt">initial.phi</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">linspace</span><span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.3</span><span class="p p-Indicator">,</span> <span class="nv">3.5</span><span class="p p-Indicator">],</span><span class="nt"> npoints</span><span class="p">:</span> <span class="nv">33</span> <span class="p p-Indicator">}</span>
-<span class="nt">defaults</span><span class="p">:</span>
-  <span class="nt">initial</span><span class="p">:</span>
-    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300. kelvin</span> <span class="c1"># temperature</span>
-    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1. atmosphere</span> <span class="c1"># pressure</span>
-    <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.55</span> <span class="c1"># equivalence ratio</span>
-  <span class="nt">phases</span><span class="p">:</span>
-    <span class="nt">gas</span><span class="p">:</span> <span class="c1"># gas phase</span>
-      <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gri30.yaml</span>
-      <span class="nt">moles</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.</span>
-      <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">CH4</span>
-      <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1.0, N2:3.76</span>
-  <span class="nt">equilibrate</span><span class="p">:</span>
-    <span class="nt">mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">HP</span>
-<span class="nt">output</span><span class="p">:</span>
-  <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">csv</span>
-  <span class="nt">force</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-  <span class="nt">returns</span><span class="p">:</span>
-    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">T</span> <span class="c1"># temperature</span>
-    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">P</span> <span class="c1"># pressure</span>
-    <span class="nt">X</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">X</span> <span class="c1"># species mole fractions</span>
-<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.3.0</span>
-</pre></div>
-</div>
 <p>A parallel batch job for equilibrium calculations using the configuration
 and the simulation module above can be run as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap run equilibrium equilibrium.yaml --parallel
@@ -182,40 +154,6 @@ and the simulation module above can be run as:</p>
 <h3>Multiple Phases<a class="headerlink" href="#multiple-phases" title="Permalink to this headline">¶</a></h3>
 <p>An example for a batch simulation with multiple thermodynamic phases is
 given by the YAML configuration</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `equilibrium` module</span>
-<span class="c1"># file specifes a parameter variation of the equivalence ratio</span>
-<span class="nt">strategy</span><span class="p">:</span>
-  <span class="nt">sequence</span><span class="p">:</span>
-    <span class="nt">initial.phi</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">linspace</span><span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.3</span><span class="p p-Indicator">,</span> <span class="nv">3.5</span><span class="p p-Indicator">],</span><span class="nt"> npoints</span><span class="p">:</span> <span class="nv">33</span> <span class="p p-Indicator">}</span>
-<span class="nt">defaults</span><span class="p">:</span>
-  <span class="nt">initial</span><span class="p">:</span>
-    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300. kelvin</span> <span class="c1"># temperature</span>
-    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1. atmosphere</span> <span class="c1"># pressure</span>
-    <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.55</span> <span class="c1"># equivalence ratio</span>
-  <span class="nt">phases</span><span class="p">:</span>
-    <span class="nt">gas</span><span class="p">:</span> <span class="c1"># gas phase</span>
-      <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gri30.yaml</span>
-      <span class="nt">moles</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.</span>
-      <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">CH4</span>
-      <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1.0, N2:3.76</span>
-    <span class="nt">carbon</span><span class="p">:</span> <span class="c1"># solid phase</span>
-      <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">graphite.yaml</span>
-      <span class="nt">moles</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.</span>
-      <span class="nt">X</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">C(gr):1.0</span>
-  <span class="nt">equilibrate</span><span class="p">:</span>
-    <span class="nt">mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">HP</span>
-    <span class="nt">solver</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gibbs</span>
-    <span class="nt">max_steps</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000</span>
-<span class="nt">output</span><span class="p">:</span>
-  <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">csv</span>
-  <span class="nt">force</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-  <span class="nt">returns</span><span class="p">:</span>
-    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">T</span> <span class="c1"># temperature</span>
-    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">P</span> <span class="c1"># pressure</span>
-    <span class="nt">species_names</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">species_moles</span> <span class="c1"># moles per species</span>
-<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.3.0</span>
-</pre></div>
-</div>
 <p>A parallel batch job for equilibrium calculations using the configuration
 and the simulation module above can be run as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap run equilibrium equilibrium_multi.yaml --parallel

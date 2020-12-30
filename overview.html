@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Overview &#8212; ctwrap 0.3.2 documentation</title>
+    <title>Overview &#8212; ctwrap 0.3.3 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -97,20 +97,6 @@ the file is saved with the name of the module to be run.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> entry indicates the minimum <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> revision that supports the YAML format</p></li>
 </ul>
 <p>The structure of a YAML configuration file is illustrated by the following <em>minimal example</em>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `minimal` simulation module (minimal.py)</span>
-<span class="c1"># file specifes a parameter variation of sleep duration</span>
-<span class="nt">strategy</span><span class="p">:</span>
-  <span class="nt">sequence</span><span class="p">:</span> <span class="c1"># example for a batch sequence</span>
-    <span class="nt">foo</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.1</span><span class="p p-Indicator">,</span> <span class="nv">0.2</span><span class="p p-Indicator">,</span> <span class="nv">0.3</span><span class="p p-Indicator">,</span> <span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.5</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.7</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">]</span>
-  <span class="nt">matrix</span><span class="p">:</span> <span class="c1"># example for a batch matrix</span>
-    <span class="nt">foo</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">linspace</span> <span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.1</span><span class="p p-Indicator">,</span> <span class="nv">0.3</span><span class="p p-Indicator">],</span><span class="nt"> npoints</span><span class="p">:</span> <span class="nv">3</span> <span class="p p-Indicator">}</span>
-    <span class="nt">bar</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">arange</span><span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">-1</span><span class="p p-Indicator">],</span><span class="nt"> step</span><span class="p">:</span> <span class="nv">-1</span> <span class="p p-Indicator">}</span>
-<span class="nt">defaults</span><span class="p">:</span>
-  <span class="nt">foo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
-  <span class="nt">bar</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2.0</span>
-</pre></div>
-</div>
 </div>
 <div class="section" id="running-a-batch-job">
 <h2>Running a Batch Job<a class="headerlink" href="#running-a-batch-job" title="Permalink to this headline">¶</a></h2>

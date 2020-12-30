@@ -54,7 +54,7 @@
    },
    "outputs": [],
    "source": [
-    "fname = '../../yaml/minimal.yaml'\n",
+    "fname = 'minimal.yaml'\n",
     "sh = cw.SimulationHandler.from_yaml(fname, strategy='sequence', verbosity=1)\n",
     "sh"
    ]
@@ -124,7 +124,7 @@
    },
    "outputs": [],
    "source": [
-    "fname = '../../yaml/minimal.yaml'\n",
+    "fname = 'minimal.yaml'\n",
     "sh = cw.SimulationHandler.from_yaml(fname, strategy='matrix', verbosity=1)\n",
     "sh"
    ]
