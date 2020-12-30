@@ -32,7 +32,7 @@ pass-through methods :meth:`Simulation.defaults` and :meth:`Simulation.new`:
 .. code-block:: Python
 
    defaults = sim.defaults() # load defaults
-   sim.run(**defaults) # run simulation module with default arguments
+   sim.run(defaults) # run simulation module with default arguments
 
 Class Definition
 ++++++++++++++++
