@@ -23,7 +23,7 @@ from ctwrap.strategy import _replace_entry, _sweep_matrix, _task_list, _parse_mo
 
 PWD = Path(__file__).parents[0]
 ROOT = PWD.parents[0]
-EXAMPLES = ROOT / 'yaml'
+EXAMPLES = ROOT / 'ctwrap' / 'yaml'
 
 
 class TestReplace(unittest.TestCase):

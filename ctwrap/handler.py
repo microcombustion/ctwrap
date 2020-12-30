@@ -159,7 +159,7 @@ class SimulationHandler(object):
 
         elif not Path(yaml_file).is_file():
             # attempt to load standard configuration
-            full_name = Path(__file__).parents[1] / 'yaml' / yaml_file
+            full_name = Path(__file__).parents[0] / 'yaml' / yaml_file
 
         else:
             full_name = Path(yaml_file)

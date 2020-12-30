@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
 NB_DIR = ROOT / 'docs' / 'examples'
-YAML_DIR = ROOT / 'yaml'
+YAML_DIR = ROOT / 'ctwrap' / 'yaml'
 
 warnings.filterwarnings(action='error')
 warnings.filterwarnings("ignore", ".*inconsistent pixels*")

@@ -23,7 +23,7 @@ from ctwrap.parser import _parse, _write, _update
 
 PWD = Path(__file__).parents[0]
 ROOT = PWD.parents[0]
-EXAMPLES = ROOT / 'yaml'
+EXAMPLES = ROOT / 'ctwrap' / 'yaml'
 
 
 class TestUpdate(unittest.TestCase):
