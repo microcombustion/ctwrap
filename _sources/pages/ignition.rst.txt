@@ -18,7 +18,7 @@ Running a Batch Simulation
 
 An example for a batch simulation is given by the YAML configuration
 
-.. literalinclude:: ../../yaml/ignition.yaml
+.. literalinclude:: ../../ctwrap/yaml/ignition.yaml
    :language: yaml
 
 A parallel batch job for ignition calculations using the configuration and the simulation

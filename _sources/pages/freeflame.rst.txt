@@ -18,7 +18,7 @@ Running a Batch Simulation
 
 An example for a batch simulation is given by the YAML configuration
 
-.. literalinclude:: ../../yaml/freeflame.yaml
+.. literalinclude:: ../../ctwrap/yaml/freeflame.yaml
    :language: yaml
 
 A parallel batch job for adiabatic flame calculations using this

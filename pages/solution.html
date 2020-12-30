@@ -95,6 +95,31 @@
 <div class="section" id="running-a-batch-simulation">
 <h2>Running a Batch Simulation<a class="headerlink" href="#running-a-batch-simulation" title="Permalink to this headline">¶</a></h2>
 <p>An example for a batch simulation is given by the YAML configuration</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `solution` module</span>
+<span class="c1"># file specifes a parameter variation of temperature</span>
+<span class="nt">strategy</span><span class="p">:</span>
+  <span class="nt">sequence</span><span class="p">:</span>
+    <span class="nt">state.T</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt"> mode</span><span class="p">:</span> <span class="nv">arange</span><span class="p p-Indicator">,</span><span class="nt"> limits</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">300</span><span class="p p-Indicator">,</span> <span class="nv">2001</span><span class="p p-Indicator">],</span><span class="nt"> step</span><span class="p">:</span> <span class="nv">25</span> <span class="p p-Indicator">}</span>
+<span class="nt">defaults</span><span class="p">:</span>
+  <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gri30.yaml</span>
+  <span class="nt">state</span><span class="p">:</span>
+    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300. kelvin</span> <span class="c1"># temperature</span>
+    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1. atmosphere</span> <span class="c1"># pressure</span>
+    <span class="nt">X</span><span class="p">:</span> <span class="s">&#39;O2:1,H2:1&#39;</span>
+<span class="nt">output</span><span class="p">:</span>
+  <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">csv</span>
+  <span class="nt">force</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+  <span class="nt">returns</span><span class="p">:</span>
+    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">T</span> <span class="c1"># temperature</span>
+    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">P</span> <span class="c1"># pressure</span>
+    <span class="nt">u</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">u</span> <span class="c1"># internal energy</span>
+    <span class="nt">h</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h</span> <span class="c1"># enthalpy</span>
+    <span class="nt">s</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">s</span> <span class="c1"># entropy</span>
+    <span class="nt">cp</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cp</span> <span class="c1"># specific heat</span>
+    <span class="nt">cv</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cv</span> <span class="c1"># specific heat</span>
+<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.3.0</span>
+</pre></div>
+</div>
 <p>A parallel batch job for solution calculations using the configuration and the simulation
 module above can be run as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap run solution solution.yaml --parallel

@@ -12,7 +12,7 @@ Running a Batch Simulation
 
 An example for a batch simulation is given by the YAML configuration
 
-.. literalinclude:: ../../yaml/solution.yaml
+.. literalinclude:: ../../ctwrap/yaml/solution.yaml
    :language: yaml
 
 A parallel batch job for solution calculations using the configuration and the simulation

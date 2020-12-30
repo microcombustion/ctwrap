@@ -145,6 +145,32 @@
 <div class="section" id="running-a-batch-simulation">
 <h2>Running a Batch Simulation<a class="headerlink" href="#running-a-batch-simulation" title="Permalink to this headline">¶</a></h2>
 <p>An example for a batch simulation is given by the YAML configuration</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `ignition` module</span>
+<span class="c1"># file specifes a parameter variation of the equivalence ratio</span>
+<span class="nt">strategy</span><span class="p">:</span>
+  <span class="nt">sequence</span><span class="p">:</span>
+    <span class="nt">initial.phi</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">]</span>
+<span class="nt">defaults</span><span class="p">:</span>
+  <span class="nt">initial</span><span class="p">:</span>
+    <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000. kelvin</span> <span class="c1"># temperature</span>
+    <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">101325. pascal</span> <span class="c1"># pressure</span>
+    <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.</span> <span class="c1"># equivalence ratio</span>
+    <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">H2</span>
+    <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1,AR:5</span>
+  <span class="nt">chemistry</span><span class="p">:</span>
+    <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
+  <span class="nt">settings</span><span class="p">:</span>
+    <span class="nt">delta_t</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.5e-6</span>
+    <span class="nt">max_time_step</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.2e-9</span>
+    <span class="nt">n_points</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000</span>
+    <span class="nt">atol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-18</span>
+    <span class="nt">rtol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-15</span>
+<span class="nt">output</span><span class="p">:</span>
+  <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
+  <span class="nt">force</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.3.0</span>
+</pre></div>
+</div>
 <p>A parallel batch job for ignition calculations using the configuration and the simulation
 module above can be run as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap run ignition ignition.yaml --parallel
