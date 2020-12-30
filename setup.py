@@ -9,27 +9,28 @@ with open(path.join(here, 'ctwrap', '_version.py')) as version_file:
     exec(version_file.read())
 
 
-def readme():
-    """ load readme """
-    with open('README.rst') as f:
-        return f.read()
-
+""" load readme """
+with open('README.md', 'r', encoding="utf-8") as f:
+    long_description = f.read()
 
 # configuration
 setup(
     name='ctwrap',
     version=__version__,
-    description='Wrapper functions for running batch simulations',
-    long_description=readme(),
+    description='Python wrapper for batch simulations',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Education',
         'Intended Audience :: Science/Research',
-        'License :: MIT',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
     ],
+    python_requires='>=3.6',
     keywords='python, wrapper, cantera',
-    url='https://github.com/microcombustion/ctwrap.git',
+    url='https://github.com/microcombustion/ctwrap',
     author=__author__,
     author_email='ischoegl@lsu.edu',
     license='MIT',
@@ -39,5 +40,6 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        'numpy', 'ruamel.yaml', 'pint', 'h5py', 'pandas'],
-    zip_safe=False)
+        'h5py', 'numpy', 'pandas', 'pint', 'ruamel.yaml'],
+    zip_safe=False
+)
