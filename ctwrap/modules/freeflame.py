@@ -16,9 +16,7 @@ from ctwrap import Parser
 try:
     import cantera as ct
 except ImportError as err:
-    warnings.warn(
-        "This module will not work without an installation of Cantera",
-        UserWarning)
+    ct = ImportError('Method requires a working cantera installation.')
 
 
 def defaults():
