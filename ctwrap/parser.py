@@ -65,9 +65,13 @@ from pathlib import Path
 from typing import Optional, Dict, Any, Tuple, KeysView, Generator, Union
 from copy import deepcopy
 from pint import UnitRegistry
-from ruamel import yaml
 import warnings
 import re
+
+try:
+    import ruamel_yaml as yaml
+except ImportError:
+    from ruamel import yaml
 
 
 __all__ = ['Parser']
