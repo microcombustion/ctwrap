@@ -177,6 +177,7 @@ class TestIgnition(TestWrap):
     _parser = True
     _strategy = None
     _data_default = 'SolutionArray'
+    _skip_long = True
 
 
 class TestSolution(TestWrap):
