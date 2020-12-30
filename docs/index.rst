@@ -6,8 +6,9 @@
 ctwrap - Wrapper for Batch Simulations
 ======================================
 
-Light-weight Python wrapper for batch simulation jobs (e.g. Cantera). The source
-code is available at the `ctwrap Github repositiory <https://github.com/microcombustion/ctwrap/>`_.
+Light-weight Python wrapper for batch simulation jobs (e.g. Cantera).
+The source code is available at the
+`ctwrap Github repository <https://github.com/microcombustion/ctwrap/>`_.
 
 ++++++++++++++++++
 Table of Contents

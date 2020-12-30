@@ -4,7 +4,7 @@
 ctwrap
 ======
 
-Light-weight Python wrapper for batch simulation jobs (e.g. Cantera).
+Light-weight Python wrapper for batch simulations (e.g. Cantera).
 
 -------------
 Documentation
@@ -22,13 +22,18 @@ Philosophy
 
 The code was developed with the following objectives in mind. It should:
 
+* provide a low-level interface to essential Cantera capabilities
 * create a flexible framework for generic simulations
 * provide a command line interface
-* be easily scriptable (using YAML configuration files via `ruamel.yaml`)
+* be easily scriptable (using YAML configuration files via ``ruamel.yaml``)
 * enforce units (via `pint <https://pint.readthedocs.io/en/stable/>`_)
-* avoid clutter (data are saved in HDF containers)
-* enable parallel execution of (single-threaded) simulations (via `multiprocessing`)
+* enable parallel execution of (single-threaded) simulations (via ``multiprocessing``)
 * enable simple re-import of simulation results into native Cantera objects
+
+.. note:: Although core functions of this software are continuously tested, there
+   may be remaining bugs, non-working features, or other issues that could prevent
+   a user from using this software to their specification. If you find problems,
+   please report them in the issue tracker.
 
 -------
 Example
@@ -45,18 +50,6 @@ is run as:
     $ ctwrap run adiabatic_flame adiabatic_flame.yaml --parallel
 
 Results are written to a single file ``adiabatic_flame.h5``.
-
-In general, a custom batch job requires a simulation module ``some_simulation.py`` and
-a configuration file ``batch_configuration.yaml``. The corresponding batch job is run as:
-
-.. code-block::
-
-   $ ctwrap run some_simulation.py batch_configuration.yaml --parallel
-
-Results are written to a single file ``some_simulation.h5``.
-
-.. note:: the wrapper itself does not depend on a Cantera installation; only the
-   simulation modules do.
 
 .. |adiabatic flame| replace:: ``adiabatic_flame.py``
 .. _adiabatic flame: https://github.com/Cantera/cantera/blob/master/interfaces/cython/cantera/examples/onedim/adiabatic_flame.py
