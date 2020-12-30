@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Batch Jobs &#8212; ctwrap 0.3.0-beta documentation</title>
+    <title>Batch Jobs &#8212; ctwrap 0.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -15,7 +15,7 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Adiabatic Flame Batch" href="adiabatic_flame.html" />
+    <link rel="next" title="Equilibrium Batch Jobs" href="equilibrium.html" />
     <link rel="prev" title="Overview" href="../overview.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -35,27 +35,45 @@
             
   <div class="section" id="batch-jobs">
 <h1>Batch Jobs<a class="headerlink" href="#batch-jobs" title="Permalink to this headline">¶</a></h1>
+<p>Beyond the <a class="reference internal" href="../overview.html"><span class="doc">Minimal Example</span></a>, <code class="docutils literal notranslate"><span class="pre">ctwrap</span></code> supports
+the following pre-configured simulation modules:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="adiabatic_flame.html">Adiabatic Flame Batch Simulation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="adiabatic_flame.html#yaml-defaults">YAML Defaults</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adiabatic_flame.html#simulation-module">Simulation Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adiabatic_flame.html#running-the-batch-simulation">Running the Batch Simulation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="equilibrium.html">Equilibrium Batch Simulation</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="equilibrium.html">Equilibrium</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="equilibrium.html#yaml-defaults">YAML Defaults</a></li>
 <li class="toctree-l2"><a class="reference internal" href="equilibrium.html#simulation-module">Simulation Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="equilibrium.html#running-the-batch-simulation">Running the Batch Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="equilibrium.html#running-a-batch-simulation">Running a Batch Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="ignition.html">Ignition Batch Simulation</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="freeflame.html">Free Flame</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="freeflame.html#yaml-defaults">YAML Defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="freeflame.html#simulation-module">Simulation Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="freeflame.html#running-a-batch-simulation">Running a Batch Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ignition.html">Ignition</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="ignition.html#yaml-defaults">YAML Defaults</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ignition.html#simulation-module">Simulation Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ignition.html#running-the-batch-simulation">Running the Batch Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ignition.html#running-a-batch-simulation">Running a Batch Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="solution.html">Solution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="solution.html#simulation-module">Simulation Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solution.html#running-a-batch-simulation">Running a Batch Simulation</a></li>
 </ul>
 </li>
 </ul>
+</div>
+<div class="section" id="custom-simulations">
+<h2>Custom Simulations<a class="headerlink" href="#custom-simulations" title="Permalink to this headline">¶</a></h2>
+<p>In addition, <code class="docutils literal notranslate"><span class="pre">ctwarp</span></code> supports custom batch simulation. In general,
+a custom batch job requires a simulation module <code class="docutils literal notranslate"><span class="pre">some_simulation.py</span></code> and
+a configuration file <code class="docutils literal notranslate"><span class="pre">batch_configuration.yaml</span></code>. The corresponding batch job is run as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap run some_simulation.py batch_configuration.yaml --parallel
+</pre></div>
+</div>
+<p>Depending on the configuration, results are written to a single file
+<code class="docutils literal notranslate"><span class="pre">some_simulation.h5</span></code> or <code class="docutils literal notranslate"><span class="pre">some_simulation.csv</span></code>.</p>
 </div>
 </div>
 
@@ -96,7 +114,7 @@
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="../overview.html" title="previous chapter">Overview</a></li>
-      <li>Next: <a href="adiabatic_flame.html" title="next chapter">Adiabatic Flame Batch</a></li>
+      <li>Next: <a href="equilibrium.html" title="next chapter">Equilibrium Batch Jobs</a></li>
   </ul></li>
 </ul>
 </div>
@@ -126,7 +144,7 @@
       &copy;2018-20, I. Schoegl and D. Akinpelu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
@@ -134,10 +152,6 @@
           rel="nofollow">Page source</a>
     </div>
 
-    
-    <a href="https://github.com/microcombustion/ctwrap" class="github">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
-    </a>
     
 
     

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jupyter Notebooks &#8212; ctwrap 0.3.0-beta documentation</title>
+    <title>Jupyter Notebooks &#8212; ctwrap 0.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Running Simulations from the Commandline" href="commandline_example.html" />
-    <link rel="prev" title="Ignition Batch Simulation" href="../pages/ignition.html" />
+    <link rel="prev" title="Solution Batch Jobs" href="../pages/solution.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -40,8 +40,7 @@
 <li class="toctree-l1"><a class="reference internal" href="commandline_example.html">        Commandline Example</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="commandline_example.html#Help">Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="commandline_example.html#minimal-Module"><code class="docutils literal notranslate"><span class="pre">minimal</span></code> Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="commandline_example.html#ignition-Module"><code class="docutils literal notranslate"><span class="pre">ignition</span></code> Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="commandline_example.html#adiabatic_flame-Module"><code class="docutils literal notranslate"><span class="pre">adiabatic_flame</span></code> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commandline_example.html#solution-Module"><code class="docutils literal notranslate"><span class="pre">solution</span></code> Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="minimal_example.html">        Minimal Example</a><ul>
@@ -50,16 +49,16 @@
 <li class="toctree-l2"><a class="reference internal" href="minimal_example.html#Run-Batch-Matrix:-Set-up-Simulation-Handler-object">Run Batch Matrix: Set up Simulation Handler object</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="adiabatic_flame_example.html">        Adiabatic Flame Example</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="adiabatic_flame_example.html#1.-Function/Class-Definitions">1. Function/Class Definitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adiabatic_flame_example.html#2.-Simulations">2. Simulations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adiabatic_flame_example.html#3.-Create-Graphical-Output">3. Create Graphical Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="freeflame_example.html">        Free Flame Example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="freeflame_example.html#Function/Class-Definitions">Function/Class Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="freeflame_example.html#Simulations">Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="freeflame_example.html#Create-Graphical-Output">Create Graphical Output</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="equilibrium_example.html">        Equilibrium Example</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="equilibrium_example.html#Function/Class-Definitions">Function/Class Definitions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="equilibrium_example.html#Simulations">Simulations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="equilibrium_example.html#3.-Create-graphical-output">3. Create graphical output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="equilibrium_example.html#Create-graphical-output">Create graphical output</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ignition_example.html">        Ignition Example</a><ul>
@@ -108,7 +107,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../pages/ignition.html" title="previous chapter">Ignition Batch Simulation</a></li>
+      <li>Previous: <a href="../pages/solution.html" title="previous chapter">Solution Batch Jobs</a></li>
       <li>Next: <a href="commandline_example.html" title="next chapter">Running Simulations from the Commandline</a></li>
   </ul></li>
 </ul>
@@ -139,7 +138,7 @@
       &copy;2018-20, I. Schoegl and D. Akinpelu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
@@ -147,10 +146,6 @@
           rel="nofollow">Page source</a>
     </div>
 
-    
-    <a href="https://github.com/microcombustion/ctwrap" class="github">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
-    </a>
     
 
     

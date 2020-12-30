@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ctwrap Strategy &#8212; ctwrap 0.3.0-beta documentation</title>
+    <title>ctwrap Strategy &#8212; ctwrap 0.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -86,14 +86,17 @@ lower-case string corresponding to a strategy class:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>strategy</strong> – Dictionary of batch job strategies, where lower-case keys
+<li><p><strong>strategy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – Dictionary of batch job strategies, where lower-case keys
 specify the batch simulation strategy and the value holds parameters.
 Except for the case, the key needs to match the name of a <cite>Strategy</cite> object.</p></li>
-<li><p><strong>name</strong> – Name of strategy (can be <cite>None</cite> if there is only one strategy)</p></li>
+<li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Name of strategy (can be <cite>None</cite> if there is only one strategy)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Instantiated <cite>Strategy</cite> object</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ctwrap.strategy.Strategy" title="ctwrap.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strategy</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Instantiated <cite>Strategy</cite> object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -105,15 +108,49 @@ Except for the case, the key needs to match the name of a <cite>Strategy</cite> 
 </dd></dl>
 
 <dl class="py method">
-<dt id="ctwrap.strategy.Strategy.tasks">
-<em class="property">property </em><code class="sig-name descname">tasks</code><a class="headerlink" href="#ctwrap.strategy.Strategy.tasks" title="Permalink to this definition">¶</a></dt>
-<dd><p>List of tasks to be performed</p>
+<dt id="ctwrap.strategy.Strategy.variations">
+<em class="property">property </em><code class="sig-name descname">variations</code><a class="headerlink" href="#ctwrap.strategy.Strategy.variations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameter values to be tested grouped by task</p>
+<p><strong>Example:</strong> The following code applies a parameter variation to the
+<cite>Sequence</cite> object <em>strategy</em>:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># define parameter variation</span>
+<span class="n">foo</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;foobar&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}</span>
+<span class="n">strategy</span> <span class="o">=</span> <span class="n">ctwrap</span><span class="o">.</span><span class="n">Sequence</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+
+<span class="c1"># generate dictionary of varied parameter values</span>
+<span class="nb">vars</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">variations</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Nested dictionary of parameter values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="ctwrap.strategy.Strategy.configurations">
 <code class="sig-name descname">configurations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">defaults</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Strategy.configurations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Strategy.configurations" title="Permalink to this definition">¶</a></dt>
-<dd><p>List of configurations to be tested</p>
+<dd><p>Configurations to be tested grouped by task</p>
+<p><strong>Example:</strong> The following code applies a parameter variation to the
+<cite>Sequence</cite> object <em>strategy</em> based on a parameter set <em>defaults</em>:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># define parameter variation</span>
+<span class="n">foo</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;foobar&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}</span>
+<span class="n">strategy</span> <span class="o">=</span> <span class="n">ctwrap</span><span class="o">.</span><span class="n">Sequence</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+
+<span class="c1"># generate dictionary of configurations based on default parameters</span>
+<span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;foobar&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;spam&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;eggs&#39;</span><span class="p">:</span> <span class="mf">3.14</span><span class="p">}</span>
+<span class="n">confs</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">configurations</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>defaults</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Dictionary containing default parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nested dictionary of configurations</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -144,6 +181,12 @@ Except for the case, the key needs to match the name of a <cite>Strategy</cite> 
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt id="ctwrap.strategy.Strategy.base">
+<code class="sig-name descname">base</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Strategy.base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Strategy.base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return basis for a restart</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -162,9 +205,14 @@ Except for the case, the key needs to match the name of a <cite>Strategy</cite> 
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt id="ctwrap.strategy.Sequence.from_legacy">
-<em class="property">classmethod </em><code class="sig-name descname">from_legacy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">items</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Sequence.from_legacy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Sequence.from_legacy" title="Permalink to this definition">¶</a></dt>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ctwrap.strategy.Legacy">
+<em class="property">class </em><code class="sig-prename descclassname">ctwrap.strategy.</code><code class="sig-name descname">Legacy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sweep</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Legacy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Legacy" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="ctwrap.strategy.Legacy.convert">
+<em class="property">static </em><code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">items</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Legacy.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Legacy.convert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create Sequence from ctwrap 0.1.0 syntax</p>
 </dd></dl>
 
@@ -191,7 +239,7 @@ Except for the case, the key needs to match the name of a <cite>Strategy</cite> 
 
 <dl class="py class">
 <dt id="ctwrap.strategy.Sobol">
-<em class="property">class </em><code class="sig-prename descclassname">ctwrap.strategy.</code><code class="sig-name descname">Sobol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ranges</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Sobol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Sobol" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">ctwrap.strategy.</code><code class="sig-name descname">Sobol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ranges</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ctwrap/strategy.html#Sobol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ctwrap.strategy.Sobol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pseudo-randomly sampled parameter space via Sobol sequence</p>
 <p>Not implemented; there is prior work in Ayoobi and Schoegl, PROCI 2015</p>
 </dd></dl>
@@ -268,7 +316,7 @@ Except for the case, the key needs to match the name of a <cite>Strategy</cite> 
       &copy;2018-20, I. Schoegl and D. Akinpelu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
@@ -276,10 +324,6 @@ Except for the case, the key needs to match the name of a <cite>Strategy</cite> 
           rel="nofollow">Page source</a>
     </div>
 
-    
-    <a href="https://github.com/microcombustion/ctwrap" class="github">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
-    </a>
     
 
     

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ctwrap.handler &#8212; ctwrap 0.3.0-beta documentation</title>
+    <title>ctwrap.handler &#8212; ctwrap 0.3.0 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -86,16 +86,19 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">ruamel</span> <span class="kn">import</span> <span class="n">yaml</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="c1"># multiprocessing</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">queues</span> <span class="k">as</span> <span class="n">mpq</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">synchronize</span> <span class="k">as</span> <span class="n">mps</span>
 <span class="kn">import</span> <span class="nn">queue</span>  <span class="c1"># imported for using queue.Empty exception</span>
 
 <span class="c1"># ctwrap specific import</span>
 <span class="kn">from</span> <span class="nn">.parser</span> <span class="kn">import</span> <span class="n">_parse</span><span class="p">,</span> <span class="n">_write</span><span class="p">,</span> <span class="n">Parser</span>
-<span class="kn">from</span> <span class="nn">.strategy</span> <span class="kn">import</span> <span class="n">Strategy</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Matrix</span>
+<span class="kn">from</span> <span class="nn">.strategy</span> <span class="kn">import</span> <span class="n">Strategy</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Legacy</span><span class="p">,</span> <span class="n">Matrix</span>
 <span class="kn">from</span> <span class="nn">.wrapper</span> <span class="kn">import</span> <span class="n">Simulation</span>
 <span class="kn">from</span> <span class="nn">.output</span> <span class="kn">import</span> <span class="n">Output</span>
 
@@ -140,25 +143,27 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_output</span> <span class="o">=</span> <span class="n">output</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">create_tasks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaults</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">variations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_configurations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">configurations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaults</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="p">{</span>
             <span class="s1">&#39;defaults&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_defaults</span><span class="p">,</span>
-            <span class="s1">&#39;strategy&#39;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">definition</span><span class="p">},</span>
-            <span class="s1">&#39;tasks&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="s1">&#39;strategy&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">definition</span><span class="p">,</span>
+            <span class="s1">&#39;cases&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variations</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="SimulationHandler.from_yaml"><a class="viewcode-back" href="../../pages/handler.html#ctwrap.handler.SimulationHandler.from_yaml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">yaml_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                   <span class="n">strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+                  <span class="n">output_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">database</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Alternate constructor using YAML file as input.</span>
 
@@ -168,15 +173,19 @@
 <span class="sd">        Arguments:</span>
 <span class="sd">           yaml_file: YAML file</span>
 <span class="sd">           strategy: Batch job strategy name (only needed if more than one are defined)</span>
-<span class="sd">           name: Output name (overrides yaml)</span>
-<span class="sd">           path: File path (both yaml and output)</span>
+<span class="sd">           output_name: Output name (overrides YAML configuration)</span>
+<span class="sd">           database: File database (both YAML configuration and output)</span>
 <span class="sd">           **kwargs: Dependent on implementation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="k">if</span> <span class="s1">&#39;path&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">database</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="c1"># pylint: disable=unsubscriptable-object</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Parameter &#39;path&#39; is superseded by &#39;database&#39;&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="c1"># load configuration from yaml</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">/</span> <span class="n">fname</span>
+        <span class="k">if</span> <span class="n">database</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">database</span><span class="p">)</span> <span class="o">/</span> <span class="n">fname</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
             <span class="n">content</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
@@ -184,56 +193,65 @@
         <span class="n">output</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="p">{})</span>
 
         <span class="c1"># naming priorities: keyword / yaml / automatic</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">fname</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">fname</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
+            <span class="n">output_name</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">output_name</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span> <span class="n">output_name</span><span class="o">=</span><span class="n">output_name</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimulationHandler.from_dict"><a class="viewcode-back" href="../../pages/handler.html#ctwrap.handler.SimulationHandler.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
                   <span class="n">strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> \
-            <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;SimulationHandler&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+                  <span class="n">output_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">output_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;SimulationHandler&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Alternate constructor using a dictionary as input.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">           content: Dictionary from YAML input</span>
 <span class="sd">           strategy: Batch job strategy name (only needed if more than one are defined)</span>
-<span class="sd">           name: Output name (overrides yaml)</span>
-<span class="sd">           path: Output path (overrides yaml)</span>
+<span class="sd">           output_name: Output name (overrides YAML configuration)</span>
+<span class="sd">           output_path: Output path (overrides YAML configuration)</span>
 <span class="sd">           **kwargs: Dependent on implementation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="s1">&#39;ctwrap&#39;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">,</span> <span class="s1">&#39;obsolete yaml file format&#39;</span>
         <span class="k">assert</span> <span class="s1">&#39;defaults&#39;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">,</span> <span class="s1">&#39;obsolete yaml file format&#39;</span>
 
+        <span class="k">if</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">output_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="c1"># pylint: disable=unsubscriptable-object</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Parameter &#39;name&#39; is superseded by &#39;output_name&#39;&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;path&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="c1"># pylint: disable=unsubscriptable-object</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Parameter &#39;path&#39; is superseded by &#39;output_path&#39;&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="s1">&#39;variation&#39;</span> <span class="ow">in</span> <span class="n">content</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="s1">&#39;variation&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">strategy</span> <span class="o">=</span> <span class="n">Sequence</span><span class="o">.</span><span class="n">from_legacy</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="s1">&#39;variation&#39;</span><span class="p">])</span>
+            <span class="n">strategies</span> <span class="o">=</span> <span class="n">Legacy</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="s1">&#39;variation&#39;</span><span class="p">])</span>
+            <span class="n">strategy</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Old implementation&quot;</span><span class="p">,</span> <span class="ne">PendingDeprecationWarning</span><span class="p">)</span>
         <span class="k">elif</span> <span class="s1">&#39;strategy&#39;</span> <span class="ow">in</span> <span class="n">content</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">strategy</span> <span class="o">=</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">strategy</span><span class="p">)</span>
+            <span class="n">strategies</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Missing or invalid argument: need &#39;strategy&#39; or &#39;variation&#39; entry in dictionary&quot;</span><span class="p">)</span>
 
+        <span class="n">strategy</span> <span class="o">=</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">strategies</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">strategy</span><span class="p">)</span>
         <span class="n">defaults</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="s1">&#39;defaults&#39;</span><span class="p">]</span>
 
         <span class="n">output</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="n">Output</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">settings</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">Output</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="n">output_name</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">)</span><span class="o">.</span><span class="n">settings</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns itself as iterator&quot;&quot;&quot;</span>
 
-        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variations</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">task</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variations</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SimulationHandler.configuration"><a class="viewcode-back" href="../../pages/handler.html#ctwrap.handler.SimulationHandler.configuration">[docs]</a>    <span class="k">def</span> <span class="nf">configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -245,7 +263,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">           updated configuration dictionary based on the task</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">[</span><span class="n">task</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configurations</span><span class="p">[</span><span class="n">task</span><span class="p">]</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">verbose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -263,7 +281,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;tasks defined in terms of the variation entry and values&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variations</span>
 
 <div class="viewcode-block" id="SimulationHandler.run_task"><a class="viewcode-back" href="../../pages/handler.html#ctwrap.handler.SimulationHandler.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">:</span> <span class="n">Simulation</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -282,28 +300,38 @@
 <span class="sd">           task: task to do</span>
 <span class="sd">           **kwargs: dependent on implementation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=no-member</span>
 
-        <span class="k">assert</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">,</span> <span class="s1">&#39;unknown task `</span><span class="si">{}</span><span class="s1">`&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variations</span><span class="p">,</span> <span class="s1">&#39;unknown task `</span><span class="si">{}</span><span class="s1">`&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Keyword arguments are deprecated and ignored&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
 
         <span class="c1"># create a new simulation object</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">_module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">)</span>
-
-        <span class="c1"># get configuration</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span>
-        <span class="n">overload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">overload</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">_module</span><span class="p">)</span>
 
         <span class="c1"># run simulation</span>
-        <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;task_0&quot;</span>
-        <span class="n">obj</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">obj</span><span class="o">.</span><span class="n">_save</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">(</span><span class="n">task</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">Output</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">)</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span></div>
+            <span class="n">out</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">entry</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">variation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_variations</span><span class="p">[</span><span class="n">task</span><span class="p">])</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_setup_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parallel</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create batch queues used by worker function&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+            <span class="n">tasks_to_accomplish</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tasks_to_accomplish</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">task</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configurations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tasks_to_accomplish</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">task</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">tasks_to_accomplish</span>
 
 <div class="viewcode-block" id="SimulationHandler.run_serial"><a class="viewcode-back" href="../../pages/handler.html#ctwrap.handler.SimulationHandler.run_serial">[docs]</a>    <span class="k">def</span> <span class="nf">run_serial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                    <span class="n">sim</span><span class="p">:</span> <span class="n">Simulation</span><span class="p">,</span>
-                   <span class="n">verbosity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                   <span class="n">verbosity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run variation in series.</span>
@@ -324,40 +352,33 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            True when task is completed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="n">Simulation</span><span class="p">),</span> <span class="s1">&#39;need simulation object&#39;</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Keyword arguments are deprecated and ignored&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">verbosity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span>
 
-        <span class="c1"># create a new simulation object</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">_module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s1">&#39;Starting serial batch simulation&#39;</span><span class="p">)</span>
 
-        <span class="n">tasks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="n">tasks</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tasks</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s1">&#39;processing `</span><span class="si">{}</span><span class="s1">`&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+        <span class="c1"># set up queues and dispatch worker</span>
+        <span class="n">tasks_to_accomplish</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_batch</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">lock</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">_worker</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">_module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">definition</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">,</span>
+                <span class="n">tasks_to_accomplish</span><span class="p">,</span> <span class="n">lock</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">)</span>
 
-            <span class="c1"># get configuration</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span>
-            <span class="n">overload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">overload</span><span class="p">)</span>
-
-            <span class="c1"># run simulation</span>
-            <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;task_</span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">_save</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">Output</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">)</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="SimulationHandler.run_parallel"><a class="viewcode-back" href="../../pages/handler.html#ctwrap.handler.SimulationHandler.run_parallel">[docs]</a>    <span class="k">def</span> <span class="nf">run_parallel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                      <span class="n">sim</span><span class="p">:</span> <span class="n">Simulation</span><span class="p">,</span>
-                     <span class="n">number_of_processes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                     <span class="n">verbosity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+                     <span class="n">number_of_processes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">verbosity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run variation using multiprocessing.</span>
 
@@ -380,8 +401,10 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            True when task is completed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="n">Simulation</span><span class="p">),</span> <span class="s1">&#39;need simulation object&#39;</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Keyword arguments are deprecated and ignored&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">number_of_processes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">number_of_processes</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span>
@@ -390,19 +413,11 @@
             <span class="n">verbosity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span>
 
         <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s1">&#39;running simulation using &#39;</span> <span class="o">+</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s1">&#39;Starting parallel batch simulation using &#39;</span> <span class="o">+</span>
                   <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> cores&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">number_of_processes</span><span class="p">))</span>
 
-        <span class="c1"># set up queues</span>
-        <span class="n">tasks_to_accomplish</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
-        <span class="n">finished_tasks</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
-        <span class="n">tasks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="n">tasks</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tasks</span><span class="p">):</span>
-            <span class="n">overload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;task_</span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">tasks_to_accomplish</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">t</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
-
+        <span class="c1"># set up queues and lock</span>
+        <span class="n">tasks_to_accomplish</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_batch</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">lock</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
         <span class="c1"># creating processes</span>
@@ -410,79 +425,133 @@
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_processes</span><span class="p">):</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
                 <span class="n">target</span><span class="o">=</span><span class="n">_worker</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tasks_to_accomplish</span><span class="p">,</span> <span class="n">finished_tasks</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">_module</span><span class="p">,</span> <span class="n">lock</span><span class="p">,</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">))</span>
-            <span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">_module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">definition</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">,</span>
+                      <span class="n">tasks_to_accomplish</span><span class="p">,</span> <span class="n">lock</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">))</span>
             <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
         <span class="c1"># completing process</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">processes</span><span class="p">:</span>
             <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
-        <span class="c1"># print the output</span>
-        <span class="k">while</span> <span class="ow">not</span> <span class="n">finished_tasks</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="n">finished_tasks</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s2">&quot;Appending metadata&quot;</span><span class="p">)</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">Output</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output</span><span class="p">)</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
-<span class="k">def</span> <span class="nf">_worker</span><span class="p">(</span><span class="n">tasks_to_accomplish</span><span class="p">,</span> <span class="n">tasks_that_are_done</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lock</span><span class="p">,</span>
-            <span class="n">output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-            <span class="n">verbosity</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">True</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_worker</span><span class="p">(</span>
+        <span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">strategy</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">tasks_to_accomplish</span><span class="p">:</span> <span class="n">mpq</span><span class="o">.</span><span class="n">Queue</span><span class="p">,</span>
+        <span class="n">lock</span><span class="p">:</span> <span class="n">mps</span><span class="o">.</span><span class="n">Lock</span><span class="p">,</span>
+        <span class="n">verbosity</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">True</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Worker function for the `:meth: `run_parallel` method.</span>
+<span class="sd">    Worker function running simulation queues.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        tasks_to_accomplish (queue): multiprocessing queue of remaining task</span>
-<span class="sd">        tasks_that_are_done (queue): multiprocessing queue of complted task</span>
-<span class="sd">        module (str): name of handler to be run</span>
-<span class="sd">        lock (lock): multiprocessing lock</span>
-<span class="sd">        output (dict): dictionary containing output information</span>
-<span class="sd">        metadata (dict): dictionary containing metadata</span>
-<span class="sd">        verbosity (int): verbosity level</span>
+<span class="sd">        module: Name of simulation module to be run</span>
+<span class="sd">        tasks_to_accomplish: Queue of remaining tasks</span>
+<span class="sd">        lock: Multiprocessing lock (used for parallel simulations only)</span>
+<span class="sd">        output: Dictionary containing output information</span>
+<span class="sd">        verbosity: Verbosity level</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        True when tasks are completed</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=no-member</span>
 
-    <span class="n">this</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">current_process</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">parallel</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lock</span><span class="p">,</span> <span class="n">mp</span><span class="o">.</span><span class="n">synchronize</span><span class="o">.</span><span class="n">Lock</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+        <span class="n">this</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">current_process</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">this</span> <span class="o">=</span> <span class="s1">&#39;main&#39;</span>
 
-    <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">parallel</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s1">&#39;starting &#39;</span> <span class="o">+</span> <span class="n">this</span><span class="p">)</span>
 
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="c1"># create local copy of strategy object</span>
+    <span class="n">strategy</span> <span class="o">=</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">strategy</span><span class="p">)</span>
+    <span class="n">variations</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">variations</span> <span class="c1"># pylint: disable=no-member</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">variations</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="c1"># create local copy of output object</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">Output</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">other</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">reschedule</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">reschedule</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># retrieve next simulation task</span>
-            <span class="n">task</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">tasks_to_accomplish</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
+            <span class="n">task</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">tasks_to_accomplish</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
 
         <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
             <span class="c1"># no tasks left</span>
-            <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">parallel</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s1">&#39;terminating &#39;</span> <span class="o">+</span> <span class="n">this</span><span class="p">)</span>
             <span class="k">break</span>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
-            <span class="c1"># perform task</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="n">indent1</span> <span class="o">+</span> <span class="s1">&#39;processing `</span><span class="si">{}</span><span class="s1">` (</span><span class="si">{}</span><span class="s1">)&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># create object</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">from_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+            <span class="n">base</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">base</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+            <span class="n">restart</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">has_restart</span> <span class="ow">and</span> <span class="n">out</span> <span class="ow">and</span> <span class="n">base</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+                        <span class="n">done</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">dir</span><span class="p">())</span>
+                        <span class="n">restart</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">done</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">dir</span><span class="p">())</span>
+                    <span class="n">restart</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+                <span class="n">invalid</span> <span class="o">=</span> <span class="n">done</span> <span class="o">-</span> <span class="n">tasks</span> <span class="c1"># empty if labels follow task names</span>
+                <span class="k">if</span> <span class="n">restart</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">invalid</span><span class="p">:</span>
+                    <span class="c1"># need to pick another task</span>
+                    <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s1">&#39;rescheduling </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">this</span><span class="p">))</span>
+                    <span class="n">tasks_to_accomplish</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">task</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
+                    <span class="n">reschedule</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">continue</span>
+
             <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">indent1</span> <span class="o">+</span> <span class="s1">&#39;running `</span><span class="si">{}</span><span class="s1">` (</span><span class="si">{}</span><span class="s1">)&#39;</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">this</span><span class="p">))</span>
 
-            <span class="n">config</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">overload</span><span class="p">)</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">_save</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;case `</span><span class="si">{}</span><span class="s1">` completed by </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">this</span><span class="p">)</span>
-            <span class="n">tasks_that_are_done</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="c1"># run task</span>
+            <span class="k">if</span> <span class="n">restart</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">restart</span><span class="p">(</span><span class="n">restart</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">errored</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="c1"># Convert exception to warning</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Simulation of &#39;</span><span class="si">{}</span><span class="s2">&#39; for &#39;</span><span class="si">{}</span><span class="s2">&#39; failed with error message:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">task</span><span class="p">:</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))}</span>
+            <span class="n">errored</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># save output</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+                    <span class="n">out</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">entry</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">variation</span><span class="o">=</span><span class="n">variations</span><span class="p">[</span><span class="n">task</span><span class="p">],</span> <span class="n">errored</span><span class="o">=</span><span class="n">errored</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">entry</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">variation</span><span class="o">=</span><span class="n">variations</span><span class="p">[</span><span class="n">task</span><span class="p">],</span> <span class="n">errored</span><span class="o">=</span><span class="n">errored</span><span class="p">)</span>
+
+            <span class="n">other</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">data</span>
 
     <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
@@ -553,15 +622,11 @@
       &copy;2018-20, I. Schoegl and D. Akinpelu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 
-    
-    <a href="https://github.com/microcombustion/ctwrap" class="github">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
-    </a>
     
 
     

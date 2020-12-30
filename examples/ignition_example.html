@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ignition Example &#8212; ctwrap 0.3.0-beta documentation</title>
+    <title>Ignition Example &#8212; ctwrap 0.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -315,7 +315,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&#39;0.3.0-beta&#39;
+&#39;0.3.0&#39;
 </pre></div></div>
 </div>
 </div>
@@ -340,7 +340,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.wrapper.Ignition at 0x7f0b34854290&gt;
+&lt;ctwrap.wrapper.Ignition at 0x7fd53eba9b10&gt;
 </pre></div></div>
 </div>
 </div>
@@ -364,7 +364,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
+Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4,
+1.6, 1.8]
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -373,7 +374,7 @@ Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;ctwrap.handler.SimulationHandler at 0x7f0b354d59d0&gt;
+&lt;ctwrap.handler.SimulationHandler at 0x7fd566ca8110&gt;
 </pre></div></div>
 </div>
 </div>
@@ -394,17 +395,17 @@ Simulations for entry `initial.phi` with values: [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
- * running simulation using 1 cores
- * processing `initial.phi_0.4` (Process-1)
- * processing `initial.phi_0.6` (Process-1)
- * processing `initial.phi_0.8` (Process-1)
- * processing `initial.phi_1.0` (Process-1)
- * processing `initial.phi_1.2` (Process-1)
- * processing `initial.phi_1.4` (Process-1)
- * processing `initial.phi_1.6` (Process-1)
- * processing `initial.phi_1.8` (Process-1)
-CPU times: user 13.3 ms, sys: 12.2 ms, total: 25.5 ms
-Wall time: 405 ms
+ * Starting parallel batch simulation using 1 cores
+ * running `case_0` (Process-1)
+ * running `case_1` (Process-1)
+ * running `case_2` (Process-1)
+ * running `case_3` (Process-1)
+ * running `case_4` (Process-1)
+ * running `case_5` (Process-1)
+ * running `case_6` (Process-1)
+ * running `case_7` (Process-1)
+CPU times: user 14.4 ms, sys: 20 ms, total: 34.4 ms
+Wall time: 1min 30s
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -446,7 +447,7 @@ True
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;KeysViewHDF5 [&#39;task_0&#39;, &#39;task_1&#39;, &#39;task_2&#39;, &#39;task_3&#39;, &#39;task_4&#39;, &#39;task_5&#39;, &#39;task_6&#39;, &#39;task_7&#39;]&gt;
+&lt;KeysViewHDF5 [&#39;case_0&#39;, &#39;case_1&#39;, &#39;case_2&#39;, &#39;case_3&#39;, &#39;case_4&#39;, &#39;case_5&#39;, &#39;case_6&#39;, &#39;case_7&#39;]&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -464,7 +465,7 @@ True
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;KeysViewHDF5 [&#39;defaults&#39;, &#39;strategy&#39;, &#39;tasks&#39;]&gt;
+&lt;KeysViewHDF5 [&#39;cases&#39;, &#39;defaults&#39;, &#39;strategy&#39;]&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -506,9 +507,13 @@ True
   &#39;P&#39;: &#39;101325. pascal&#39;,
   &#39;phi&#39;: 1.0,
   &#39;fuel&#39;: &#39;H2&#39;,
-  &#39;oxidizer&#39;: &#39;O2:1,AR:3.76&#39;},
+  &#39;oxidizer&#39;: &#39;O2:1,AR:5&#39;},
  &#39;chemistry&#39;: {&#39;mechanism&#39;: &#39;h2o2.yaml&#39;},
- &#39;settings&#39;: {&#39;delta_t&#39;: 1e-05, &#39;n_points&#39;: 500}}
+ &#39;settings&#39;: {&#39;delta_t&#39;: 5e-07,
+  &#39;max_time_step&#39;: 2e-10,
+  &#39;n_points&#39;: 1000,
+  &#39;atol&#39;: 1e-18,
+  &#39;rtol&#39;: 1e-15}}
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -546,10 +551,10 @@ True
 <span class="c1"># plot results</span>
 <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">][:],</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">][:],</span><span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">[</span><span class="n">f</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="n">phi</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">][:],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">][:],</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">[</span><span class="n">f</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">phi</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
 
 <span class="c1"># add title/axis labels</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;IdealGasConstPressure Reactor&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;IdealGasConstPressure Reactor Simulation (ignition)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (ms)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Temperature (K)&#39;</span><span class="p">)</span>
 
@@ -647,7 +652,7 @@ True
       &copy;2018-20, I. Schoegl and D. Akinpelu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
@@ -655,10 +660,6 @@ True
           rel="nofollow">Page source</a>
     </div>
 
-    
-    <a href="https://github.com/microcombustion/ctwrap" class="github">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
-    </a>
     
 
     

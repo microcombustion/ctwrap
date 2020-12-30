@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ignition Batch Simulation &#8212; ctwrap 0.3.0-beta documentation</title>
+    <title>Ignition Batch Jobs &#8212; ctwrap 0.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -15,8 +15,8 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Jupyter Notebooks" href="../examples/jupyter.html" />
-    <link rel="prev" title="Equilibrium Batch Simulation" href="equilibrium.html" />
+    <link rel="next" title="Solution Batch Jobs" href="solution.html" />
+    <link rel="prev" title="FreeFlame Batch Jobs" href="freeflame.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -33,8 +33,8 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="ignition-batch-simulation">
-<h1>Ignition Batch Simulation<a class="headerlink" href="#ignition-batch-simulation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="ignition-batch-jobs">
+<h1>Ignition Batch Jobs<a class="headerlink" href="#ignition-batch-jobs" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="yaml-defaults">
 <h2>YAML Defaults<a class="headerlink" href="#yaml-defaults" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># default parameters for the `ignition` module</span>
@@ -48,9 +48,10 @@
   <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
 <span class="nt">settings</span><span class="p">:</span>
   <span class="nt">delta_t</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-5</span>
+  <span class="nt">max_time_step</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-5</span>
   <span class="nt">n_points</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500</span>
   <span class="nt">atol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-15</span>
-  <span class="nt">rtol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-9</span>
+  <span class="nt">rtol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-12</span>
 </pre></div>
 </div>
 </div>
@@ -119,6 +120,7 @@
     <span class="c1"># set simulation parameters</span>
     <span class="n">sim</span><span class="o">.</span><span class="n">atol</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;atol&#39;</span><span class="p">]</span>
     <span class="n">sim</span><span class="o">.</span><span class="n">rtol</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;rtol&#39;</span><span class="p">]</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">max_time_step</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;max_time_step&#39;</span><span class="p">]</span>
     <span class="n">delta_t</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;delta_t&#39;</span><span class="p">]</span>
     <span class="n">n_points</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;n_points&#39;</span><span class="p">]</span>
 
@@ -142,35 +144,38 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="running-the-batch-simulation">
-<h2>Running the Batch Simulation<a class="headerlink" href="#running-the-batch-simulation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="running-a-batch-simulation">
+<h2>Running a Batch Simulation<a class="headerlink" href="#running-a-batch-simulation" title="Permalink to this headline">¶</a></h2>
 <p>An example for a batch simulation is given by the YAML configuration</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># YAML file example for the `ignition` module</span>
 <span class="c1"># file specifes a parameter variation of the equivalence ratio</span>
 <span class="nt">strategy</span><span class="p">:</span>
   <span class="nt">sequence</span><span class="p">:</span>
     <span class="nt">initial.phi</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.4</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">,</span> <span class="nv">0.8</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">1.2</span><span class="p p-Indicator">,</span> <span class="nv">1.4</span><span class="p p-Indicator">,</span> <span class="nv">1.6</span><span class="p p-Indicator">,</span> <span class="nv">1.8</span><span class="p p-Indicator">]</span>
-<span class="nt">output</span><span class="p">:</span>
-  <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
-  <span class="nt">force</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="nt">defaults</span><span class="p">:</span>
   <span class="nt">initial</span><span class="p">:</span>
     <span class="nt">T</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000. kelvin</span> <span class="c1"># temperature</span>
     <span class="nt">P</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">101325. pascal</span> <span class="c1"># pressure</span>
     <span class="nt">phi</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.</span> <span class="c1"># equivalence ratio</span>
     <span class="nt">fuel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">H2</span>
-    <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1,AR:3.76</span>
+    <span class="nt">oxidizer</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">O2:1,AR:5</span>
   <span class="nt">chemistry</span><span class="p">:</span>
     <span class="nt">mechanism</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h2o2.yaml</span>
   <span class="nt">settings</span><span class="p">:</span>
-    <span class="nt">delta_t</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-5</span>
-    <span class="nt">n_points</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500</span>
+    <span class="nt">delta_t</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.5e-6</span>
+    <span class="nt">max_time_step</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.2e-9</span>
+    <span class="nt">n_points</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000</span>
+    <span class="nt">atol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-18</span>
+    <span class="nt">rtol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.e-15</span>
+<span class="nt">output</span><span class="p">:</span>
+  <span class="nt">format</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">h5</span>
+  <span class="nt">force</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="nt">ctwrap</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.3.0</span>
 </pre></div>
 </div>
 <p>A parallel batch job for ignition calculations using the configuration and the simulation
 module above can be run as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap ignition ignition.yaml --parallel
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ctwrap run ignition ignition.yaml --parallel
 </pre></div>
 </div>
 <p>Results are written to a single file <code class="docutils literal notranslate"><span class="pre">ignition.h5</span></code>.</p>
@@ -214,8 +219,8 @@ module above can be run as:</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="batch.html">Batch Jobs</a><ul>
-      <li>Previous: <a href="equilibrium.html" title="previous chapter">Equilibrium Batch Simulation</a></li>
-      <li>Next: <a href="../examples/jupyter.html" title="next chapter">Jupyter Notebooks</a></li>
+      <li>Previous: <a href="freeflame.html" title="previous chapter">FreeFlame Batch Jobs</a></li>
+      <li>Next: <a href="solution.html" title="next chapter">Solution Batch Jobs</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -246,7 +251,7 @@ module above can be run as:</p>
       &copy;2018-20, I. Schoegl and D. Akinpelu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
@@ -254,10 +259,6 @@ module above can be run as:</p>
           rel="nofollow">Page source</a>
     </div>
 
-    
-    <a href="https://github.com/microcombustion/ctwrap" class="github">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
-    </a>
     
 
     
