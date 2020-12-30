@@ -61,6 +61,7 @@ def run(chemistry=None, initial=None, settings=None):
     # set simulation parameters
     sim.atol = settings['atol']
     sim.rtol = settings['rtol']
+    sim.max_time_step = settings['max_time_step']
     delta_t = settings['delta_t']
     n_points = settings['n_points']
 
