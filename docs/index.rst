@@ -10,7 +10,7 @@ Python wrapper for batch simulations (e.g. Cantera).
 The source code is available at the
 `ctwrap Github repository <https://github.com/microcombustion/ctwrap/>`_.
 
-|ci| |tag|
+|ci| |tag| |pypi|
 
 ++++++++++++++++++
 Table of Contents
@@ -75,3 +75,7 @@ Results are written to a single file ``freeflame.h5``.
 .. |tag| image:: https://img.shields.io/github/v/tag/microcombustion/ctwrap
    :target: https://github.com/microcombustion/ctwrap/tags
    :alt: GitHub tag (latest by date)
+
+.. |pypi| image:: https://img.shields.io/pypi/v/ctwrap?color=lightblue
+   :target: https://pypi.org/project/ctwrap/
+   :alt: PyPI

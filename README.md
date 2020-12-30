@@ -1,5 +1,6 @@
 ![ci](https://github.com/microcombustion/ctwrap/workflows/CI/badge.svg)
 ![tag](https://img.shields.io/github/v/tag/microcombustion/ctwrap)
+![PyPI](https://img.shields.io/pypi/v/ctwrap?color=lightblue)
 
 # ctwrap
 
