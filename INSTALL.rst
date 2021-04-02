@@ -66,4 +66,4 @@ For a linked installation, run ``pip install -e .`` instead.
 
 .. code-block::
 
-    $ pip uninstall ctwrap
+    $ conda remove --name ctwrap --all
