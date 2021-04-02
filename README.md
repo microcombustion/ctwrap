@@ -47,7 +47,7 @@ $ pip install ctwrap
 A parallel batch job for adiabatic flame calculations uses the `freeflame` module (modified from Cantera's `adiabatic_flame.py` example). Based on the YAML configuration given as a reference, a variation of 12 equivalence ratio values is run as:
 
 ```
-$ ctwrap run freeflame freeflame.yaml --parallel
+$ ctwrap run freeflame freeflame.yaml --parallel --strategy sequence
 ```
 
 Results are written to a single file `freeflame.h5`.

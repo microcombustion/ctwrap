@@ -26,6 +26,13 @@ configuration and the simulation module above can be run as:
 
 .. code-block::
 
-    $ ctwrap run freeflame freeflame.yaml --parallel
+    $ ctwrap run freeflame freeflame.yaml --parallel --strategy sequence
 
-Results are written to a single file ``freeflame.h5``.
+or
+
+.. code-block::
+
+    $ ctwrap run freeflame freeflame.yaml --parallel --strategy matrix
+
+where the *strategy* keyword corresponds to entries in the YAML file. In either case,
+results are written to a single file ``freeflame.h5``.
