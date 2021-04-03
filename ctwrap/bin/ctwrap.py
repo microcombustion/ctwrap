@@ -20,6 +20,12 @@ parser_list = subparsers.add_parser(
     "list", help='list available simulation modules',
     description='List available simulation modules')
 
+parser_test = subparsers.add_parser(
+    "test", help='test simulation module with default configuration',
+    description='Test simulation module with default configuration')
+parser_test.add_argument(
+    'module_name', help='name of wrapped simulation module')
+
 parser_run = subparsers.add_parser(
     "run", help='run simulation module',
     description='Run simulation module')
@@ -52,14 +58,6 @@ def main():
         return
 
     module_name = args.module_name
-    yml_file = args.yaml_config
-    verbosity = args.verbosity
-    parallel = args.parallel
-    strategy = args.strategy
-    if args.output is None:
-        output_file = None
-    else:
-        output_file = args.output
 
     # import module
     if (Path.cwd() / module_name).is_file():
@@ -69,6 +67,27 @@ def main():
         module = importlib.import_module(module_name)
     else:
         module = importlib.import_module(module_name)
+
+    if args.command == 'test':
+        print('Testing module `{}` with default configuration:'.format(module_name))
+        try:
+            sim = ctwrap.Simulation.from_module(module)
+            defaults = sim.defaults()
+            sim.run(defaults)
+            print('success')
+        except:
+            print('failed')
+            raise
+        return
+
+    yml_file = args.yaml_config
+    verbosity = args.verbosity
+    parallel = args.parallel
+    strategy = args.strategy
+    if args.output is None:
+        output_file = None
+    else:
+        output_file = args.output
 
     # verbose output
     if verbosity:
@@ -80,8 +99,12 @@ def main():
 
     # set up variation
     sim = ctwrap.Simulation.from_module(module)
-    sh = ctwrap.SimulationHandler.from_yaml(
-        yml_file, strategy=strategy, verbosity=verbosity, output_name=output_file)
+    try:
+        sh = ctwrap.SimulationHandler.from_yaml(
+            yml_file, strategy=strategy, verbosity=verbosity, output_name=output_file)
+    except Exception as e:
+        raise ValueError("Failed to parse YAML input.\n\n"
+                         "Run 'ctwrap run --help' to list available options.") from e
 
     # run parameter variation
     if parallel:

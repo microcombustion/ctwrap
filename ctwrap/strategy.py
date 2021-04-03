@@ -232,7 +232,10 @@ class Strategy:
             key, value = next(iter(strategy.items()))
             name = key
         else:
-            raise ValueError("Parameter 'name' is required if multiple strategies are defined")
+            raise ValueError("Parameter 'name' is required if more than one strategy is availalbe.\n\n"
+                             "Name of batch simulation strategy needs to be speficied\n"
+                             "if multiple strategies are defined in the YAML input file.\n"
+                             "Available strategies are: {}".format(list(strategy.keys())))
 
         hooks = {'strategy': cls}
         for sub in cls.__subclasses__():
