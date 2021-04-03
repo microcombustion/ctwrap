@@ -51,7 +51,12 @@ the root folder of the repository.
 
     $ pip install .
 
-For a linked installation, run ``pip install -e .`` instead.
+(For a linked installation, run ``pip install -e .`` instead). To verify that
+everything is installed correctly, run:
+
+.. code-block::
+
+    $ ctwrap test freeflame
 
 **Update:** Within the ``ctwrap`` source folder, run
 
@@ -59,8 +64,6 @@ For a linked installation, run ``pip install -e .`` instead.
 
     $ git pull
     $ python setup.py develop
-
-
 
 **Uninstall:** To uninstall, simply remove the ``conda`` environment, i.e.
 
