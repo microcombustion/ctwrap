@@ -10,6 +10,19 @@ on:
       - main
 
 jobs:
+  fedora-job:
+    strategy:
+      matrix:
+        cc: [ gcc, clang ]
+    name: ${{ matrix.cc }}
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:rawhide
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: |
+        dnf -y install git clang
   nosetests-multi-os:
     name: Run pytest on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
