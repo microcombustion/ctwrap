@@ -7,6 +7,16 @@ on:
       - main
 
 jobs:
+  fedora-job:
+    name: Fedora job
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:rawhide
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: |
+        dnf -y install git clang
   nosetests-linux:
     name: Run pytest on Linux
     runs-on: "ubuntu-latest"
