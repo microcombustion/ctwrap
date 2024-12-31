@@ -236,7 +236,7 @@ class WriteCSV(Output):
                 df = pd.read_csv(fname)
             else:
                 df = pd.DataFrame(columns=row.keys())
-            df = df.append(row, ignore_index=True)
+            df = pd.concat([df, row], ignore_index=True)
             df.to_csv(fname, index=False)
 
     def dir(self):

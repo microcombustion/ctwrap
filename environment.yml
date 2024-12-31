@@ -10,7 +10,7 @@ dependencies:
   - h5py
   - pint
   - ruamel.yaml>=0.17.0
-  - pandas
+  - pandas>=1.4
   - cantera
   - setuptools
   - pytest
