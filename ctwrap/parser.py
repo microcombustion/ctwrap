@@ -264,6 +264,7 @@ class Parser(object):
 
     def to_yaml(self):
         """Convert Parser content to YAML string"""
+        yaml = YAML(typ="safe")
         return yaml.dump(self.raw, Dumper=yaml.SafeDumper)
 
     def get(self, key, default=None):
