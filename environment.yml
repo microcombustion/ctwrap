@@ -9,7 +9,7 @@ dependencies:
   - numpy
   - h5py
   - pint
-  - ruamel.yaml
+  - ruamel.yaml>=0.17.0
   - pandas
   - cantera
   - setuptools

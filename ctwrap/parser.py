@@ -65,13 +65,9 @@ from pathlib import Path
 from typing import Optional, Dict, Any, Tuple, KeysView, Generator, Union
 from copy import deepcopy
 from pint import UnitRegistry
+from ruamel.yaml import YAML
 import warnings
 import re
-
-try:
-    import ruamel_yaml as yaml
-except ImportError:
-    from ruamel import yaml
 
 
 __all__ = ['Parser']
@@ -253,12 +249,13 @@ class Parser(object):
         elif path is not None:
             fname = Path(path) / fname
 
+        yaml = YAML(typ="rt")
         try:
-            _ = fname.is_file() # will raise error
+            _ = fname.is_file()  # will raise error
             with open(fname) as stream:
-                out = yaml.load(stream, Loader=yaml.SafeLoader)
+                out = yaml.load(stream)
         except OSError:
-            out = yaml.load(yml, Loader=yaml.SafeLoader)
+            out = yaml.load(yml)
 
         if keys is None:
             return cls(out)
