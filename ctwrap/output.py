@@ -14,15 +14,14 @@ import warnings
 
 from typing import Dict, List, Any, Optional, Union
 
-import pkg_resources
+import importlib
 
 # avoid explicit dependence on cantera
-try:
-    pkg_resources.get_distribution('cantera')
-except pkg_resources.DistributionNotFound:
+ct_spec = importlib.util.find_spec("cantera")
+if ct_spec is None:
     ct = ImportError('Method requires a working cantera installation.')
 else:
-    import cantera as ct
+    ct = importlib.import_module("cantera")
 
 
 class Output:

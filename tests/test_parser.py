@@ -5,12 +5,8 @@
 
 import unittest
 from pathlib import Path
-import pint.quantity as pq
-
-try:
-    import ruamel_yaml as yaml
-except ImportError:
-    from ruamel import yaml
+import pint as pq
+from ruamel.yaml import YAML
 
 import warnings
 # add exception as pywintypes imports a deprecated module
@@ -202,6 +198,7 @@ class TestYAML(unittest.TestCase):
     def test_minimal(self):
 
         with open(EXAMPLES / 'minimal.yaml') as stream:
+            yaml = YAML(typ='safe')
             defaults = yaml.load(stream, Loader=yaml.SafeLoader)
         p = cw.Parser.from_yaml('minimal.yaml', path=EXAMPLES)
         self.assertEqual(len(p), len(defaults))
@@ -216,6 +213,7 @@ class TestYAML(unittest.TestCase):
     def test_ignition(self):
 
         with open(EXAMPLES / 'ignition.yaml') as stream:
+            yaml = YAML(typ='safe')
             yml = yaml.load(stream, Loader=yaml.SafeLoader)
         initial = cw.Parser(yml['defaults']['initial'])
         self.assertIsInstance(initial.T, pq.Quantity)

@@ -21,15 +21,14 @@ warnings.filterwarnings("ignore", ".*the imp module is deprecated*")
 # pylint: disable=no-member
 import ctwrap.output as cwo
 
-import pkg_resources
+import importlib
 
 # avoid explicit dependence on cantera
-try:
-    pkg_resources.get_distribution('cantera')
-except pkg_resources.DistributionNotFound:
+ct_spec = importlib.util.find_spec("cantera")
+if ct_spec is None:
     ct = ImportError('Method requires a working cantera installation.')
 else:
-    import cantera as ct
+    ct = importlib.import_module("cantera")
 
 
 PWD = Path(__file__).parents[0]
@@ -46,6 +45,7 @@ class TestOutput(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         with open(EXAMPLES / cls._yaml) as stream:
+            yaml = YAML(typ='safe')
             cls._config = yaml.load(stream, Loader=yaml.SafeLoader)
 
         out = cls._config.get('output')
