@@ -60,11 +60,7 @@ import multiprocessing as mp
 from multiprocessing import queues as mpq
 from multiprocessing import synchronize as mps
 import queue  # imported for using queue.Empty exception
-
-try:
-    import ruamel_yaml as yaml
-except ImportError:
-    from ruamel import yaml
+from ruamel.yaml import YAML
 
 # ctwrap specific import
 from .parser import _parse, _write, Parser
@@ -169,7 +165,8 @@ class SimulationHandler(object):
                           "".format(yaml_file))
 
         with open(full_name) as stream:
-            content = yaml.load(stream, Loader=yaml.SafeLoader)
+            yaml = YAML(typ="safe")
+            content = yaml.load(stream)
 
         output = content.get('output', {})
 
