@@ -249,7 +249,7 @@ class Parser(object):
         elif path is not None:
             fname = Path(path) / fname
 
-        yaml = YAML(typ="rt")
+        yaml = YAML(typ="safe")
         try:
             _ = fname.is_file()  # will raise error
             with open(fname) as stream:
