@@ -245,7 +245,6 @@ class WriteCSV(Output):
             return []
 
         df = pd.read_csv(fname)
-        print("DEBUG dir df", df)
         return list(df.output)
 
     def load_like(self, entry, other):
