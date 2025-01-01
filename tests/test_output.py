@@ -7,11 +7,7 @@ import pytest
 import unittest
 from pathlib import Path
 import h5py
-
-try:
-    import ruamel_yaml as yaml
-except ImportError:
-    from ruamel import yaml
+from ruamel.yaml import YAML
 
 import warnings
 # add exception as pywintypes imports a deprecated module
@@ -46,7 +42,7 @@ class TestOutput(unittest.TestCase):
     def setUpClass(cls):
         with open(EXAMPLES / cls._yaml) as stream:
             yaml = YAML(typ='safe')
-            cls._config = yaml.load(stream, Loader=yaml.SafeLoader)
+            cls._config = yaml.load(stream)
 
         out = cls._config.get('output')
         if out:

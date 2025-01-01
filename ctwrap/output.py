@@ -235,7 +235,7 @@ class WriteCSV(Output):
                 df = pd.read_csv(fname)
             else:
                 df = pd.DataFrame(columns=row.keys())
-            df = pd.concat([df, row], ignore_index=True)
+            df = pd.concat([df, row.to_frame().T], ignore_index=True)
             df.to_csv(fname, index=False)
 
     def dir(self):
@@ -245,6 +245,7 @@ class WriteCSV(Output):
             return []
 
         df = pd.read_csv(fname)
+        print("DEBUG dir df", df)
         return list(df.output)
 
     def load_like(self, entry, other):
