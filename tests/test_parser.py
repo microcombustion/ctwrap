@@ -199,7 +199,7 @@ class TestYAML(unittest.TestCase):
 
         with open(EXAMPLES / 'minimal.yaml') as stream:
             yaml = YAML(typ='safe')
-            defaults = yaml.load(stream, Loader=yaml.SafeLoader)
+            defaults = yaml.load(stream)
         p = cw.Parser.from_yaml('minimal.yaml', path=EXAMPLES)
         self.assertEqual(len(p), len(defaults))
         self.assertEqual(p.keys(), defaults.keys())
@@ -214,7 +214,7 @@ class TestYAML(unittest.TestCase):
 
         with open(EXAMPLES / 'ignition.yaml') as stream:
             yaml = YAML(typ='safe')
-            yml = yaml.load(stream, Loader=yaml.SafeLoader)
+            yml = yaml.load(stream)
         initial = cw.Parser(yml['defaults']['initial'])
         self.assertIsInstance(initial.T, pq.Quantity)
         self.assertIsInstance(initial['fuel'], str)
