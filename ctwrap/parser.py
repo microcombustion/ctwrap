@@ -85,6 +85,7 @@ def _parse(val: str):
     Returns:
        `Tuple` containing value and unit
     """
+    # TODO :seems parser does not handle "e" scientific notation e.g; "1e-6 m**3" is not parsed as dimensioned unit. 
 
     if not isinstance(val, str):
         raise TypeError("Method requires string input")
@@ -254,6 +255,8 @@ class Parser(object):
             _ = fname.is_file()  # will raise error
             with open(fname) as stream:
                 out = yaml.load(stream)
+        except FileNotFoundError:
+            raise FileNotFoundError("File '{}' not found".format(fname))
         except OSError:
             out = yaml.load(yml)
 

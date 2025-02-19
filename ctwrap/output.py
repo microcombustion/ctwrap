@@ -194,7 +194,7 @@ class WriteCSV(Output):
 
     def save(self, data, entry, variation=None, mode=None, errored=False):
         ""
-        if not data:
+        if data is None:
             return
 
         returns = self.kwargs.get('returns')
@@ -237,6 +237,9 @@ class WriteCSV(Output):
                 df = pd.DataFrame(columns=row.keys())
             df = pd.concat([df, row.to_frame().T], ignore_index=True)
             df.to_csv(fname, index=False)
+
+        else:
+            raise NotImplementedError("Saving of '{}' not implemented".format(type(data).__name__))
 
     def dir(self):
         ""

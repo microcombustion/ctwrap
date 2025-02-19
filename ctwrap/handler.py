@@ -464,6 +464,7 @@ def _worker(
     else:
         out = None
 
+    data = None
     other = None
     reschedule = 0
     while reschedule < len(tasks):
@@ -522,7 +523,7 @@ def _worker(
             errored = True
 
         # save output
-        if out and obj.data:
+        if out is not None and data is not None:
             if parallel:
                 with lock:
                     out.save(data, entry=task, variation=variations[task], errored=errored)
