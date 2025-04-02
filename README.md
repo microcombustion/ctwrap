@@ -6,6 +6,12 @@
 
 Python wrapper for batch simulations (e.g. Cantera).
 
+## 🚨 Archived Repository 🚨
+
+> [!WARNING]
+> **This repository is archived and no longer maintained.** It is in a read-only state. No further updates, issues, or pull requests will be accepted. Interested users are encouraged to either fork the repository to continue development independently, or submit a feature request to [Cantera/enhancements](https://github.com/Cantera/enhancements) for similar capabilities. In either case, limited support from the original developer may be available.
+
+
 ## Documentation
 
 [Sphinx documentation](https://microcombustion.github.io/ctwrap/) includes:
