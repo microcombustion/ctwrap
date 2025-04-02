@@ -14,15 +14,14 @@ import warnings
 
 from typing import Dict, List, Any, Optional, Union
 
-import pkg_resources
+import importlib
 
 # avoid explicit dependence on cantera
-try:
-    pkg_resources.get_distribution('cantera')
-except pkg_resources.DistributionNotFound:
+ct_spec = importlib.util.find_spec("cantera")
+if ct_spec is None:
     ct = ImportError('Method requires a working cantera installation.')
 else:
-    import cantera as ct
+    ct = importlib.import_module("cantera")
 
 
 class Output:
@@ -195,7 +194,7 @@ class WriteCSV(Output):
 
     def save(self, data, entry, variation=None, mode=None, errored=False):
         ""
-        if not data:
+        if data is None:
             return
 
         returns = self.kwargs.get('returns')
@@ -236,8 +235,11 @@ class WriteCSV(Output):
                 df = pd.read_csv(fname)
             else:
                 df = pd.DataFrame(columns=row.keys())
-            df = df.append(row, ignore_index=True)
+            df = pd.concat([df, row.to_frame().T], ignore_index=True)
             df.to_csv(fname, index=False)
+
+        else:
+            raise NotImplementedError("Saving of '{}' not implemented".format(type(data).__name__))
 
     def dir(self):
         ""

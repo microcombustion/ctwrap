@@ -5,12 +5,6 @@
 
 import unittest
 from pathlib import Path
-import pint.quantity as pq
-
-try:
-    import ruamel_yaml as yaml
-except ImportError:
-    from ruamel import yaml
 
 import warnings
 # add exception as pywintypes imports a deprecated module

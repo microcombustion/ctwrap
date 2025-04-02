@@ -65,13 +65,9 @@ from pathlib import Path
 from typing import Optional, Dict, Any, Tuple, KeysView, Generator, Union
 from copy import deepcopy
 from pint import UnitRegistry
+from ruamel.yaml import YAML
 import warnings
 import re
-
-try:
-    import ruamel_yaml as yaml
-except ImportError:
-    from ruamel import yaml
 
 
 __all__ = ['Parser']
@@ -89,6 +85,7 @@ def _parse(val: str):
     Returns:
        `Tuple` containing value and unit
     """
+    # TODO :seems parser does not handle "e" scientific notation e.g; "1e-6 m**3" is not parsed as dimensioned unit. 
 
     if not isinstance(val, str):
         raise TypeError("Method requires string input")
@@ -253,12 +250,15 @@ class Parser(object):
         elif path is not None:
             fname = Path(path) / fname
 
+        yaml = YAML(typ="safe")
         try:
-            _ = fname.is_file() # will raise error
+            _ = fname.is_file()  # will raise error
             with open(fname) as stream:
-                out = yaml.load(stream, Loader=yaml.SafeLoader)
+                out = yaml.load(stream)
+        except FileNotFoundError:
+            raise FileNotFoundError("File '{}' not found".format(fname))
         except OSError:
-            out = yaml.load(yml, Loader=yaml.SafeLoader)
+            out = yaml.load(yml)
 
         if keys is None:
             return cls(out)
@@ -267,6 +267,7 @@ class Parser(object):
 
     def to_yaml(self):
         """Convert Parser content to YAML string"""
+        yaml = YAML(typ="safe")
         return yaml.dump(self.raw, Dumper=yaml.SafeDumper)
 
     def get(self, key, default=None):

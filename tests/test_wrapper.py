@@ -6,14 +6,9 @@
 import unittest
 from pathlib import Path
 import subprocess
-import pint.quantity as pq
 import importlib
 import h5py
-
-try:
-    import ruamel_yaml as yaml
-except ImportError:
-    from ruamel import yaml
+from ruamel.yaml import YAML
 
 import warnings
 # add exception as pywintypes imports a deprecated module
@@ -54,7 +49,8 @@ class TestWrap(unittest.TestCase):
 
     def setUp(self):
         with open(EXAMPLES / self._yaml) as stream:
-            self.config = yaml.load(stream, Loader=yaml.SafeLoader)
+            yaml = YAML(typ='safe')
+            self.config = yaml.load(stream)
         self.sim = cw.Simulation.from_module(self._module)
         self.sh = cw.SimulationHandler.from_yaml(self._yaml, strategy=self._strategy, database=EXAMPLES)
 
@@ -247,7 +243,8 @@ class TestInvalid(TestWrap):
 
     def setUp(self):
         with open(EXAMPLES / self._yaml) as stream:
-            self.config = yaml.load(stream, Loader=yaml.SafeLoader)
+            yaml = YAML(typ='safe')
+            self.config = yaml.load(stream)
         self.sim = cw.Simulation.from_module(self._module)
         self.sh = cw.SimulationHandler.from_dict(self._dict)
 

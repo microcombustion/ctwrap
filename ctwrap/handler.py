@@ -60,11 +60,7 @@ import multiprocessing as mp
 from multiprocessing import queues as mpq
 from multiprocessing import synchronize as mps
 import queue  # imported for using queue.Empty exception
-
-try:
-    import ruamel_yaml as yaml
-except ImportError:
-    from ruamel import yaml
+from ruamel.yaml import YAML
 
 # ctwrap specific import
 from .parser import _parse, _write, Parser
@@ -169,7 +165,8 @@ class SimulationHandler(object):
                           "".format(yaml_file))
 
         with open(full_name) as stream:
-            content = yaml.load(stream, Loader=yaml.SafeLoader)
+            yaml = YAML(typ="safe")
+            content = yaml.load(stream)
 
         output = content.get('output', {})
 
@@ -467,6 +464,7 @@ def _worker(
     else:
         out = None
 
+    data = None
     other = None
     reschedule = 0
     while reschedule < len(tasks):
@@ -525,7 +523,7 @@ def _worker(
             errored = True
 
         # save output
-        if out and obj.data:
+        if out is not None and data is not None:
             if parallel:
                 with lock:
                     out.save(data, entry=task, variation=variations[task], errored=errored)

@@ -7,11 +7,7 @@ import pytest
 import unittest
 from pathlib import Path
 import h5py
-
-try:
-    import ruamel_yaml as yaml
-except ImportError:
-    from ruamel import yaml
+from ruamel.yaml import YAML
 
 import warnings
 # add exception as pywintypes imports a deprecated module
@@ -21,15 +17,14 @@ warnings.filterwarnings("ignore", ".*the imp module is deprecated*")
 # pylint: disable=no-member
 import ctwrap.output as cwo
 
-import pkg_resources
+import importlib
 
 # avoid explicit dependence on cantera
-try:
-    pkg_resources.get_distribution('cantera')
-except pkg_resources.DistributionNotFound:
+ct_spec = importlib.util.find_spec("cantera")
+if ct_spec is None:
     ct = ImportError('Method requires a working cantera installation.')
 else:
-    import cantera as ct
+    ct = importlib.import_module("cantera")
 
 
 PWD = Path(__file__).parents[0]
@@ -46,7 +41,8 @@ class TestOutput(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         with open(EXAMPLES / cls._yaml) as stream:
-            cls._config = yaml.load(stream, Loader=yaml.SafeLoader)
+            yaml = YAML(typ='safe')
+            cls._config = yaml.load(stream)
 
         out = cls._config.get('output')
         if out:

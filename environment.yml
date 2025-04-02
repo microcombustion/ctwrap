@@ -9,8 +9,8 @@ dependencies:
   - numpy
   - h5py
   - pint
-  - ruamel.yaml
-  - pandas
+  - ruamel.yaml>=0.17.0
+  - pandas>=1.4
   - cantera
   - setuptools
   - pytest
